@@ -1,55 +1,54 @@
-import { useEffect, useMemo, useState, type MouseEvent } from 'react'
-import Markdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import { patterns, slugify } from './data/patterns'
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
+import { patterns, prefetchPattern } from './data/patterns'
+import { appHref, appPathname, Arrow, dynamicProgrammingSourceUrl, ExternalIcon, Mark, navigate, PageState, SearchIcon, SkipLink, sourceUrl } from './SiteChrome'
 
-const sourceUrl = 'https://app.notion.com/p/3c9890465d8480e5abb0e76e8d7df3a8'
+const loadPatternPage = () => import('./PatternPage')
+const PatternPage = lazy(loadPatternPage)
 
-function currentSlug() {
-  const match = window.location.pathname.match(/^\/patterns\/([^/]+)\/?$/)
-  return match?.[1] ?? null
+function currentSlug(): string | null | undefined {
+  const pathname = appPathname()
+  if (pathname === '/' || pathname === '') return null
+  const match = pathname.match(/^\/patterns\/([^/]+)\/?$/)
+  return match?.[1]
 }
 
-function navigate(event: MouseEvent<HTMLAnchorElement>, path: string) {
-  if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
-  event.preventDefault()
-  window.history.pushState({}, '', path)
-  window.dispatchEvent(new PopStateEvent('popstate'))
-  window.scrollTo({ top: 0, behavior: 'smooth' })
-}
-
-function Mark() {
-  return (
-    <a className="brand" href="/" onClick={(event) => navigate(event, '/')} aria-label="DSA Revision home">
-      <span className="brand-mark" aria-hidden="true">D/</span>
-      <span>DSA Revision</span>
-    </a>
-  )
-}
-
-function Arrow({ direction = 'right' }: { direction?: 'left' | 'right' }) {
-  return <span aria-hidden="true">{direction === 'left' ? '←' : '→'}</span>
+function preloadLesson(slug: string) {
+  void loadPatternPage()
+  void prefetchPattern(slug)
 }
 
 function Home() {
   const [query, setQuery] = useState('')
+  const normalizedQuery = query.trim().toLocaleLowerCase()
   const filtered = useMemo(
-    () => patterns.filter((pattern) => pattern.title.toLowerCase().includes(query.toLowerCase())),
-    [query],
+    () => patterns.filter((pattern) => pattern.title.toLocaleLowerCase().includes(normalizedQuery)),
+    [normalizedQuery],
   )
+  const collections = [
+    { title: 'DSA Revision', patterns: filtered.filter((pattern) => !pattern.collection) },
+    { title: 'Dynamic Programming', patterns: filtered.filter((pattern) => pattern.collection === 'Dynamic Programming') },
+  ].filter((collection) => collection.patterns.length > 0)
 
   return (
     <>
+      <SkipLink />
       <header className="site-header">
         <Mark />
-        <a className="source-link" href={sourceUrl} target="_blank" rel="noreferrer">Notion source ↗</a>
+        <div className="source-links" aria-label="Notion seed sources">
+          <a className="source-link" href={sourceUrl} target="_blank" rel="noreferrer" aria-label="Open the DSA Revision Notion source in a new tab">
+            <span className="source-label">DSA source</span><ExternalIcon />
+          </a>
+          <a className="source-link" href={dynamicProgrammingSourceUrl} target="_blank" rel="noreferrer" aria-label="Open the Dynamic Programming Notion source in a new tab">
+            <span className="source-label">DP source</span><ExternalIcon />
+          </a>
+        </div>
       </header>
       <main id="main">
         <section className="hero">
           <div className="hero-copy">
             <p className="eyebrow">DSA REVISION · {patterns.length} PATTERNS</p>
             <h1>DSA Revision.<br /><em>One pattern</em><br />per page.</h1>
-            <p className="hero-summary">Choose a pattern from the library below. Every topic, explanation, example, and practice question comes from the linked Notion source.</p>
+            <p className="hero-summary">Choose a pattern from the library below. The initial learning material was seeded from the linked Notion pages.</p>
           </div>
           <div className="hero-card" aria-label="First patterns in the library">
             <span className="card-index">01</span>
@@ -57,7 +56,12 @@ function Home() {
             <ol>
               {patterns.slice(0, 4).map((pattern) => <li key={pattern.slug}>{pattern.title}</li>)}
             </ol>
-            <a href={`/patterns/${patterns[0].slug}`} onClick={(event) => navigate(event, `/patterns/${patterns[0].slug}`)}>
+            <a
+              href={appHref(`/patterns/${patterns[0].slug}`)}
+              onClick={(event) => navigate(event, `/patterns/${patterns[0].slug}`)}
+              onMouseEnter={() => preloadLesson(patterns[0].slug)}
+              onFocus={() => preloadLesson(patterns[0].slug)}
+            >
               Open {patterns[0].title} <Arrow />
             </a>
           </div>
@@ -71,137 +75,70 @@ function Home() {
             </div>
             <label className="search">
               <span className="sr-only">Search patterns</span>
-              <span aria-hidden="true">⌕</span>
-              <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Find a pattern…" />
+              <SearchIcon />
+              <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Find a pattern…" aria-controls="pattern-grid" autoComplete="off" enterKeyHint="search" />
             </label>
           </div>
 
-          <div className="pattern-grid">
-            {filtered.map((pattern) => {
-              const number = String(patterns.indexOf(pattern) + 1).padStart(2, '0')
-              return (
-                <a className="pattern-card" href={`/patterns/${pattern.slug}`} onClick={(event) => navigate(event, `/patterns/${pattern.slug}`)} key={pattern.slug}>
-                  <span className="pattern-number">{number}</span>
-                  <h3>{pattern.title}</h3>
-                  <span className="pattern-meta">{pattern.sections.length} sections</span>
-                  <span className="pattern-arrow"><Arrow /></span>
-                </a>
-              )
-            })}
+          {normalizedQuery && <p className="sr-only" role="status" aria-live="polite">{filtered.length} {filtered.length === 1 ? 'pattern' : 'patterns'} found.</p>}
+          <div className="pattern-collections" id="pattern-grid">
+            {collections.map((collection) => (
+              <section className="pattern-collection" aria-labelledby={`collection-${collection.title.toLocaleLowerCase().replace(/\s+/g, '-')}`} key={collection.title}>
+                <div className="collection-heading">
+                  <h3 id={`collection-${collection.title.toLocaleLowerCase().replace(/\s+/g, '-')}`}>{collection.title}</h3>
+                  <span>{collection.patterns.length} {collection.patterns.length === 1 ? 'topic' : 'topics'}</span>
+                </div>
+                <div className="pattern-grid">
+                  {collection.patterns.map((pattern) => {
+                    const number = String(patterns.indexOf(pattern) + 1).padStart(2, '0')
+                    return (
+                      <a
+                        className="pattern-card"
+                        href={appHref(`/patterns/${pattern.slug}`)}
+                        onClick={(event) => navigate(event, `/patterns/${pattern.slug}`)}
+                        onMouseEnter={() => preloadLesson(pattern.slug)}
+                        onFocus={() => preloadLesson(pattern.slug)}
+                        key={pattern.slug}
+                      >
+                        <span className="pattern-number">{number}</span>
+                        <h4>{pattern.title}</h4>
+                        <span className="pattern-meta">{pattern.sectionCount} sections</span>
+                        <span className="pattern-arrow"><Arrow /></span>
+                      </a>
+                    )
+                  })}
+                </div>
+              </section>
+            ))}
           </div>
-          {filtered.length === 0 && <p className="empty-state">No pattern matches “{query}”.</p>}
+          {filtered.length === 0 && <p className="empty-state" role="status" aria-live="polite">No pattern matches “{query}”.</p>}
         </section>
       </main>
-      <footer><span>{patterns.length} DSA patterns</span><span>Content sourced only from DSA Revision in Notion.</span></footer>
+      <footer><span>{patterns.length} DSA patterns</span><span>Initial content seeded from DSA Revision and Dynamic Programming in Notion.</span></footer>
     </>
   )
 }
 
-function PatternPage({ slug }: { slug: string }) {
-  const patternIndex = patterns.findIndex((item) => item.slug === slug)
-  const pattern = patterns[patternIndex]
-  const [menuOpen, setMenuOpen] = useState(false)
-
+function NotFound() {
   useEffect(() => {
-    setMenuOpen(false)
-  }, [slug])
-
-  useEffect(() => {
-    document.title = pattern ? `${pattern.title} — DSA Revision` : 'Pattern not found — DSA Revision'
+    document.title = 'Page not found — DSA Revision'
     return () => { document.title = 'DSA Revision — Interview Patterns' }
-  }, [pattern])
-
-  if (!pattern) return <NotFound />
-
-  const previous = patterns[patternIndex - 1]
-  const next = patterns[patternIndex + 1]
+  }, [])
 
   return (
-    <div className="reader-shell">
-      <header className="reader-header">
-        <Mark />
-        <div className="reader-progress" aria-label={`Pattern ${patternIndex + 1} of ${patterns.length}`}>
-          <span>{String(patternIndex + 1).padStart(2, '0')} / {patterns.length}</span>
-          <span className="progress-track"><span style={{ width: `${((patternIndex + 1) / patterns.length) * 100}%` }} /></span>
-        </div>
-        <button className="menu-button" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-controls="pattern-navigation">{menuOpen ? 'Close' : 'Contents'}</button>
-      </header>
-
-      <aside id="pattern-navigation" className={`pattern-nav ${menuOpen ? 'is-open' : ''}`}>
-        <p className="nav-label">PATTERN LIBRARY</p>
-        <nav aria-label="DSA patterns">
-          {patterns.map((item, index) => (
-            <a className={item.slug === slug ? 'active' : ''} href={`/patterns/${item.slug}`} onClick={(event) => navigate(event, `/patterns/${item.slug}`)} key={item.slug}>
-              <span>{String(index + 1).padStart(2, '0')}</span>{item.title}
-            </a>
-          ))}
-        </nav>
-      </aside>
-
-      <main className="reader-main" id="main">
-        <article>
-          <div className="article-kicker"><span>DSA PATTERN</span><span>{String(patternIndex + 1).padStart(2, '0')}</span></div>
-          <h1>{pattern.title}</h1>
-          <div className="article-rule" />
-          <Markdown
-            remarkPlugins={[remarkGfm]}
-            components={{
-              h2({ children }) {
-                const text = String(children)
-                return <h2 id={slugify(text)}>{children}</h2>
-              },
-              h3({ children }) {
-                const text = String(children)
-                return <h3 id={slugify(text)}>{children}</h3>
-              },
-              a({ href, children }) {
-                return <a href={href} target="_blank" rel="noreferrer">{children}</a>
-              },
-            }}
-          >{pattern.content}</Markdown>
-        </article>
-
-        <nav className="article-pager" aria-label="Pattern pagination">
-          {previous ? (
-            <a href={`/patterns/${previous.slug}`} onClick={(event) => navigate(event, `/patterns/${previous.slug}`)}>
-              <span><Arrow direction="left" /> Previous</span><strong>{previous.title}</strong>
-            </a>
-          ) : <span />}
-          {next ? (
-            <a className="next" href={`/patterns/${next.slug}`} onClick={(event) => navigate(event, `/patterns/${next.slug}`)}>
-              <span>Next <Arrow /></span><strong>{next.title}</strong>
-            </a>
-          ) : (
-            <a className="next" href="/" onClick={(event) => navigate(event, '/')}>Back to all patterns <Arrow /></a>
-          )}
-        </nav>
-      </main>
-
-      <aside className="on-this-page">
-        <p className="nav-label">ON THIS PAGE</p>
-        <nav aria-label="On this page">
-          {pattern.sections.slice(0, 12).map((section, index) => (
-            <a href={`#${section.id}`} key={`${section.id}-${index}`}>{section.title}</a>
-          ))}
-        </nav>
-        <a className="source-note" href={sourceUrl} target="_blank" rel="noreferrer">View original in Notion ↗</a>
-      </aside>
-    </div>
+    <PageState label="404 · PAGE NOT FOUND" title="This route slipped the invariant." description="The page may have moved, or the address may be incomplete.">
+      <a className="state-action" href={appHref('/')} onClick={(event) => navigate(event, '/')}>Return to the pattern library <Arrow /></a>
+    </PageState>
   )
 }
 
-function NotFound() {
-  return (
-    <main className="not-found" id="main">
-      <p className="eyebrow">404 · PATTERN NOT FOUND</p>
-      <h1>This route slipped the invariant.</h1>
-      <a href="/" onClick={(event) => navigate(event, '/')}>Return to the pattern library <Arrow /></a>
-    </main>
-  )
+function LoadingPattern() {
+  return <PageState label="OPENING PATTERN" title="Preparing the lesson." description="Setting the page in a consistent revision flow." tone="loading" busy />
 }
 
 export default function App() {
   const [slug, setSlug] = useState(currentSlug())
+  const patternExists = typeof slug === 'string' && patterns.some((pattern) => pattern.slug === slug)
 
   useEffect(() => {
     const sync = () => setSlug(currentSlug())
@@ -209,5 +146,15 @@ export default function App() {
     return () => window.removeEventListener('popstate', sync)
   }, [])
 
-  return slug ? <PatternPage slug={slug} /> : <Home />
+  useEffect(() => {
+    if (patternExists && slug) preloadLesson(slug)
+  }, [patternExists, slug])
+
+  if (slug === null) return <Home />
+  if (slug === undefined || !patternExists) return <NotFound />
+  return (
+    <Suspense fallback={<LoadingPattern />}>
+      <PatternPage slug={slug} />
+    </Suspense>
+  )
 }
