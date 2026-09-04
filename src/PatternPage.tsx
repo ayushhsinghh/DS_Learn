@@ -2,7 +2,7 @@ import { isValidElement, useEffect, useRef, useState, type MouseEvent, type Reac
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { loadPattern, patterns, prefetchPattern, slugify, type Pattern } from './data/patterns'
-import { appHref, Arrow, ExternalIcon, Mark, navigate, PageState, SkipLink } from './SiteChrome'
+import { appHref, Arrow, Mark, navigate, PageState, SkipLink } from './SiteChrome'
 
 const javaKeywords = new Set([
   'abstract', 'assert', 'boolean', 'break', 'byte', 'case', 'catch', 'char', 'class', 'const',
@@ -75,6 +75,14 @@ function nodeText(value: ReactNode): string {
   return ''
 }
 
+function ContentsIcon() {
+  return (
+    <svg className="contents-menu-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <path d="M3 5h14M3 10h14M3 15h14" />
+    </svg>
+  )
+}
+
 function LoadFailure({ message }: { message: string }) {
   return (
     <PageState label="LESSON COULD NOT LOAD" title="The pattern is temporarily unavailable." description={message} tone="error">
@@ -86,6 +94,8 @@ function LoadFailure({ message }: { message: string }) {
 function PatternReader({ pattern }: { pattern: Pattern }) {
   const patternIndex = patterns.findIndex((item) => item.slug === pattern.slug)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [headerHidden, setHeaderHidden] = useState(false)
+  const [headerCompact, setHeaderCompact] = useState(false)
   const menuButtonRef = useRef<HTMLButtonElement>(null)
   const contentsRef = useRef<HTMLElement>(null)
   const pageScrollRef = useRef({ x: 0, y: 0 })
@@ -131,7 +141,8 @@ function PatternReader({ pattern }: { pattern: Pattern }) {
     const closeMenu = (event: KeyboardEvent) => {
       if (event.key !== 'Escape') return
       setMenuOpen(false)
-      menuButtonRef.current?.focus({ preventScroll: true })
+      setHeaderHidden(false)
+      window.requestAnimationFrame(() => menuButtonRef.current?.focus({ preventScroll: true }))
     }
     document.body.style.overflow = 'hidden'
     document.documentElement.style.overflow = 'hidden'
@@ -151,10 +162,59 @@ function PatternReader({ pattern }: { pattern: Pattern }) {
 
   useEffect(() => {
     const desktop = window.matchMedia('(min-width: 901px)')
-    const closeOnDesktop = () => { if (desktop.matches) setMenuOpen(false) }
+    const closeOnDesktop = () => {
+      if (!desktop.matches) return
+      setMenuOpen(false)
+      setHeaderHidden(false)
+      setHeaderCompact(false)
+    }
     desktop.addEventListener('change', closeOnDesktop)
     return () => desktop.removeEventListener('change', closeOnDesktop)
   }, [])
+
+  useEffect(() => {
+    const mobile = window.matchMedia('(max-width: 900px)')
+    let lastScrollY = window.scrollY
+    let frame = 0
+
+    const updateHeader = () => {
+      frame = 0
+      const currentScrollY = window.scrollY
+
+      if (!mobile.matches || menuOpen || currentScrollY <= 24) {
+        setHeaderHidden(false)
+        setHeaderCompact(false)
+        lastScrollY = currentScrollY
+        return
+      }
+
+      const delta = currentScrollY - lastScrollY
+      if (Math.abs(delta) < 8) return
+      const scrollingDown = delta > 0
+      setHeaderHidden(scrollingDown)
+      setHeaderCompact(!scrollingDown)
+      lastScrollY = currentScrollY
+    }
+
+    const onScroll = () => {
+      if (!frame) frame = window.requestAnimationFrame(updateHeader)
+    }
+    const onViewportChange = () => {
+      lastScrollY = window.scrollY
+      if (!mobile.matches) {
+        setHeaderHidden(false)
+        setHeaderCompact(false)
+      }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true })
+    mobile.addEventListener('change', onViewportChange)
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame)
+      window.removeEventListener('scroll', onScroll)
+      mobile.removeEventListener('change', onViewportChange)
+    }
+  }, [menuOpen])
 
   function openSection(event: MouseEvent<HTMLAnchorElement>, id: string) {
     event.preventDefault()
@@ -174,19 +234,29 @@ function PatternReader({ pattern }: { pattern: Pattern }) {
 
   function closeContents() {
     setMenuOpen(false)
+    setHeaderHidden(false)
+    setHeaderCompact(window.scrollY > 24)
     window.requestAnimationFrame(() => menuButtonRef.current?.focus({ preventScroll: true }))
+  }
+
+  function toggleContents() {
+    setHeaderHidden(false)
+    setMenuOpen((open) => !open)
   }
 
   return (
     <div className="reader-shell">
       <SkipLink />
-      <header className="reader-header">
+      <header className={`reader-header ${headerHidden || menuOpen ? 'is-hidden' : ''} ${headerCompact ? 'is-compact' : ''}`} inert={menuOpen ? true : undefined} aria-hidden={menuOpen || undefined}>
         <Mark />
         <div className="reader-progress" aria-label={`Pattern ${patternIndex + 1} of ${patterns.length}`}>
           <span>{String(patternIndex + 1).padStart(2, '0')} / {patterns.length}</span>
           <span className="progress-track"><span style={{ width: `${((patternIndex + 1) / patterns.length) * 100}%` }} /></span>
         </div>
-        <button ref={menuButtonRef} className="menu-button" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-controls="page-contents" aria-label={`${menuOpen ? 'Close' : 'Open'} page contents`}>{menuOpen ? 'Close' : 'Contents'}</button>
+        <button ref={menuButtonRef} className="menu-button" onClick={toggleContents} aria-expanded={menuOpen} aria-controls="page-contents" aria-label="Open page contents">
+          <span className="menu-button-label">Contents</span>
+          <ContentsIcon />
+        </button>
       </header>
 
       <aside id="pattern-navigation" className="pattern-nav">
@@ -257,7 +327,6 @@ function PatternReader({ pattern }: { pattern: Pattern }) {
             <a href={`#${section.id}`} onClick={(event) => openSection(event, section.id)} key={`${section.id}-${index}`}>{section.title}</a>
           ))}
         </nav>
-        <a className="source-note" href={pattern.sourceUrl} target="_blank" rel="noreferrer">View original in Notion <ExternalIcon /></a>
       </aside>
     </div>
   )

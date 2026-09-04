@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import { patterns, prefetchPattern } from './data/patterns'
-import { appHref, appPathname, Arrow, dynamicProgrammingSourceUrl, ExternalIcon, Mark, navigate, PageState, SearchIcon, SkipLink, sourceUrl } from './SiteChrome'
+import { appHref, appPathname, Arrow, Mark, navigate, PageState, SearchIcon, SkipLink } from './SiteChrome'
 
 const loadPatternPage = () => import('./PatternPage')
 const PatternPage = lazy(loadPatternPage)
@@ -34,21 +34,13 @@ function Home() {
       <SkipLink />
       <header className="site-header">
         <Mark />
-        <div className="source-links" aria-label="Notion seed sources">
-          <a className="source-link" href={sourceUrl} target="_blank" rel="noreferrer" aria-label="Open the DSA Revision Notion source in a new tab">
-            <span className="source-label">DSA source</span><ExternalIcon />
-          </a>
-          <a className="source-link" href={dynamicProgrammingSourceUrl} target="_blank" rel="noreferrer" aria-label="Open the Dynamic Programming Notion source in a new tab">
-            <span className="source-label">DP source</span><ExternalIcon />
-          </a>
-        </div>
       </header>
       <main id="main">
         <section className="hero">
           <div className="hero-copy">
             <p className="eyebrow">DSA REVISION · {patterns.length} PATTERNS</p>
             <h1>DSA Revision.<br /><em>One pattern</em><br />per page.</h1>
-            <p className="hero-summary">Choose a pattern from the library below. The initial learning material was seeded from the linked Notion pages.</p>
+            <p className="hero-summary">Choose a pattern from the library below. Each topic follows the same structured revision flow.</p>
           </div>
           <div className="hero-card" aria-label="First patterns in the library">
             <span className="card-index">01</span>
@@ -114,7 +106,7 @@ function Home() {
           {filtered.length === 0 && <p className="empty-state" role="status" aria-live="polite">No pattern matches “{query}”.</p>}
         </section>
       </main>
-      <footer><span>{patterns.length} DSA patterns</span><span>Initial content seeded from DSA Revision and Dynamic Programming in Notion.</span></footer>
+      <footer><span>{patterns.length} DSA patterns</span><span>One consistent revision flow.</span></footer>
     </>
   )
 }

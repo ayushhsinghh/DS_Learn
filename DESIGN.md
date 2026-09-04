@@ -278,11 +278,12 @@ Directional, search, and external-link marks use one authored square-ended SVG s
 
 ### Navigation
 
-- **Seed Sources:** The home header links separately to the DSA Revision and Dynamic Programming Notion pages. Each lesson footer links only to the page that seeded that lesson.
+- **Source Presentation:** Imported provenance remains internal documentation; the public interface stays focused on study navigation and does not expose external source links.
 - **Global Rail:** Deep Study Paper with compact Manrope labels and DM Mono indices.
 - **Active Item:** Clay Study Paper wash, Deep Pine Ink text, a vermilion left rule, stable position, and `aria-current="page"`.
 - **Local Rail:** Sage Study Paper. It maps only the article's top-level `##` section headings; `###` subheadings remain in the reading flow. Links underline and shift to Structural Teal on hover.
-- **Mobile Contents Drawer:** Lists only the current lesson's top-level sections. It fills the viewport, owns vertical touch scrolling without overscroll chaining, and freezes the lesson at its exact reading position. A drawer-owned sticky toolbar keeps Close permanently reachable. Opening moves focus to the first section; choosing a section closes the drawer, while Close or Escape returns focus to the header control. Pattern switching remains available through the library and previous/next links.
+- **Mobile Reading Header:** The full lesson header appears only at the page top. After a deliberate downward scroll it leaves the viewport; upward scroll within the lesson reveals only a `44px` contents icon at the top-right, never the full header. The icon disappears again on downward scroll. Desktop remains stable.
+- **Mobile Contents Drawer:** Lists only the current lesson's top-level sections. It fills the viewport, owns vertical touch scrolling without overscroll chaining, and freezes the lesson at its exact reading position. One compact drawer-owned sticky toolbar keeps Close permanently reachable; the underlying lesson header is hidden from view and assistive technology. Opening moves focus to the first section; choosing a section closes the drawer, while Close or Escape returns focus to the restored header control. Pattern switching remains available through the library and previous/next links.
 
 ### Reading Callout
 

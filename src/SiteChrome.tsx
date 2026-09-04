@@ -1,8 +1,5 @@
 import type { MouseEvent, ReactNode } from 'react'
 
-export const sourceUrl = 'https://app.notion.com/p/3c9890465d8480e5abb0e76e8d7df3a8'
-export const dynamicProgrammingSourceUrl = 'https://app.notion.com/p/3cf890465d8480a38040fc3f991b7594'
-
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '')
 
 export function appHref(path: string) {
@@ -47,14 +44,6 @@ export function Arrow({ direction = 'right' }: { direction?: 'left' | 'right' })
       ) : (
         <path d="M3 10h14m0 0-5-5m5 5-5 5" />
       )}
-    </svg>
-  )
-}
-
-export function ExternalIcon() {
-  return (
-    <svg className="icon icon-external" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-      <path d="M8 4H4v12h12v-4M11 4h5v5M9 11l7-7" />
     </svg>
   )
 }

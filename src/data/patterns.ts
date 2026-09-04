@@ -8,16 +8,11 @@ export type PatternSummary = {
 export type Pattern = PatternSummary & {
   content: string
   sections: { title: string; id: string; line: number }[]
-  sourceUrl: string
 }
 
 type PatternDefinition = PatternSummary & {
   load: () => Promise<{ default: string }>
-  sourceUrl?: string
 }
-
-const dsaSourceUrl = 'https://app.notion.com/p/3c9890465d8480e5abb0e76e8d7df3a8'
-const dynamicProgrammingSourceUrl = 'https://app.notion.com/p/3cf890465d8480a38040fc3f991b7594'
 
 const definitions: PatternDefinition[] = [
   { title: '2 Pointers', slug: '2-pointers', sectionCount: 7, load: () => import('./content/2-pointers.md?raw') },
@@ -41,13 +36,13 @@ const definitions: PatternDefinition[] = [
   { title: 'Topological Sorting', slug: 'topological-sorting', sectionCount: 49, load: () => import('./content/topological-sorting.md?raw') },
   { title: 'Shortest Path Algorithms', slug: 'shortest-path-algorithms', sectionCount: 61, load: () => import('./content/shortest-path-algorithms.md?raw') },
   { title: 'Minimum Spanning Trees', slug: 'minimum-spanning-trees', sectionCount: 57, load: () => import('./content/minimum-spanning-trees.md?raw') },
-  { title: 'Linear 1D Dynamic Programming', slug: 'linear-1d-dynamic-programming', sectionCount: 17, collection: 'Dynamic Programming', sourceUrl: dynamicProgrammingSourceUrl, load: () => import('./content/linear-1d-dynamic-programming.md?raw') },
-  { title: '0/1 Knapsack Dynamic Programming', slug: '0-1-knapsack-dynamic-programming', sectionCount: 17, collection: 'Dynamic Programming', sourceUrl: dynamicProgrammingSourceUrl, load: () => import('./content/0-1-knapsack-dynamic-programming.md?raw') },
-  { title: 'Unbounded Knapsack Dynamic Programming', slug: 'unbounded-knapsack-dynamic-programming', sectionCount: 17, collection: 'Dynamic Programming', sourceUrl: dynamicProgrammingSourceUrl, load: () => import('./content/unbounded-knapsack-dynamic-programming.md?raw') },
-  { title: 'Sequence, Subsequence and Palindrome Dynamic Programming', slug: 'sequence-subsequence-and-palindrome-dynamic-programming', sectionCount: 18, collection: 'Dynamic Programming', sourceUrl: dynamicProgrammingSourceUrl, load: () => import('./content/sequence-subsequence-and-palindrome-dynamic-programming.md?raw') },
+  { title: 'Linear 1D Dynamic Programming', slug: 'linear-1d-dynamic-programming', sectionCount: 17, collection: 'Dynamic Programming', load: () => import('./content/linear-1d-dynamic-programming.md?raw') },
+  { title: '0/1 Knapsack Dynamic Programming', slug: '0-1-knapsack-dynamic-programming', sectionCount: 17, collection: 'Dynamic Programming', load: () => import('./content/0-1-knapsack-dynamic-programming.md?raw') },
+  { title: 'Unbounded Knapsack Dynamic Programming', slug: 'unbounded-knapsack-dynamic-programming', sectionCount: 17, collection: 'Dynamic Programming', load: () => import('./content/unbounded-knapsack-dynamic-programming.md?raw') },
+  { title: 'Sequence, Subsequence and Palindrome Dynamic Programming', slug: 'sequence-subsequence-and-palindrome-dynamic-programming', sectionCount: 18, collection: 'Dynamic Programming', load: () => import('./content/sequence-subsequence-and-palindrome-dynamic-programming.md?raw') },
 ]
 
-export const patterns: PatternSummary[] = definitions.map(({ load: _load, sourceUrl: _sourceUrl, ...summary }) => summary)
+export const patterns: PatternSummary[] = definitions.map(({ load: _load, ...summary }) => summary)
 
 export function slugify(value: string) {
   return value
@@ -100,7 +95,6 @@ export function loadPattern(slug: string): Promise<Pattern> {
         sectionCount: definition.sectionCount,
         content: content.trim(),
         sections: extractSections(content),
-        sourceUrl: definition.sourceUrl ?? dsaSourceUrl,
       }
     })
     .catch((error) => {
