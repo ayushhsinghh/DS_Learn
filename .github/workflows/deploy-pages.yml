@@ -35,7 +35,15 @@ jobs:
         run: npm ci
 
       - name: Build site
-        run: npm run build -- --base="/${{ github.event.repository.name }}/"
+        run: npm run build
+
+      - name: Verify custom-domain artifact
+        run: |
+          test "$(cat dist/CNAME)" = "dsa.ayush.ltd"
+          if grep -q '/DS_Learn/' dist/index.html; then
+            echo "The custom-domain build still contains the repository base path."
+            exit 1
+          fi
 
       - name: Add single-page application fallback
         run: cp dist/index.html dist/404.html
