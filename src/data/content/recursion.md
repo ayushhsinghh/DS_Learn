@@ -1,4 +1,5 @@
 Recursion is a technique where a function solves a problem by asking itself to solve a **smaller version of the same problem**.
+
 Every recursive solution needs:
 1. A clearly defined problem or state
 2. A base case
@@ -6,6 +7,7 @@ Every recursive solution needs:
 4. A way to use the smaller problem’s answer
 ## Core Mental Model
 > Do one small piece of work, trust recursion to solve the smaller problem, and combine the result.
+
 ```plain text
 Solve current problem
 → Reduce it to a smaller problem
@@ -14,10 +16,12 @@ Solve current problem
 ```
 The biggest mental shift is:
 > Do not mentally execute every recursive call while writing the solution.
+
 Instead, define exactly what the function promises to return.
 ## The Recursive Function Contract
 Before writing code, complete this sentence:
 > `solve(state)` returns .
+
 Examples:
 ```plain text
 factorial(n)
@@ -153,6 +157,7 @@ Look for these signals:
 - An iterative implementation would require an explicit stack.
 ### Most important recognition question
 > Can I express the current answer using the answer to a smaller version of the same problem?
+
 If yes, recursion may be natural.
 ## The Five Questions to Ask Before Coding
 For every recursive problem, answer:
@@ -161,15 +166,18 @@ For every recursive problem, answer:
 3. What is the smallest state I can solve directly?
 4. How does every recursive call move toward that state?
 5. How do I combine the recursive answers?
+
 If any one of these is unclear, the recursion will probably be difficult to implement correctly.
 ## Common Form 1: Linear Recursion
 Use this when each state creates only one smaller recursive call.
+
 Examples:
 - Factorial
 - Sum of an array
 - Reverse a linked list
 - Traverse a linked list
 - Process characters by index
+
 The call structure looks like:
 ```plain text
 solve(0)
@@ -182,10 +190,12 @@ solve(0)
 2. Move to one smaller state.
 3. Stop at the base case.
 4. Use the returning value if the current state depends on it.
+
 **Memory flow:** `Handle current → Recurse once → Return`
 ### Array sum
 Contract:
 > `sum(nums, index)` returns the sum from `index` through the end.
+
 ```java
 int sum(int[] nums, int index) {
     if (index == nums.length) {
@@ -206,6 +216,7 @@ Practice:
 ## Common Form 2: Recursion with an Accumulator
 Use this when partial information can be carried forward as a parameter.
 An accumulator stores the work completed so far.
+
 Examples:
 ```plain text
 running sum
@@ -218,6 +229,7 @@ number of selected elements
 2. Update it before making the recursive call.
 3. Pass it into the smaller state.
 4. Return it when the base case is reached.
+
 **Memory flow:** `Update answer so far → Pass forward → Return at base`
 ```java
 int sum(
@@ -250,6 +262,7 @@ return sum(
 );
 ```
 Use whichever produces the clearest function contract.
+
 Practice:
 - LC 129 — Sum Root to Leaf Numbers
 - LC 112 — Path Sum
@@ -257,6 +270,7 @@ Practice:
 - Digit Sum and Number Reversal
 ## Common Form 3: Multiple Recursive Choices
 Use this when every state has several possible decisions.
+
 Examples:
 ```plain text
 take or skip
@@ -278,6 +292,7 @@ solve(index+1)    solve(index+1)
 3. Each call solves the remaining smaller problem.
 4. Combine their results using sum, maximum, minimum, OR, or AND.
 5. Stop when the decision space is exhausted.
+
 **Memory flow:** `List choices → Recurse for each → Combine answers`
 ### Take-or-skip template
 ```java
@@ -307,6 +322,7 @@ Practice:
 - LC 494 — Target Sum
 - LC 416 — Partition Equal Subset Sum
 - LC subsequence-generation problems
+
 This form often leads to dynamic programming when the same states repeat.
 ## Common Form 4: Tree Recursion
 Trees are naturally recursive because each subtree is itself a smaller tree.
@@ -322,10 +338,12 @@ The most important decision is what information each child should return to its 
 3. Recursively solve the left subtree.
 4. Recursively solve the right subtree.
 5. Combine those answers with the current node.
+
 **Memory flow:** `Ask left → Ask right → Combine at current node`
 ### Maximum depth
 Contract:
 > `maxDepth(node)` returns the maximum depth of the subtree rooted at `node`.
+
 ```java
 int maxDepth(TreeNode node) {
     if (node == null) {
@@ -341,8 +359,10 @@ int maxDepth(TreeNode node) {
 ### Tree recursion mental model
 Do not think:
 > How do I calculate the depth of the entire tree?
+
 Think:
 > If the left and right children give me their depths, how does the current node calculate its answer?
+
 Practice:
 - LC 104 — Maximum Depth of Binary Tree
 - LC 110 — Balanced Binary Tree
@@ -352,6 +372,7 @@ Practice:
 - LC 112 — Path Sum
 ## Common Form 5: Divide and Conquer
 Use this when a problem can be divided into independent smaller ranges.
+
 The common structure is:
 ```plain text
 Divide
@@ -366,6 +387,7 @@ Unlike simple multiple-choice recursion, divide-and-conquer calls usually solve 
 3. Recursively solve each part.
 4. Combine their results.
 5. Return the combined answer.
+
 **Memory flow:** `Divide → Solve parts → Combine`
 ### Merge-sort structure
 ```java
@@ -384,12 +406,14 @@ void mergeSort(int[] nums, int left, int right) {
 ```
 ### Important observation
 The recursive calls do not perform the merge.
+
 They only guarantee:
 ```plain text
 Left half is sorted
 Right half is sorted
 ```
 The current function combines those results.
+
 Practice:
 - LC 912 — Sort an Array
 - LC 108 — Convert Sorted Array to BST
@@ -408,10 +432,12 @@ The returning phase is especially useful because it processes nodes in reverse o
 3. Use the returned smaller-list answer.
 4. Reconnect the current node.
 5. Return the new head or required result.
+
 **Memory flow:** `Solve remaining list → Reconnect current while returning`
 ### Reverse linked list
 Contract:
 > `reverse(head)` returns the new head of the reversed list beginning at `head`.
+
 ```java
 ListNode reverse(ListNode head) {
     if (head == null || head.next == null) {
@@ -428,6 +454,7 @@ ListNode reverse(ListNode head) {
 ```
 ### Why set `head.next = null`?
 Without it, the old forward connection remains and creates a cycle.
+
 Practice:
 - LC 206 — Reverse Linked List
 - LC 24 — Swap Nodes in Pairs
@@ -436,12 +463,14 @@ Practice:
 - LC 234 — Palindrome Linked List
 ## Common Form 7: Backtracking Recursion
 Backtracking is recursion with reversible choices.
+
 It is used to generate:
 - Subsets
 - Permutations
 - Combinations
 - Paths
 - Valid arrangements
+
 This should eventually have its own dedicated topic, but its recursive foundation belongs here.
 ### How it works
 1. Choose one available option.
@@ -449,6 +478,7 @@ This should eventually have its own dedicated topic, but its recursive foundatio
 3. Recursively explore that decision.
 4. Undo the choice.
 5. Try the next option.
+
 **Memory flow:** `Choose → Explore → Undo`
 ```java
 void backtrack(
@@ -478,6 +508,7 @@ void backtrack(
 answer.add(new ArrayList<>(current));
 ```
 `current` continues changing during backtracking. Saving the same list reference would cause stored answers to change later.
+
 Practice:
 - LC 78 — Subsets
 - LC 46 — Permutations
@@ -486,6 +517,7 @@ Practice:
 - LC 131 — Palindrome Partitioning
 ## Common Form 8: Recursion Using the Call Stack as Storage
 Use this when explicit stack operations are restricted and recursive calls temporarily hold removed elements.
+
 Examples:
 - Sort a stack
 - Reverse a stack
@@ -496,6 +528,7 @@ Examples:
 3. The removed element remains stored in the current call frame.
 4. During unwinding, insert it into the correct position.
 5. Rebuild the complete stack.
+
 **Memory flow:** `Remove → Store in call frame → Solve smaller → Reinsert`
 ```java
 void sort(Deque<Integer> stack) {
@@ -532,6 +565,7 @@ Practice:
 - Delete the Middle Element of a Stack
 ## How to Trace Recursion Properly
 Do not trace recursion only in your head. Create a table.
+
 For:
 ```java
 sum([2, 4, 6], index)
@@ -558,6 +592,7 @@ sum([2, 4, 6], index)
 <td>returns `0`</td>
 </tr>
 </table>
+
 Then unwind:
 ```plain text
 sum(3) = 0
@@ -570,6 +605,7 @@ Always trace both:
 2. Values returning upward
 ## Choosing Recursive Parameters
 The parameters should describe everything that can change between recursive states.
+
 Common parameters:
 ```plain text
 index
@@ -582,6 +618,7 @@ previous selected index
 ```
 Ask:
 > If two calls have the same parameters, are they solving the same problem?
+
 If yes, those parameters correctly define the state.
 This question also helps identify repeated states for dynamic programming.
 ## Choosing a Base Case
@@ -648,6 +685,7 @@ fib(5)
 ```
 `fib(3)` is solved more than once.
 This indicates overlapping subproblems.
+
 The progression becomes:
 ```plain text
 Recursion
@@ -769,6 +807,7 @@ Stack: O(n)
 ```
 ## Final Reusable Model
 > A recursive function should make one clear promise, solve a smaller version of that promise, and use the returned answer without reopening the smaller problem.
+
 ```plain text
 Define the contract
 → Write the base case

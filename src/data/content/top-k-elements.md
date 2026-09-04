@@ -1,9 +1,11 @@
 The Top K Elements pattern finds the largest, smallest, most frequent, closest, or highest-priority `k` items without fully sorting all `n` items.
+
 The key idea is:
 > If you only need `k` elements, avoid doing unnecessary work on all `n` elements.
+
 A heap is the most common tool because it can maintain the best `k` candidates seen so far.
 ## Core Mental Model
-For the `k` largest elements, maintain a **min-heap of size ****`k`**:
+For the `k` largest elements, maintain a **min-heap of size `k`**:
 ```plain text
 The heap contains the k largest values seen so far.
 The smallest among those k values stays at the top.
@@ -13,7 +15,7 @@ When a better candidate arrives:
 Add candidate
 → If size exceeds k, remove the weakest candidate
 ```
-For the `k` smallest elements, use a **max-heap of size ****`k`**.
+For the `k` smallest elements, use a **max-heap of size `k`**.
 ```plain text
 Top K largest  → min-heap
 Top K smallest → max-heap
@@ -29,6 +31,7 @@ Look for these signals:
 - The answer depends on a score such as value, frequency, distance, profit, or priority.
 ### Most important recognition question
 > Do I need the complete sorted order, or only the best `k` candidates?
+
 If only `k` candidates matter, consider a heap, bucket sort, or quickselect.
 ## Intuition Example
 Find the three largest values:
@@ -60,6 +63,7 @@ Use this when every element has a score and only the best `k` elements are neede
 3. If the heap grows beyond size `k`, remove its root.
 4. Choose the heap direction so the root is the weakest accepted candidate.
 5. After processing everything, the heap contains the best `k` elements.
+
 **Memory flow:** `Add candidate → Remove weakest → Keep best k`
 ### K largest using a min-heap
 ```java
@@ -106,6 +110,7 @@ The values themselves are not the priority—their frequencies are.
 3. If the heap size exceeds `k`, remove the least frequent element.
 4. After processing all unique values, the heap contains the `k` most frequent.
 5. Extract those values into the result.
+
 **Memory flow:** `Count frequencies → Heap by frequency → Remove least frequent`
 ```java
 Map<Integer, Integer> frequency = new HashMap<>();
@@ -146,6 +151,7 @@ Practice:
 ## Common Form 3: Top K Frequent Elements Using Buckets
 Use bucket sort when the ranking value—usually frequency—has a small known range.
 An element in an array of length `n` can appear at most `n` times.
+
 Therefore, create buckets indexed by frequency:
 ```plain text
 bucket[frequency] = elements having that frequency
@@ -156,6 +162,7 @@ bucket[frequency] = elements having that frequency
 3. Place each unique value into the bucket matching its frequency.
 4. Traverse buckets from highest frequency to lowest.
 5. Stop after collecting `k` elements.
+
 **Memory flow:** `Count → Group by frequency → Read buckets backward`
 ```java
 Map<Integer, Integer> frequency = new HashMap<>();
@@ -215,7 +222,9 @@ Quickselect uses quicksort’s partition step but explores only the side contain
 3. Compare the pivot index with the target index.
 4. If equal, return the pivot.
 5. Otherwise, continue into only the relevant partition.
+
 **Memory flow:** `Partition → Check pivot index → Search one side`
+
 For the kth largest value:
 ```plain text
 Target sorted index = nums.length - k
@@ -257,16 +266,19 @@ private int partition(int[] nums, int low, int high) {
 }
 ```
 Randomizing the pivot helps avoid consistently bad partitions.
+
 Practice:
 - LC 215 — Kth Largest Element in an Array
 - LC 973 — K Closest Points to Origin
 - LC 347 — Top K Frequent Elements
 ## Common Form 5: K Closest Elements
 Use this when candidates are ranked by distance rather than their original value.
+
 Examples:
 - Points closest to the origin
 - Values closest to a target
 - Locations closest to a user
+
 To keep the `k` closest candidates, use a max-heap containing their distances.
 The farthest currently accepted candidate stays at the root and is removed when a closer one arrives.
 ### How it works
@@ -275,6 +287,7 @@ The farthest currently accepted candidate stays at the root and is removed when 
 3. If the heap exceeds size `k`, remove the farthest candidate.
 4. Continue until every candidate has been processed.
 5. The heap now contains the `k` closest candidates.
+
 **Memory flow:** `Calculate distance → Add → Remove farthest`
 ```java
 PriorityQueue<int[]> maxHeap =
@@ -295,6 +308,7 @@ For a point `(x, y)`, compare squared distance:
 long distance = (long) x * x + (long) y * y;
 ```
 There is no need to calculate the square root because squared distances preserve the same ordering.
+
 Practice:
 - LC 973 — K Closest Points to Origin
 - LC 658 — Find K Closest Elements
@@ -307,6 +321,7 @@ Use this when values arrive one at a time and the current kth result must be ava
 3. Remove the weakest candidate whenever the heap exceeds `k`.
 4. The root always represents the current kth-ranked value.
 5. There is no need to reprocess earlier elements.
+
 **Memory flow:** `Receive value → Update heap → Root is current kth`
 ```java
 class KthLargest {
@@ -339,10 +354,12 @@ Practice:
 - LC 1825 — Finding MK Average
 ## Common Form 7: K-Way Merge with a Heap
 Use this when multiple collections are already sorted and you need their combined order or kth result.
+
 Examples:
 - Merge `k` sorted linked lists
 - Find the kth smallest matrix value
 - Find the smallest range containing values from multiple lists
+
 The heap contains the next available candidate from each collection.
 ### How it works
 1. Add the first candidate from each sorted collection to a min-heap.
@@ -350,7 +367,9 @@ The heap contains the next available candidate from each collection.
 3. Add the next candidate from the same collection.
 4. Repeat until enough elements have been processed.
 5. The heap never needs more than one active candidate per collection.
+
 **Memory flow:** `One candidate per source → Remove smallest → Add its successor`
+
 Example node for sorted arrays:
 ```java
 class Entry {
@@ -414,6 +433,7 @@ Need complete sorted order             → normal sorting
 ## Heap Direction Rule
 Ask:
 > Which accepted candidate should be removed when a better one arrives?
+
 ```plain text
 Keep largest values  → remove smallest → min-heap
 Keep smallest values → remove largest  → max-heap
@@ -503,6 +523,7 @@ Time: O(x log k)
 ```
 ## Final Reusable Model
 > Keep only the candidates that can still belong to the final Top K result, and make the weakest accepted candidate easy to remove.
+
 ```plain text
 Define ranking
 → Choose removable boundary

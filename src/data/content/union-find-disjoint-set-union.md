@@ -1,4 +1,5 @@
 Union-Find, also called Disjoint Set Union or DSU, maintains a collection of non-overlapping connected groups.
+
 It efficiently answers two questions:
 ```plain text
 Find:
@@ -27,6 +28,7 @@ Component: {0, 1, 2, 3}
 ---
 ## Core Mental Model
 > Every connected component chooses one representative node called its root.
+
 Nodes in the same component have the same root:
 ```plain text
 find(0) == find(1)
@@ -54,6 +56,7 @@ Look for these signals:
 - Connectivity changes through additions, not arbitrary deletions.
 ### Most important recognition question
 > Am I repeatedly connecting two items and asking whether they already belong to the same connected group?
+
 If yes, Union-Find is likely appropriate.
 ---
 ## Union-Find State
@@ -67,6 +70,7 @@ int[] size;
 parent[x]
 ```
 stores the next node on the path toward the representative root.
+
 A root points to itself:
 ```java
 parent[root] == root
@@ -183,6 +187,7 @@ Without optimization:
 4 → 3 → 2 → 1
 ```
 Finding the root of `4` requires following the entire chain.
+
 Path compression directly connects every visited node to the root:
 ```java
 parent[node] = find(parent[node]);
@@ -206,6 +211,7 @@ int find(int node) {
 ```
 ### Recursive contract
 > `find(node)` returns the representative root of `node` and compresses the path from `node` to that root.
+
 ---
 ## Union by Size
 When combining two components, attach the smaller tree under the larger tree.
@@ -282,6 +288,7 @@ Edges are added, and we need to determine whether nodes belong to the same conne
 2. For every connection, call `union(u, v)`.
 3. To answer a connectivity query, compare their roots.
 4. Nodes are connected exactly when their roots are equal.
+
 **Memory flow:** `Add connection → Merge representatives → Compare roots`
 ```java
 UnionFind unionFind = new UnionFind(n);
@@ -302,6 +309,7 @@ Practice:
 ---
 ## Common Form 2: Detect a Redundant Edge
 In an undirected graph, an edge creates a cycle when its endpoints are already connected.
+
 Before adding:
 ```plain text
 find(u) == find(v)
@@ -314,6 +322,7 @@ Adding another edge between the same components creates a cycle.
 3. If their roots are equal, the edge is redundant.
 4. Otherwise, merge their components.
 5. Return the edge that failed to merge.
+
 **Memory flow:** `Check roots → Same means cycle → Different means merge`
 ```java
 for (int[] edge : edges) {
@@ -328,6 +337,7 @@ for (int[] edge : edges) {
 ### Why this works only directly for undirected cycles
 In an undirected graph, existing connectivity between `u` and `v` means another undirected edge closes a cycle.
 Directed-cycle detection requires direction-aware logic and generally uses DFS states or topological sorting.
+
 Practice:
 - LC 684 — Redundant Connection
 - LC 261 — Graph Valid Tree
@@ -348,6 +358,7 @@ A union between already-connected nodes changes nothing.
 2. Process every edge.
 3. Decrease the count after each successful union.
 4. Return the final component count.
+
 **Memory flow:** `Start with n groups → Successful union removes one group`
 ```java
 UnionFind unionFind = new UnionFind(n);
@@ -393,6 +404,7 @@ all nodes form one component
 2. Union every edge.
 3. If any union fails, a cycle exists.
 4. Confirm only one connected component remains.
+
 **Memory flow:** `Check edge count → Reject cycles → Confirm one component`
 ```java
 boolean validTree(int n, int[][] edges) {
@@ -438,6 +450,7 @@ to connect them.
 2. Union the endpoints of every edge.
 3. Count the remaining connected components.
 4. Return `components - 1`.
+
 **Memory flow:** `Merge existing connections → Count groups → Connect groups with c - 1 edges`
 ```java
 if (connections.length < n - 1) {
@@ -463,6 +476,7 @@ Sometimes graph nodes are not integers. They may be:
 - Accounts
 - Variables
 - Coordinates
+
 We must assign each unique item an integer ID or union related indices.
 ### How it works
 1. Decide what represents a DSU node.
@@ -471,6 +485,7 @@ We must assign each unique item an integer ID or union related indices.
 4. Find the representative for every item.
 5. Group items by their representative.
 6. Build the final output from those groups.
+
 **Memory flow:** `Map objects to IDs → Union related items → Group by root`
 ### Accounts Merge idea
 For every account:
@@ -517,6 +532,7 @@ An inequality creates a contradiction if both variables are already in the same 
 3. Process every inequality.
 4. If unequal variables have the same root, return `false`.
 5. Otherwise, all equations are satisfiable.
+
 **Memory flow:** `Merge equal variables → Test inequalities against components`
 ```java
 for (String equation : equations) {
@@ -543,6 +559,7 @@ return true;
 ```
 ### Why process equalities first?
 An inequality can only be evaluated correctly after all implied equality groups have been formed.
+
 Practice:
 - LC 990 — Satisfiability of Equality Equations
 - LC 737 — Sentence Similarity II
@@ -550,6 +567,7 @@ Practice:
 ---
 ## Common Form 8: Union-Find on a Grid
 A grid can be converted into DSU nodes.
+
 For a grid with:
 ```plain text
 rows × columns
@@ -564,6 +582,7 @@ int id = row * columns + column;
 3. Union cells belonging to the same region.
 4. Count successful merges, component roots, or component sizes.
 5. Optionally activate cells dynamically as they appear.
+
 **Memory flow:** `Convert coordinates to IDs → Union neighboring cells → Track regions`
 ```java
 int id(int row, int col, int columns) {
@@ -578,11 +597,13 @@ unionFind.union(current, neighbor);
 ```
 ### Dynamic island idea
 Initially, cells are inactive.
+
 When land is added:
 1. Activate the cell.
 2. Increment the island count.
 3. Union it with active land neighbors.
 4. Decrease the island count for every successful union.
+
 Practice:
 - LC 200 — Number of Islands
 - LC 305 — Number of Islands II
@@ -592,6 +613,7 @@ Practice:
 ---
 ## Common Form 9: Component Size Problems
 Union by size naturally maintains component sizes.
+
 After finding a root:
 ```java
 size[find(node)]
@@ -603,6 +625,7 @@ gives the number of nodes in that component.
 3. Find the root of the requested node.
 4. Read its component size.
 5. Combine component sizes when evaluating possible new connections.
+
 **Memory flow:** `Merge sizes at roots → Query size through representative`
 ### Making a Large Island idea
 For each zero cell:
@@ -626,6 +649,7 @@ for (int[] direction : directions) {
 ```
 ### Why use a set?
 Two neighboring cells may belong to the same island. Adding both sizes would double-count that component.
+
 Practice:
 - LC 827 — Making a Large Island
 - LC 952 — Largest Component Size by Common Factor
@@ -633,11 +657,13 @@ Practice:
 ---
 ## Common Form 10: Process Edges in Sorted Order
 Some problems ask connectivity questions under changing limits.
+
 Instead of rebuilding the graph for every query:
 1. Sort edges by weight.
 2. Sort queries by their permitted limit.
 3. Add all edges currently allowed by the query.
 4. Use Union-Find to answer connectivity.
+
 This is an offline-query technique.
 ### How it works
 1. Sort graph edges by weight.
@@ -645,6 +671,7 @@ This is an offline-query technique.
 3. For each query, union every edge satisfying its threshold.
 4. Check whether the query endpoints are connected.
 5. Store the result at the query’s original index.
+
 **Memory flow:** `Sort events → Add currently valid edges → Answer connectivity`
 For a query requiring edge weights smaller than `limit`:
 ```java
@@ -673,6 +700,7 @@ It processes edges from smallest to largest weight.
 3. If its endpoints are already connected, skip it because it creates a cycle.
 4. Otherwise, union the components and include the edge.
 5. Stop after selecting `n - 1` edges.
+
 **Memory flow:** `Sort edges → Add cheapest non-cycling edge → Merge components`
 ```java
 Arrays.sort(
@@ -701,6 +729,7 @@ for (int[] edge : edges) {
 ```
 Minimum Spanning Trees will be covered as a dedicated graph topic. Here, the important connection is:
 > Union-Find lets Kruskal determine whether adding an edge would create a cycle.
+
 Practice:
 - LC 1584 — Min Cost to Connect All Points
 - LC 1135 — Connecting Cities With Minimum Cost
@@ -709,6 +738,7 @@ Practice:
 ## Common Form 12: Weighted Union-Find
 Normal Union-Find tracks only whether nodes are connected.
 Weighted Union-Find also tracks a relationship between a node and its parent.
+
 Example:
 ```plain text
 a / b = 2
@@ -725,8 +755,10 @@ The structure stores ratios while merging components.
 3. During `find`, compress the path and multiply ratios.
 4. During `union`, connect roots while preserving the given relationship.
 5. If two variables have the same root, derive their ratio from stored weights.
+
 **Memory flow:** `Find representative → Accumulate relationship → Merge roots consistently`
 This is an advanced DSU extension. DFS or BFS is usually simpler for one-time Evaluate Division queries, but weighted Union-Find is useful for repeated dynamic relationships.
+
 Practice:
 - LC 399 — Evaluate Division
 - LC 2307 — Check for Contradictions in Equations
@@ -760,11 +792,13 @@ Use BFS or DFS when the actual path is needed.
 ## Union-Find versus Directed Graph Algorithms
 Standard Union-Find ignores edge direction.
 It is naturally suited to undirected connectivity.
+
 It cannot generally replace:
 - Directed-cycle detection
 - Topological sorting
 - Reachability in directed graphs
 - Strongly connected component algorithms
+
 For directed dependencies, use:
 ```plain text
 DFS states
@@ -864,11 +898,13 @@ m = number of operations
 With:
 - Path compression
 - Union by size or rank
+
 The amortized cost of each operation is:
 ```plain text
 O(α(n))
 ```
 Here, `α(n)` is the inverse Ackermann function, which grows extremely slowly.
+
 For all practical input sizes:
 ```plain text
 α(n) is smaller than 5

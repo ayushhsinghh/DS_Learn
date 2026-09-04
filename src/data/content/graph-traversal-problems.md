@@ -23,10 +23,12 @@ Unlike a tree:
 - The graph may be disconnected.
 - There may be several paths between two nodes.
 - There may not be a single root.
+
 Because of these differences, graph traversal normally requires a `visited` structure.
 ---
 ## Core Mental Model
 > Start from a node, process it, and discover its unvisited neighbors.
+
 The two fundamental graph traversals are:
 ```plain text
 DFS → Follow one path deeply before returning
@@ -239,6 +241,7 @@ for (int[] edge : edges) {
 ```
 ### Critical question
 > Does the relationship work in one direction or both?
+
 Many graph solutions fail because the graph was constructed in the wrong direction.
 ---
 ## Why We Need `visited`
@@ -259,8 +262,10 @@ Without `visited`:
 ...
 ```
 Traversal never ends.
+
 The visited structure ensures:
 > Every node is processed at most once.
+
 For integer nodes:
 ```java
 boolean[] visited = new boolean[n];
@@ -298,6 +303,7 @@ B adds D
 C also adds D
 ```
 Now `D` appears in the queue twice.
+
 Correct:
 ```java
 if (!visited[next]) {
@@ -315,6 +321,7 @@ Recursive DFS explores one neighbor completely before trying the next neighbor.
 3. Examine each neighbor.
 4. Recursively visit every unvisited neighbor.
 5. Return when all neighbors have been explored.
+
 **Memory flow:** `Enter node → Mark visited → Explore neighbors → Return`
 ```java
 void dfs(
@@ -335,6 +342,7 @@ void dfs(
 ```
 ### Recursive contract
 > `dfs(node)` visits every unvisited node reachable from `node`.
+
 Practice:
 - LC 1971 — Find if Path Exists in Graph
 - LC 841 — Keys and Rooms
@@ -350,6 +358,7 @@ Iterative DFS replaces the recursive call stack with an explicit stack.
 4. Process it.
 5. Push its unvisited neighbors.
 6. Continue until the stack is empty.
+
 **Memory flow:** `Push start → Pop node → Push unvisited neighbors`
 ```java
 void dfs(
@@ -383,6 +392,7 @@ void dfs(
 - Stack overflow is a concern.
 - You want explicit control over traversal order.
 - The language has a limited call stack.
+
 Practice:
 - LC 1971 — Find if Path Exists in Graph
 - LC 841 — Keys and Rooms
@@ -397,6 +407,7 @@ BFS explores all nodes one edge away before nodes two edges away.
 4. Process it.
 5. Add every unvisited neighbor.
 6. Continue until the queue is empty.
+
 **Memory flow:** `Offer start → Poll node → Offer unvisited neighbors`
 ```java
 void bfs(
@@ -427,6 +438,7 @@ void bfs(
 ```
 ### Queue invariant
 > Every node currently in the queue has been discovered but not yet processed.
+
 Practice:
 - LC 1971 — Find if Path Exists in Graph
 - LC 841 — Keys and Rooms
@@ -441,6 +453,7 @@ You do not need to traverse the rest of the graph after finding the target.
 3. Explore reachable neighbors.
 4. Return immediately when the destination is found.
 5. Return `false` if traversal finishes without finding it.
+
 **Memory flow:** `Start from source → Explore reachable nodes → Stop at destination`
 ### BFS template
 ```java
@@ -518,6 +531,7 @@ To process the complete graph, start another traversal from every still-unvisite
 3. Otherwise, a new connected component has been found.
 4. Increment the component count.
 5. Traverse from that node to mark its entire component.
+
 **Memory flow:** `Find unvisited node → Count component → Mark complete component`
 ```java
 int countComponents(
@@ -556,6 +570,7 @@ Sometimes the question needs the number of nodes in every connected component.
 3. Recursively count every unvisited neighbor.
 4. Return the total size to the caller.
 5. Use component sizes to calculate the final answer.
+
 **Memory flow:** `Count current node → Add reachable component sizes → Return total`
 ```java
 int componentSize(
@@ -587,6 +602,7 @@ answer += (long) seen * size;
 seen += size;
 ```
 This counts pairs containing one node from the new component and one from an earlier component.
+
 Practice:
 - LC 2316 — Count Unreachable Pairs of Nodes
 - LC 695 — Max Area of Island
@@ -610,6 +626,7 @@ The first time a node is discovered, BFS has reached it using the minimum number
 	`distance[neighbor] = distance[node] + 1`.
 4. Add the neighbor to the queue.
 5. Stop when the destination is reached or traversal finishes.
+
 **Memory flow:** `Process distance d → Discover nodes at distance d + 1`
 ```java
 int shortestPath(
@@ -646,6 +663,7 @@ int shortestPath(
 }
 ```
 Here, `distance[neighbor] == -1` also acts as the visited check.
+
 Practice:
 - LC 752 — Open the Lock
 - LC 127 — Word Ladder
@@ -655,6 +673,7 @@ Practice:
 ---
 ## Common Form 8: Level-Based BFS
 Use this when the answer changes once per BFS layer.
+
 Examples:
 - Number of transformations
 - Number of minutes
@@ -666,6 +685,7 @@ Examples:
 3. Add their undiscovered neighbors.
 4. After the level finishes, increase distance or time.
 5. The newly added nodes form the next level.
+
 **Memory flow:** `Capture level size → Process current layer → Increment distance`
 ```java
 int distance = 0;
@@ -692,6 +712,7 @@ while (!queue.isEmpty()) {
 ### Why capture `size` first?
 The queue changes while processing the level.
 Without capturing its original size, nodes from the next level could be processed in the current level.
+
 Practice:
 - LC 752 — Open the Lock
 - LC 127 — Word Ladder
@@ -701,6 +722,7 @@ Practice:
 ## Common Form 9: Multi-Source BFS
 Normal BFS starts from one source.
 Multi-source BFS starts from every source simultaneously.
+
 Example:
 ```plain text
 Several infected nodes spread at the same time.
@@ -711,6 +733,7 @@ Several infected nodes spread at the same time.
 3. Run ordinary BFS.
 4. Each BFS level represents simultaneous expansion from all sources.
 5. Every node is reached by its nearest source.
+
 **Memory flow:** `Add all sources → Expand together → Record nearest distance`
 ```java
 Deque<Integer> queue = new ArrayDeque<>();
@@ -753,6 +776,7 @@ Practice:
 ---
 ## Common Form 10: Clone a Graph
 Cloning requires creating exactly one new node for each original node while preserving connections.
+
 A visited boolean is insufficient because we must also remember:
 ```plain text
 original node → cloned node
@@ -764,6 +788,7 @@ original node → cloned node
 4. If a neighbor has not been cloned, recursively clone it.
 5. Connect the current clone to the neighbor’s clone.
 6. Return the clone associated with the current node.
+
 **Memory flow:** `Map original to clone → Clone neighbors → Connect clones`
 ```java
 Node cloneGraph(Node node) {
@@ -799,6 +824,7 @@ Node clone(
 ### Why store the clone before recursion?
 If the graph contains a cycle, recursion may return to the same node.
 The mapping must already exist so the repeated visit can return the existing clone instead of creating another one.
+
 Practice:
 - LC 133 — Clone Graph
 - LC 138 — Copy List with Random Pointer
@@ -814,6 +840,7 @@ To reconstruct the path, store which node first discovered every neighbor.
 4. Start at the destination.
 5. Follow parents backward to the source.
 6. Reverse the collected sequence.
+
 **Memory flow:** `Discover node → Save predecessor → Trace backward → Reverse`
 ```java
 List<Integer> shortestPath(
@@ -899,9 +926,11 @@ Whether the component satisfies a condition
 ```
 Before coding, define:
 > `dfs(node)` returns  for the unvisited graph reachable from `node`.
+
 ---
 ## BFS Without a Separate `visited` Array
 A separate `visited` structure is not required when another structure already records discovery.
+
 For shortest path:
 ```java
 if (distance[neighbor] == -1) {
@@ -921,6 +950,7 @@ if (!parent.containsKey(neighbor)) {
 }
 ```
 > You still need visited information; it may simply be stored inside another structure.
+
 ---
 ## Traversing Disconnected Graphs
 Starting from node `0` does not guarantee that every graph node will be visited.
@@ -944,6 +974,7 @@ Use this outer loop when the question concerns:
 - Number of components
 - Whether every component satisfies a condition
 - Complete graph traversal
+
 Do not use it when the question asks only what is reachable from a specific source.
 ---
 ## Marking Visited: Global versus Current Path
@@ -965,6 +996,7 @@ Used for:
 - Directed-cycle detection
 - Backtracking
 - Certain path enumeration problems
+
 A node may be globally visited but no longer belong to the current recursive path.
 We will cover this distinction fully in cycle detection.
 ---

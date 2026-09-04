@@ -12,6 +12,7 @@ or
 1 copy of an item
 ```
 An item cannot be selected more than once.
+
 Classic example:
 ```plain text
 Item weights: [1, 3, 4, 5]
@@ -19,6 +20,7 @@ Item values:  [1, 4, 5, 7]
 Capacity:     7
 ```
 We must select items whose total weight is at most `7` while maximizing total value.
+
 The pattern also appears when there are no explicit weights and values:
 - Choose a subset having a target sum
 - Divide an array into equal subsets
@@ -28,6 +30,7 @@ The pattern also appears when there are no explicit weights and values:
 - Select items under multiple capacity constraints
 #### Core mental model
 > For every item, decide whether to take it once or skip it permanently.
+
 ---
 ## 2. How to Identify It
 Look for these signals:
@@ -43,6 +46,7 @@ Look for these signals:
 - The order of selected items does not matter.
 - Each recursive state moves to the next item after both take and skip.
 - The same `(index, remainingCapacity)` state appears repeatedly.
+
 Common wording:
 ```plain text
 Each item can be used once
@@ -55,6 +59,7 @@ Assign plus or minus signs
 ```
 #### Recognition question
 > Am I deciding independently for every item whether to include it once or exclude it?
+
 If yes, consider 0/1 Knapsack.
 ---
 ## 3. State Definition and Recursive Function Contract
@@ -65,6 +70,7 @@ remaining capacity or remaining target
 ```
 Complete:
 > `solve(index, remaining)` returns  using items from `index` onward.
+
 Examples:
 ```plain text
 solve(index, capacity)
@@ -82,6 +88,7 @@ The remaining capacity alone does not tell us which items are still available.
 The same capacity may be reached after processing different sets of items.
 ### Why is `remaining` required?
 The answer from the same index changes depending on how much capacity or target remains.
+
 Therefore, the complete state is generally:
 ```plain text
 (index, remaining)
@@ -140,6 +147,7 @@ solve(index + 1, capacity - weights[index])
 ```
 The current item has been consumed and cannot be selected again.
 That is the defining difference between 0/1 and unbounded knapsack.
+
 Decision tree:
 ```plain text
            item 0
@@ -212,6 +220,7 @@ if (target == 0) {
 }
 ```
 If unprocessed zeros remain, each zero can be selected or skipped without changing the target, creating additional valid subsets.
+
 Safer counting base case:
 ```java
 if (index == nums.length) {
@@ -428,6 +437,7 @@ int knapsack(
 ```
 #### Why use `item - 1`?
 DP row `item` represents the first `item` items.
+
 The current item’s input-array index is:
 ```plain text
 item - 1
@@ -472,6 +482,7 @@ for (int index = n - 1; index >= 0; index--) {
 ```
 #### Core rule
 > Process states only after every dependency used by the recurrence has already been calculated.
+
 ---
 ## 10. Space Optimization
 The two-dimensional recurrence uses only:
@@ -534,12 +545,14 @@ for (int item = 0;
 ```
 ### Why must capacity move backward?
 Suppose the current item has weight `2`.
+
 If capacity moves forward:
 ```plain text
 dp[2] uses the item
 dp[4] may use the newly updated dp[2]
 ```
 The same item has now been used twice.
+
 Moving backward ensures:
 ```plain text
 dp[capacity - weight]
@@ -569,6 +582,7 @@ We need the maximum total value without exceeding capacity.
 2. For every capacity, compare taking and skipping it.
 3. Taking uses the previous item state at reduced capacity.
 4. Store the larger value.
+
 **Memory flow:** `Take once or skip → Keep maximum value`
 ```plain text
 dp[i][capacity]
@@ -591,6 +605,7 @@ Determine whether some subset adds exactly to a target.
 3. Process every number once.
 4. Iterate target backward.
 5. Mark a sum possible if it was already possible or can be formed by adding the current number.
+
 **Memory flow:** `Existing achievable sums → Add current number once`
 ```java
 boolean subsetSum(
@@ -631,6 +646,7 @@ S / 2
 3. Set the target to `sum / 2`.
 4. Determine whether a subset produces that target.
 5. The remaining elements automatically produce the other half.
+
 **Memory flow:** `Convert equal partition → Find one subset of half the total`
 ```java
 int total = Arrays.stream(nums).sum();
@@ -662,6 +678,7 @@ abs(totalSum - 2 × sum1)
 2. Only inspect sums up to `totalSum / 2`.
 3. Choose the achievable sum closest to half.
 4. Calculate `totalSum - 2 × subsetSum`.
+
 **Memory flow:** `Find achievable sums → Choose sum closest to half`
 ```java
 int answer = Integer.MAX_VALUE;
@@ -694,6 +711,7 @@ dp[sum]
 3. Iterate sums backward.
 4. Add the number of subsets that produced `sum - number`.
 5. Zeros automatically double existing counts.
+
 **Memory flow:** `Count existing subsets → Add current item once`
 ```java
 int countSubsets(
@@ -726,6 +744,7 @@ Exclude zero
 Include zero
 ```
 Therefore, its count doubles.
+
 Practice:
 - Count Subsets With Sum K
 - LC 494 — Target Sum
@@ -733,6 +752,7 @@ Practice:
 ---
 ### Common Form 6: Target Sum Transformation
 Assign `+` or `-` before every number.
+
 Let:
 ```plain text
 P = sum of positively assigned numbers
@@ -756,6 +776,7 @@ P = (totalSum + target) / 2
 ```
 The problem becomes:
 > Count subsets whose sum is `(totalSum + target) / 2`.
+
 #### Validity checks
 A solution is impossible when:
 ```plain text
@@ -771,6 +792,7 @@ totalSum + target is odd
 3. Validate parity.
 4. Convert the problem into subset-count DP.
 5. Count subsets producing the transformed target.
+
 **Memory flow:** `Separate positive and negative groups → Convert to subset count`
 ```java
 int transformed =
@@ -791,6 +813,7 @@ Practice:
 ---
 ### Common Form 7: Multiple Capacity Constraints
 Some problems limit more than one resource.
+
 Example:
 ```plain text
 Number of zeros available
@@ -807,6 +830,7 @@ dp[zeros][ones]
 3. Iterate every capacity dimension backward.
 4. Compare taking and skipping the item.
 5. Backward iteration prevents reuse.
+
 **Memory flow:** `Consume several resources → Process each item once`
 ```java
 for (String word : strings) {
@@ -838,6 +862,7 @@ Practice:
 ---
 ### Common Form 8: Select Items with an Exact Count or Additional Condition
 Sometimes capacity is not the only changing condition.
+
 State may include:
 ```plain text
 index
@@ -856,7 +881,9 @@ remaining members
 3. Reduce all resources affected by taking.
 4. Combine results according to the objective.
 5. Ensure the state does not contain information that can be derived from other parameters.
+
 **Memory flow:** `Take or skip → Update multiple remaining conditions`
+
 Example state:
 ```plain text
 dp[index][remainingCapacity][itemsNeeded]
@@ -868,6 +895,7 @@ Practice:
 ---
 ## 12. Answer Reconstruction
 To determine which items were selected, preserve the two-dimensional DP table.
+
 Starting from:
 ```plain text
 item = n

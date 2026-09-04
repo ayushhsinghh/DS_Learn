@@ -1,4 +1,5 @@
 A Minimum Spanning Tree, or MST, connects every node in an undirected weighted graph using the minimum possible total edge cost.
+
 It must satisfy three properties:
 ```plain text
 Every vertex is connected
@@ -22,12 +23,14 @@ The selected edges include every graph vertex.
 The selected edges are connected and contain no cycle.
 ## Minimum
 Among all possible spanning trees, it has the smallest total edge weight.
+
 A connected graph can have:
 - One unique MST
 - Several different MSTs with the same minimum cost
 ---
 ## Core Mental Model
 > Repeatedly select a safe, low-cost edge that connects previously separate parts of the graph.
+
 The two main MST algorithms are:
 ```plain text
 Kruskal’s algorithm
@@ -49,6 +52,7 @@ Look for these signals:
 - The required result contains exactly `n - 1` connections.
 - Existing connections can be treated as zero-cost edges.
 - A virtual source can represent an alternative construction method.
+
 Common wording:
 ```plain text
 minimum cost to connect all
@@ -59,6 +63,7 @@ roads, cables, pipes, bridges
 ```
 ### Most important recognition question
 > Are we minimizing the total cost of connecting the entire graph, rather than the travel cost from one source?
+
 If yes, consider a Minimum Spanning Tree.
 ---
 ## MST versus Shortest Path
@@ -115,6 +120,7 @@ It uses Union-Find to determine whether adding an edge would create a cycle.
 5. Union those components.
 6. If both endpoints are already connected, skip the edge.
 7. Stop after selecting `V - 1` edges.
+
 **Memory flow:** `Sort all edges → Add cheapest non-cycling edge → Merge components`
 ---
 ## Kruskal Template
@@ -184,6 +190,7 @@ If true:
 u and v already have a path between them
 ```
 Adding another edge closes a cycle.
+
 If false:
 ```plain text
 The edge joins two separate components
@@ -201,6 +208,7 @@ At every step, it chooses the cheapest edge connecting the current tree to an un
 5. Otherwise, include the node and edge.
 6. Add the new node’s outgoing edges.
 7. Continue until every node has joined the MST.
+
 **Memory flow:** `Grow one tree → Select cheapest boundary edge → Add new node`
 ---
 ## Prim State
@@ -273,6 +281,7 @@ long prim(List<List<Edge>> graph) {
 ---
 ## Why Prim Starts with Cost `0`
 The starting node does not require an edge to enter the MST.
+
 Therefore:
 ```java
 queue.offer(new State(start, 0));
@@ -377,7 +386,9 @@ The graph directly provides weighted undirected edges.
 3. Run Kruskal or Prim.
 4. Select exactly `V - 1` safe edges.
 5. If fewer nodes can be connected, return failure.
+
 **Memory flow:** `Model weighted graph → Build MST → Verify complete connectivity`
+
 Practice:
 - LC 1135 — Connecting Cities With Minimum Cost
 - Minimum Cost to Connect All Cities
@@ -385,6 +396,7 @@ Practice:
 ---
 ## Common Form 2: Complete Graph with Calculated Edge Costs
 Sometimes every pair of nodes can be connected, but edges are not listed explicitly.
+
 Example:
 ```plain text
 Points in a plane
@@ -405,7 +417,9 @@ O(V²) edges
 3. Either generate every pair and use Kruskal.
 4. Or use Prim and find the next cheapest connection directly.
 5. Add nodes until all points are connected.
+
 **Memory flow:** `Implicit complete graph → Calculate edge cost → Grow MST`
+
 For a dense complete graph, array-based Prim can avoid storing all edges:
 ```java
 int[] best = new int[n];
@@ -454,6 +468,7 @@ Practice:
 ---
 ## Common Form 3: Existing Connections
 Some connections already exist and require no additional cost.
+
 Model them as:
 ```plain text
 zero-cost edges
@@ -465,6 +480,7 @@ or union them before processing paid edges.
 3. Sort the optional paid connections by cost.
 4. Add the cheapest edges joining different components.
 5. Stop when one component remains.
+
 **Memory flow:** `Merge existing network → Connect remaining components cheaply`
 ```java
 for (int[] connection : existing) {
@@ -509,9 +525,12 @@ Now the complete problem becomes one MST.
 3. Add the normal connection edges.
 4. Run an MST across all nodes.
 5. The selected virtual edges represent local construction.
+
 **Memory flow:** `Convert alternative choices into edges → Run one MST`
+
 Practice:
 - LC 1168 — Optimize Water Distribution in a Village
+
 This is one of the most important MST modeling techniques.
 ---
 ## Common Form 5: Stop When All Nodes Become Connected
@@ -523,6 +542,7 @@ We need the first moment when the entire graph becomes connected.
 3. Decrease component count after a successful union.
 4. When component count becomes one, return the current event value.
 5. If this never happens, return failure.
+
 **Memory flow:** `Process connections in order → Merge groups → Stop at one component`
 ```java
 Arrays.sort(
@@ -545,6 +565,7 @@ for (int[] log : logs) {
 ```
 Practice:
 - LC 1101 — The Earliest Moment When Everyone Become Friends
+
 This is closely related to Kruskal because edges are processed in sorted order.
 ---
 ## Common Form 6: Minimum Bottleneck Connection
@@ -560,6 +581,7 @@ In an MST, the path between any two nodes minimizes the maximum edge required be
 2. Union endpoints from smallest weight upward.
 3. Stop when the required nodes become connected.
 4. The current edge weight is the minimum possible bottleneck.
+
 **Memory flow:** `Enable edges from smallest upward → Stop when connectivity appears`
 ```java
 for (Edge edge : sortedEdges) {
@@ -574,6 +596,7 @@ Practice:
 - LC 1631 — Path With Minimum Effort
 - LC 778 — Swim in Rising Water
 - Minimum Bottleneck Path
+
 These problems can also be solved with minimax Dijkstra or binary search plus connectivity testing.
 ---
 ## Common Form 7: Critical and Pseudo-Critical MST Edges
@@ -588,9 +611,12 @@ It can appear in at least one MST, but is not required in every MST.
 3. If the result is worse or impossible, the edge is critical.
 4. Otherwise, calculate an MST forcing that edge first.
 5. If the cost equals the original MST cost, it is pseudo-critical.
+
 **Memory flow:** `Compute baseline → Exclude edge → Force edge → Compare costs`
+
 Practice:
 - LC 1489 — Find Critical and Pseudo-Critical Edges in Minimum Spanning Tree
+
 This repeated-Kruskal approach is appropriate because the problem constraints are relatively small.
 ---
 ## Common Form 8: Maximum Spanning Tree
@@ -601,6 +627,7 @@ The structure is the same as an MST, but edges are processed in descending order
 2. Use Union-Find to avoid cycles.
 3. Include an edge when it joins separate components.
 4. Stop after selecting `V - 1` edges.
+
 **Memory flow:** `Process largest safe edges → Build maximum-cost spanning tree`
 ```java
 edges.sort(
@@ -642,6 +669,7 @@ The real MST decision is between those components.
 3. Process candidate edges between components.
 4. Skip edges whose endpoints now have the same root.
 5. Select the cheapest edges that merge separate components.
+
 **Memory flow:** `Compress existing groups → Connect component representatives`
 This frequently appears in infrastructure and network-upgrade questions.
 ---
@@ -696,6 +724,7 @@ Return the failure value required by the problem.
 ## Handling Duplicate Edge Weights
 Duplicate weights do not cause a problem.
 They may mean multiple valid MSTs exist.
+
 Kruskal or Prim can choose any safe edge with the same cost unless the question requires:
 - A specific MST
 - Lexicographic ordering

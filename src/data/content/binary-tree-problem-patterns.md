@@ -1,5 +1,6 @@
 After learning traversals, the next step is recognizing:
 > What information must move between the parent and its children?
+
 Most binary-tree questions are variations of:
 ```plain text
 Information moves downward → carry state through parameters
@@ -11,6 +12,7 @@ Need movement to parent     → convert tree into an undirected graph
 ## Core Mental Model
 For every tree problem, define the recursive contract:
 > `solve(node)` returns  for the subtree rooted at `node`.
+
 Then decide whether the answer is:
 1. Returned from the current subtree
 2. Stored in a global variable
@@ -45,6 +47,7 @@ Am I changing links or constructing a new tree?
 ## Common Forms
 ## Common Form 1: Height-Based Problems
 These problems require information from both child subtrees before the current node can calculate its answer.
+
 Examples include:
 - Maximum depth
 - Balanced tree
@@ -56,6 +59,7 @@ Examples include:
 2. Recursively calculate information for the right subtree.
 3. Use both answers to calculate the current node’s result.
 4. Return the information required by the parent.
+
 **Memory flow:** `Ask children → Combine answers → Return upward`
 ### Basic height template
 ```java
@@ -110,6 +114,7 @@ Practice:
 ## Common Form 2: Root-to-Leaf Path Problems
 These problems follow one path from the root toward a leaf.
 The current path’s state is passed downward.
+
 Examples:
 - Does a path have a given sum?
 - Return every root-to-leaf path
@@ -120,6 +125,7 @@ Examples:
 2. Check whether the current node is a leaf.
 3. At a leaf, evaluate or save the completed path.
 4. Otherwise, pass the updated state to both children.
+
 **Memory flow:** `Update path state → Move downward → Evaluate at leaf`
 ### Path-sum template
 ```java
@@ -147,6 +153,7 @@ A valid root-to-leaf path must end at a leaf:
 node.left == null && node.right == null
 ```
 Reaching a `null` child does not itself mean that a valid path was completed.
+
 Practice:
 - LC 112 — Path Sum
 - LC 113 — Path Sum II
@@ -156,6 +163,7 @@ Practice:
 ---
 ## Common Form 3: Path Construction with Backtracking
 Use backtracking when the complete sequence of nodes in the current path must be stored.
+
 Examples:
 - Return all paths having a target sum
 - Return all root-to-leaf paths
@@ -165,6 +173,7 @@ Examples:
 2. Check or save the path when the required endpoint is reached.
 3. Recursively explore the children.
 4. Remove the current node before returning to the parent.
+
 **Memory flow:** `Choose node → Explore children → Undo node`
 ```java
 void collectPaths(
@@ -193,6 +202,7 @@ void collectPaths(
 answer.add(new ArrayList<>(path));
 ```
 The original `path` list continues changing during backtracking. Saving the same reference would corrupt previously stored answers.
+
 Practice:
 - LC 113 — Path Sum II
 - LC 257 — Binary Tree Paths
@@ -201,6 +211,7 @@ Practice:
 ---
 ## Common Form 4: Any-to-Any Path Problems
 These paths do not necessarily start at the root or end at a leaf.
+
 A valid path may:
 ```plain text
 start inside the left subtree
@@ -212,6 +223,7 @@ This is the central pattern behind diameter and maximum path sum.
 At each node, calculate two different answers:
 1. **Return value:** the best single branch that can be extended by the parent.
 2. **Global candidate:** the complete path passing through the current node, possibly using both children.
+
 **Memory flow:** `Children return one branch → Current node joins two branches → Return one branch`
 ### Generic template
 ```java
@@ -246,6 +258,7 @@ The parent-to-child path cannot split:
 left    right
 ```
 If the current node returned both branches to its parent, the result would no longer be a single path.
+
 Therefore:
 ```plain text
 Use both branches for the final/global candidate
@@ -264,6 +277,7 @@ Practice:
 ---
 ## Common Form 5: Lowest Common Ancestor
 The Lowest Common Ancestor is the deepest node whose subtree contains both target nodes.
+
 The current node can receive three kinds of information from each subtree:
 ```plain text
 null → neither target was found
@@ -276,6 +290,7 @@ q    → q was found
 3. Search both subtrees.
 4. If both sides return non-null, the current node is the LCA.
 5. If only one side returns non-null, pass that result upward.
+
 **Memory flow:** `Search both sides → Detect split → Propagate found node`
 ```java
 TreeNode lowestCommonAncestor(
@@ -309,6 +324,7 @@ Signals from both children → current node is LCA
 ```
 ### Important assumption
 This template assumes both nodes exist in the tree. If existence is not guaranteed, additional tracking is required.
+
 Practice:
 - LC 236 — Lowest Common Ancestor of a Binary Tree
 - LC 235 — Lowest Common Ancestor of a BST
@@ -318,6 +334,7 @@ Practice:
 ---
 ## Common Form 6: Tree Views and Level Problems
 Tree-view problems ask which nodes are visible when looking from a particular direction.
+
 Examples:
 ```plain text
 Right-side view
@@ -336,6 +353,7 @@ The traversal must track structural position such as:
 2. Process all nodes belonging to one level.
 3. Save either the first or last node from that level.
 4. Add children for the next level.
+
 **Memory flow:** `Process one level → Select visible node → Move to next level`
 ### Right-side view template
 ```java
@@ -380,6 +398,7 @@ left child  → column - 1
 right child → column + 1
 ```
 Then group nodes by their columns.
+
 These problems often require:
 ```plain text
 BFS/DFS + column number + Hashmap<column, Nodes>
@@ -394,6 +413,7 @@ Practice:
 ---
 ## Common Form 7: Tree Modification
 These problems change the tree’s links or values.
+
 Examples:
 - Invert a tree
 - Flatten a tree
@@ -401,6 +421,7 @@ Examples:
 - Prune subtrees
 - Add a row
 - Transform a tree
+
 The traversal order depends on whether modification must happen before or after processing the children.
 ### How it works
 1. Determine whether children must be processed before changing the current node.
@@ -408,6 +429,7 @@ The traversal order depends on whether modification must happen before or after 
 3. Recursively modify the required subtrees.
 4. Reconnect the returned subtree roots.
 5. Return the new root of the current subtree.
+
 **Memory flow:** `Save links → Modify subtrees → Reconnect → Return root`
 ### Generic modification template
 ```java
@@ -443,7 +465,9 @@ TreeNode invertTree(TreeNode node) {
 ```
 ### Critical question
 > After modifying the subtree, what should this function return to its parent?
+
 Usually it returns the root of the modified subtree.
+
 Practice:
 - LC 226 — Invert Binary Tree
 - LC 114 — Flatten Binary Tree to Linked List
@@ -475,6 +499,7 @@ Examples:
 3. Start BFS from the target node.
 4. Use a visited set because the converted structure is now an undirected graph.
 5. Process one BFS level per unit of distance or time.
+
 **Memory flow:** `Build parent links → Start from target → BFS in three directions`
 ### Parent-map template
 ```java
@@ -515,6 +540,7 @@ After adding parent edges, movement can form cycles:
 parent → child → parent
 ```
 Without `visited`, BFS would repeatedly revisit the same nodes.
+
 Practice:
 - LC 863 — All Nodes Distance K in Binary Tree
 - LC 2385 — Amount of Time for Binary Tree to Be Infected
@@ -523,6 +549,7 @@ Practice:
 ---
 ## Common Form 9: Tree Construction
 These problems ask you to create a tree from traversal information or recursively divide an input range.
+
 Examples:
 - Build a tree from preorder and inorder
 - Build a balanced BST from a sorted array
@@ -533,6 +560,7 @@ Examples:
 3. Determine which elements belong to the right subtree.
 4. Recursively construct both subtrees.
 5. Attach them to the root and return it.
+
 **Memory flow:** `Choose root → Divide input → Build children → Return root`
 ### Sorted-array-to-BST template
 ```java
@@ -557,6 +585,7 @@ TreeNode build(
 ```
 ### Important construction contract
 > `build(left, right)` returns the root of the tree constructed from that range.
+
 Practice:
 - LC 105 — Construct Binary Tree from Preorder and Inorder
 - LC 106 — Construct Binary Tree from Inorder and Postorder
@@ -597,6 +626,7 @@ Need to build a new tree
 ## Choosing Between Return Value and Global Answer
 Use a return value when:
 > The parent needs this information to calculate its own result.
+
 Examples:
 ```plain text
 subtree height
@@ -606,6 +636,7 @@ modified subtree root
 ```
 Use a global answer when:
 > The candidate answer can be completed at any node and cannot be passed upward as-is.
+
 Examples:
 ```plain text
 diameter through a node

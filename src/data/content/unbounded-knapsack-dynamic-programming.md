@@ -1,5 +1,6 @@
 ## 1. Introduction to the Pattern
 Unbounded Knapsack is used when every item may be selected any number of times.
+
 For every item:
 ```plain text
 Take it and allow it again
@@ -7,6 +8,7 @@ or
 Skip it permanently
 ```
 The word “unbounded” means there is no fixed limit on how many copies of an item may be selected.
+
 Classic example:
 ```plain text
 Weights:  [2, 3, 4]
@@ -20,6 +22,7 @@ Possible selections include:
 [4, 4]
 ```
 The same item can appear repeatedly.
+
 This pattern commonly appears as:
 - Minimum number of coins
 - Number of coin combinations
@@ -30,6 +33,7 @@ This pattern commonly appears as:
 - Exact-sum construction with unlimited pieces
 #### Core mental model
 > Taking an item does not remove it from future choices.
+
 ---
 ## 2. How to Identify It
 Look for these signals:
@@ -42,6 +46,7 @@ Look for these signals:
 - After selecting an item, the same item remains available.
 - The recursive take decision stays at the same index.
 - The one-dimensional capacity loop naturally moves forward.
+
 Common wording:
 ```plain text
 Unlimited supply
@@ -55,6 +60,7 @@ Number of combinations
 ```
 #### Recognition question
 > After selecting the current item, am I allowed to select it again?
+
 If yes, consider Unbounded Knapsack.
 ---
 ## 3. State Definition and Recursive Function Contract
@@ -65,6 +71,7 @@ remaining capacity or amount
 ```
 Complete:
 > `solve(index, remaining)` returns  using items from `index` onward, where every remaining item may be reused.
+
 Examples:
 ```plain text
 solve(index, capacity)
@@ -83,6 +90,7 @@ solve(index, target)
 The index determines which choices remain available and prevents counting the same unordered combination in different orders.
 ### Why is `remaining` required?
 The answer changes depending on the amount or capacity still available.
+
 The complete state is usually:
 ```plain text
 (index, remaining)
@@ -211,6 +219,7 @@ if (amount < 0) {
 }
 ```
 It would make an invalid path look as if it used zero additional coins.
+
 Use a large impossible value:
 ```java
 int infinity = amount + 1;
@@ -348,6 +357,7 @@ This is unsafe:
 ```
 It overflows into a negative number.
 Using a smaller sentinel leaves room for addition.
+
 A problem-specific value is often simpler:
 ```java
 int infinity = amount + 1;
@@ -413,6 +423,7 @@ dp[item][capacity - weight]
 ```
 Why?
 The current row allows the same item type to be selected again.
+
 Compare with 0/1 Knapsack:
 ```plain text
 0/1 take:
@@ -430,6 +441,7 @@ The take transition reads:
 dp[item][capacity - weight]
 ```
 This is the current row at a smaller capacity.
+
 Therefore, capacity must move:
 ```plain text
 low to high
@@ -546,6 +558,7 @@ The goal is to maximize total value without exceeding capacity.
 3. Taking reads the current item row or an already updated one-dimensional state.
 4. This permits the item to be selected repeatedly.
 5. Keep the maximum value.
+
 **Memory flow:** `Take reusable item or skip its type → Keep maximum value`
 ```plain text
 dp[capacity]
@@ -568,6 +581,7 @@ Choose reusable values to create an exact target using the fewest items.
 3. Initialize other states as impossible.
 4. Try placing each reusable item after a smaller achievable amount.
 5. Return failure if the target remains impossible.
+
 **Memory flow:** `Reach smaller amount → Add one reusable item → Minimize count`
 ```java
 int coinChange(
@@ -610,6 +624,7 @@ Practice:
 ---
 ### Common Form 3: Count Unordered Combinations
 Count how many combinations create an amount.
+
 Order does not matter:
 ```plain text
 [1, 2, 2]
@@ -623,6 +638,7 @@ represent the same combination.
 3. Process one coin type at a time.
 4. Move amounts forward to allow coin reuse.
 5. Keeping coins in the outer loop prevents different orders from being counted separately.
+
 **Memory flow:** `Choose coin type → Extend existing combinations using that coin`
 ```java
 int change(
@@ -662,6 +678,7 @@ are different answers.
 3. Try every possible final number in the inner loop.
 4. Add the number of sequences forming `target - number`.
 5. Different final choices create different orders.
+
 **Memory flow:** `Choose final item for current total → Count preceding sequences`
 ```java
 int combinationSum4(
@@ -739,6 +756,7 @@ Capacity → total rod length
 3. Its value is the price earned.
 4. Allow the same piece length to be selected repeatedly.
 5. Maximize total price for the complete rod.
+
 **Memory flow:** `Choose reusable cut length → Consume rod → Add price`
 ```java
 for (int length = 1;
@@ -760,10 +778,12 @@ Practice:
 - Rod Cutting
 - Unbounded Knapsack
 - LC 1547 — Minimum Cost to Cut a Stick uses interval DP, not this pattern
+
 The last distinction is important: not every cutting problem is Knapsack.
 ---
 ### Common Form 6: Minimum Number of Perfect Squares or Pieces
 Available reusable items are generated rather than directly provided.
+
 For Perfect Squares:
 ```plain text
 1, 4, 9, 16, ...
@@ -775,6 +795,7 @@ Each square can be used repeatedly.
 3. Set `dp[0] = 0`.
 4. For every amount, try every square that fits.
 5. Minimize the number of selected squares.
+
 **Memory flow:** `Generate reusable items → Build exact total with minimum count`
 ```java
 int numSquares(int n) {
@@ -808,6 +829,7 @@ Practice:
 ---
 ### Common Form 7: Feasibility with Reusable Items
 Determine whether an exact target can be constructed using reusable values.
+
 State:
 ```plain text
 dp[amount]
@@ -819,6 +841,7 @@ dp[amount]
 3. Move amount forward.
 4. Mark a target possible when the smaller target was possible.
 5. Reusing updated states permits repeated selection.
+
 **Memory flow:** `Reach smaller total → Add reusable item → Mark new total possible`
 ```java
 boolean[] dp =
@@ -843,6 +866,7 @@ Practice:
 ---
 ### Common Form 8: Maximum Number of Exact Pieces
 Some problems require using the entire target while maximizing the number of pieces.
+
 Example:
 ```plain text
 Cut a segment of length n
@@ -856,6 +880,7 @@ Unused capacity is not allowed.
 3. Set `dp[0] = 0`.
 4. Add one piece only to an achievable smaller length.
 5. Return failure if the target remains impossible.
+
 **Memory flow:** `Build exact length → Add one reusable piece → Maximize count`
 ```java
 int impossible = Integer.MIN_VALUE / 2;
@@ -878,6 +903,7 @@ for (int piece : pieces) {
 ```
 #### Why not initialize everything to zero?
 Zero would incorrectly mean every length is achievable using zero pieces.
+
 Practice:
 - Maximize the Cut Segments
 - Exact Rod-Cutting Variations
@@ -885,6 +911,7 @@ Practice:
 ---
 ## 12. Answer Reconstruction
 To reconstruct which reusable items were selected, preserve the DP array and track the last choice.
+
 For minimum coins:
 ```java
 int[] previousCoin =
@@ -924,6 +951,7 @@ currentAmount eventually becomes 0
 ```
 #### Reconstruction principle
 > Store which reusable item produced each improved state, then repeatedly subtract that item.
+
 The same item may appear multiple times in the reconstructed answer.
 ---
 ## 13. Quick Interview Checklist
@@ -980,6 +1008,7 @@ C = capacity or target amount
 ```
 ### Brute-force recursion
 Because an item can be selected repeatedly, the exact recursion tree depends on item values.
+
 A loose exponential description is common:
 ```plain text
 Time: exponential

@@ -1,5 +1,6 @@
 ## 1. Introduction to the Pattern
 This family covers problems where we select, compare, transform, or partition ordered sequences.
+
 The input may be:
 ```plain text
 One array
@@ -92,6 +93,7 @@ Characters may be skipped
 ```
 #### Recognition question
 > Am I preserving relative order while selecting, comparing, or matching sequence elements?
+
 If yes, this DP family is likely relevant.
 ---
 ## 3. State Definition and Recursive Function Contract
@@ -102,6 +104,7 @@ solve(index, previousIndex)
 ```
 Contract:
 > Returns the best valid subsequence obtainable from `index` onward given the previously selected element.
+
 Bottom-up alternative:
 ```plain text
 dp[i]
@@ -113,6 +116,7 @@ solve(i, j)
 ```
 Contract:
 > Returns the required answer for the suffix of the first sequence beginning at `i` and the suffix of the second sequence beginning at `j`.
+
 Prefix tabulation:
 ```plain text
 dp[i][j]
@@ -125,8 +129,10 @@ solve(left, right)
 ```
 Contract:
 > Returns the required palindrome answer for the substring from `left` through `right`.
+
 #### State-selection question
 > What information about the unprocessed sequences can change the future answer?
+
 That information belongs in the state.
 ---
 ## 4. Brute-Force Recursive Decision
@@ -294,6 +300,7 @@ matching suffix length = 0
 ```
 ### Counting transformations
 The base cases depend on what remains.
+
 For Distinct Subsequences:
 ```plain text
 Target exhausted → one successful construction
@@ -596,6 +603,7 @@ for (int left = n - 1; left >= 0; left--) {
 ```
 #### Core rule
 > Every prefix, predecessor, or inner interval used by a state must already be calculated.
+
 ---
 ## 10. Space Optimization
 ### LIS
@@ -669,6 +677,7 @@ Select the longest strictly increasing subsequence from one array.
 3. Extend compatible subsequences.
 4. Store the best length ending at the current index.
 5. Return the maximum ending length.
+
 **Memory flow:** `Try earlier endings → Extend compatible sequence`
 ```java
 int lengthOfLIS(int[] nums) {
@@ -771,6 +780,7 @@ Practice:
 ---
 ### Common Form 3: Custom Predecessor Chains
 Replace the increasing comparison with another compatibility rule.
+
 Examples:
 ```plain text
 Divisibility
@@ -783,7 +793,9 @@ Object nesting
 2. Define the compatibility relationship.
 3. Try extending every compatible predecessor.
 4. Track parents when the actual chain is required.
+
 **Memory flow:** `Order candidates → Apply custom compatibility → Extend chain`
+
 Largest Divisible Subset:
 ```java
 List<Integer> largestDivisibleSubset(
@@ -846,6 +858,7 @@ Find the longest subsequence appearing in both sequences.
 2. If they match, use both and move both indices.
 3. If they differ, skip from either sequence.
 4. Keep the longer result.
+
 **Memory flow:** `Match both → Otherwise try skipping from either side`
 ```java
 int longestCommonSubsequence(
@@ -870,6 +883,7 @@ Use the completed LCS table to reconstruct one valid LCS.
 2. If the characters match, add that character and move diagonally.
 3. Otherwise, move toward the neighboring cell with the larger LCS value.
 4. Reverse the collected characters.
+
 **Memory flow:** `Trace optimal table decisions backward → Reverse result`
 ```java
 String printLcs(
@@ -916,6 +930,7 @@ Find the longest contiguous segment appearing in both strings.
 2. If characters match, extend the diagonal suffix.
 3. If they differ, reset the state to zero.
 4. Track the largest value anywhere in the table.
+
 **Memory flow:** `Matching characters extend contiguous suffix → Mismatch resets it`
 ```java
 int longestCommonSubstring(
@@ -954,6 +969,7 @@ Practice:
 ---
 ### Common Form 7: Shortest Common Supersequence
 A supersequence contains both input strings as subsequences.
+
 Shortest length:
 ```plain text
 m + n - LCS length
@@ -967,6 +983,7 @@ The common characters should be included only once.
 4. Otherwise, add the character from the direction selected by the LCS table.
 5. Append any remaining characters.
 6. Reverse the result.
+
 **Memory flow:** `Merge both strings around their common subsequence`
 ```java
 String shortestCommonSupersequence(
@@ -1039,6 +1056,7 @@ Insertions
 2. Delete characters from the first string that are outside the LCS.
 3. Insert characters from the second string that are outside the LCS.
 4. Add the two operation counts when total operations are required.
+
 **Memory flow:** `Preserve common core → Delete extras → Insert missing characters`
 ```java
 int minimumInsertionsAndDeletions(
@@ -1082,6 +1100,7 @@ dp[i][j]
 2. Otherwise, try insertion, deletion, and replacement.
 3. Add one for the current operation.
 4. Keep the minimum.
+
 **Memory flow:** `Match for free → Otherwise try three editing operations`
 ```java
 int minDistance(
@@ -1136,6 +1155,7 @@ Practice:
 ---
 ### Common Form 10: Count Distinct Subsequences
 Count how many subsequences of a source equal a target.
+
 State:
 ```plain text
 dp[i][j]
@@ -1196,6 +1216,7 @@ Determine whether a third string can be formed by interleaving two strings while
 3. Try consuming from the first string if its next character matches.
 4. Try consuming from the second string if its next character matches.
 5. The state is valid if either transition works.
+
 **Memory flow:** `Next character may come from first or second sequence`
 ```java
 boolean isInterleave(
@@ -1242,6 +1263,7 @@ Practice:
 ---
 ### Common Form 12: Longest Palindromic Subsequence
 Find the longest subsequence that is also a palindrome.
+
 Two approaches are available:
 ```plain text
 Interval DP
@@ -1253,6 +1275,7 @@ LCS(text, reverse(text))
 2. If they match, include both and solve the inner interval.
 3. Otherwise, skip either boundary.
 4. Keep the longer result.
+
 **Memory flow:** `Match symmetric boundaries → Otherwise remove one boundary`
 ```java
 int longestPalindromeSubseq(String text) {
@@ -1273,6 +1296,7 @@ Practice:
 ---
 ### Common Form 13: Longest Palindromic Substring
 Unlike a subsequence, the selected palindrome must be contiguous.
+
 State:
 ```plain text
 palindrome[left][right]
@@ -1286,6 +1310,7 @@ and
 The inner substring is a palindrome
 ```
 Length-one and length-two intervals require direct handling.
+
 **Memory flow:** `Validate inner interval → Extend using equal boundaries`
 ```java
 String longestPalindrome(String text) {
@@ -1339,6 +1364,7 @@ Different positions count as different substrings even if their text is equal.
 2. When an interval is valid, increase the count.
 3. Equal boundaries extend an already-valid inner interval.
 4. Single characters always count.
+
 **Memory flow:** `Validate each interval → Count every valid palindrome`
 ```java
 int countSubstrings(String text) {
@@ -1376,6 +1402,7 @@ Practice:
 ---
 ### Common Form 15: Minimum Insertions or Deletions for a Palindrome
 The longest palindromic subsequence is the part that can remain unchanged.
+
 Therefore:
 ```plain text
 Minimum insertions
@@ -1387,6 +1414,7 @@ The same formula gives the minimum deletions needed to produce a palindrome.
 2. Preserve those characters.
 3. Insert or delete every character outside that subsequence.
 4. Subtract the LPS length from the total length.
+
 **Memory flow:** `Preserve longest palindromic core → Modify remaining characters`
 ```java
 int minInsertions(String text) {
@@ -1403,6 +1431,7 @@ Practice:
 ---
 ### Common Form 16: Palindrome Partitioning Cost
 Divide a string into palindromic pieces while minimizing cuts or changes.
+
 This combines:
 ```plain text
 Palindrome preprocessing
@@ -1414,7 +1443,9 @@ Partition DP
 2. Define `dp[end]` as the minimum partition cost for a prefix.
 3. Try every possible beginning of the final partition.
 4. Combine the current partition cost with the best earlier prefix.
+
 **Memory flow:** `Precompute valid intervals → Try each final cut → Minimize total cost`
+
 Minimum cuts:
 ```java
 int minCut(String text) {
@@ -1505,6 +1536,7 @@ dp[i][j] came from dp[i - 1][j - 1]
 ```
 #### Reconstruction rule
 > Start at the final DP state and repeatedly determine which transition produced its value.
+
 Full DP storage is usually required for reconstruction.
 ---
 ## 13. Quick Interview Checklist

@@ -45,7 +45,9 @@ null
 ---
 ## Core Mental Model
 > Every node is the root of its own smaller subtree.
+
 When solving a tree problem, do not initially think about the entire tree.
+
 Think:
 ```plain text
 What should I do at the current node?
@@ -54,6 +56,7 @@ What should the right subtree do?
 ```
 For recursive problems:
 > Trust that the recursive call correctly solves the subtree given to it.
+
 ---
 ## Important Tree Terminology
 Using:
@@ -123,6 +126,7 @@ Every level is completely filled except possibly the last, and the last level is
 Every internal node has two children and every leaf is at the same depth.
 ## Balanced Binary Tree
 The left and right subtree heights do not differ excessively.
+
 For an AVL-style balance condition:
 ```plain text
 abs(leftHeight - rightHeight) <= 1
@@ -143,6 +147,7 @@ A skewed tree behaves like a linked list and can produce recursion depth `O(n)`.
 ---
 ## What Is Tree Traversal?
 Traversal means visiting every tree node in a defined order.
+
 The three main DFS traversal orders are:
 ```plain text
 Preorder  → Node, Left, Right
@@ -151,6 +156,7 @@ Postorder → Left, Right, Node
 ```
 The only difference is:
 > When do we process the current node relative to its children?
+
 ---
 ## Small Traversal Example
 For:
@@ -215,12 +221,14 @@ After both children   → postorder
 ## How to Choose a Traversal
 ## Choose Preorder When
 You need to process the parent before its children.
+
 Common uses:
 - Copy or serialize a tree
 - Pass information from parent to child
 - Build paths from the root
 - Create a tree from preorder information
 - Produce prefix expressions
+
 Mental model:
 ```plain text
 Parent decides first
@@ -228,17 +236,20 @@ Parent decides first
 ```
 ## Choose Inorder When
 The relative order between left subtree, node, and right subtree matters.
+
 Common uses:
 - Retrieve BST values in sorted order
 - Find BST predecessor or successor
 - Find kth smallest value in a BST
 - Validate BST ordering
+
 Mental model:
 ```plain text
 Process values from left to right
 ```
 ## Choose Postorder When
 A parent needs information from its children before it can calculate its own answer.
+
 Common uses:
 - Calculate height
 - Determine balance
@@ -246,6 +257,7 @@ Common uses:
 - Delete a tree
 - Calculate subtree sums
 - Find maximum path values
+
 Mental model:
 ```plain text
 Children answer first
@@ -269,6 +281,7 @@ Look for these signals:
 	- `node.right`
 ### Most important recognition question
 > Should the current node be processed before, between, or after its children?
+
 That decision identifies preorder, inorder, or postorder.
 ---
 ## Common Forms
@@ -282,6 +295,7 @@ Node → Left → Right
 2. Process the current node.
 3. Recursively traverse the left subtree.
 4. Recursively traverse the right subtree.
+
 **Memory flow:** `Process node → Explore left → Explore right`
 ```java
 void preorder(
@@ -300,6 +314,7 @@ void preorder(
 ```
 ### Recursive contract
 > `preorder(node)` processes every node in the subtree rooted at `node` in Node–Left–Right order.
+
 Practice:
 - LC 144 — Binary Tree Preorder Traversal
 - LC 257 — Binary Tree Paths
@@ -317,6 +332,7 @@ Left → Node → Right
 2. Recursively traverse the left subtree.
 3. Process the current node.
 4. Recursively traverse the right subtree.
+
 **Memory flow:** `Explore left → Process node → Explore right`
 ```java
 void inorder(
@@ -357,6 +373,7 @@ Left → Right → Node
 3. Recursively solve the right subtree.
 4. Process or calculate the current node’s result.
 5. Return information to the parent when required.
+
 **Memory flow:** `Ask left → Ask right → Process current`
 ```java
 void postorder(
@@ -390,6 +407,7 @@ int height(TreeNode node) {
 }
 ```
 The parent cannot calculate its height until both children provide theirs.
+
 Practice:
 - LC 145 — Binary Tree Postorder Traversal
 - LC 104 — Maximum Depth of Binary Tree
@@ -406,6 +424,7 @@ Preorder is the easiest iterative DFS traversal.
 3. Push its right child.
 4. Push its left child.
 5. Because the stack is LIFO, the left child is processed first.
+
 **Memory flow:** `Pop node → Process → Push right → Push left`
 ```java
 List<Integer> answer = new ArrayList<>();
@@ -459,6 +478,7 @@ Iterative inorder must first travel as far left as possible.
 4. Process it.
 5. Move to its right subtree.
 6. Repeat the same leftward process.
+
 **Memory flow:** `Push left chain → Pop and process → Move right`
 ```java
 List<Integer> answer = new ArrayList<>();
@@ -482,6 +502,7 @@ return answer;
 ```
 ### Stack meaning
 The stack contains ancestors whose left subtree is being processed or has just finished, but whose own value has not yet been processed.
+
 Practice:
 - LC 94 — Binary Tree Inorder Traversal
 - LC 230 — Kth Smallest Element in a BST
@@ -497,6 +518,7 @@ A simple approach uses two stacks.
 3. Push its left and right children into the first stack.
 4. Continue until the first stack is empty.
 5. Pop the second stack to obtain Left–Right–Node order.
+
 **Memory flow:** `Build reverse order → Reverse it again → Get postorder`
 ```java
 List<Integer> answer = new ArrayList<>();
@@ -550,6 +572,7 @@ This explicitly simulates recursive call frames.
 3. If it is marked for processing, add its value.
 4. Otherwise, push the node and its children in reverse desired order.
 5. The stack recreates the required traversal sequence.
+
 **Memory flow:** `Push future actions in reverse execution order`
 ### Preorder example
 ```java
@@ -612,6 +635,7 @@ This is an advanced technique and should be learned after recursive and stack-ba
 4. Traverse the left subtree.
 5. When the temporary connection is encountered again, remove it.
 6. Process the current node and move right.
+
 **Memory flow:** `Create temporary return path → Traverse left → Remove path`
 ```java
 TreeNode current = root;
@@ -645,6 +669,7 @@ Always remove the temporary connection:
 predecessor.right = null;
 ```
 Otherwise, the original tree remains modified and contains a cycle.
+
 Practice:
 - LC 94 — Binary Tree Inorder Traversal
 - LC 144 — Binary Tree Preorder Traversal
@@ -682,6 +707,7 @@ TreeNode find(TreeNode node)
 ```
 Before coding, complete:
 > `solve(node)` returns  for the subtree rooted at `node`.
+
 This return contract is more important than choosing preorder or postorder by name.
 ---
 ## Null Base Cases and Neutral Values
@@ -783,6 +809,7 @@ Although predecessor links may be examined more than once, each temporary edge i
 ---
 ## Final Reusable Model
 > Every tree node represents a smaller subtree. Decide when to process the node and define exactly what its subtree returns.
+
 ```plain text
 Preorder:
 Process current → Visit children

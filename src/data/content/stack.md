@@ -18,6 +18,7 @@ Top
 The most recently opened, started, or encountered item is often the first one that must be completed.
 ## Core Mental Model
 > A stack remembers unfinished work in reverse order.
+
 ```plain text
 Encounter unfinished work → Push
 Finish the latest work    → Pop
@@ -34,6 +35,7 @@ Look for these signals:
 - The question involves evaluating or decoding an expression.
 ### Most important recognition question
 > When I encounter a new element, does it resolve the most recent unresolved element first?
+
 If yes, a stack is likely useful.
 ## Basic Stack Operations in Java
 Use the `Deque` interface with `ArrayDeque`:
@@ -70,6 +72,7 @@ Processing:
 The newest opening bracket must be closed first, which is exactly LIFO order.
 ## Common Form 1: Matching and Nested Structures
 Use this when opening symbols must be matched with closing symbols in reverse order.
+
 Examples:
 - Parentheses
 - Nested tags
@@ -81,6 +84,7 @@ Examples:
 3. The top must contain the matching opening symbol.
 4. Pop the matched opening symbol.
 5. At the end, the stack must be empty.
+
 **Memory flow:** `Opening → Push | Closing → Match and pop`
 ```java
 Deque<Character> stack = new ArrayDeque<>();
@@ -127,6 +131,7 @@ Practice:
 ## Common Form 2: Monotonic Stack
 A monotonic stack keeps its values in increasing or decreasing order.
 It is used when a new element resolves previous elements that were waiting for something larger or smaller.
+
 Example:
 ```plain text
 temperatures = [73, 74, 75, 71, 69, 72]
@@ -143,6 +148,7 @@ It does not resolve `75`.
 3. While the current value resolves the top, pop it.
 4. Calculate the answer for the popped index.
 5. Push the current index because it may need a future answer.
+
 **Memory flow:** `Current resolves previous → Pop and answer → Push current`
 ### Next greater element template
 ```java
@@ -165,6 +171,7 @@ for (int current = 0; current < nums.length; current++) {
 The stack stores indices because the answer may require the value, position, or distance.
 ### Stack meaning
 For next greater element, the stack contains indices whose next greater value has not yet been found.
+
 Practice:
 - LC 496 — Next Greater Element I
 - LC 503 — Next Greater Element II
@@ -174,6 +181,7 @@ Practice:
 ## Common Form 3: Previous/Next Smaller Boundaries
 Use this when every element expands until a smaller or greater value blocks it.
 The classic problem is Largest Rectangle in Histogram.
+
 For each bar, find:
 ```plain text
 First smaller bar on the left
@@ -190,6 +198,7 @@ area  = height × width
 3. Pop each taller bar.
 4. After popping, the new stack top is its left boundary.
 5. Calculate the rectangle using the popped height.
+
 **Memory flow:** `Smaller arrives → Pop taller → Calculate boundary area`
 ### One-pass histogram template
 ```java
@@ -224,6 +233,7 @@ for (int i = 0; i <= heights.length; i++) {
 i == heights.length ? 0 : heights[i]
 ```
 It forces every remaining bar out of the stack so its area is calculated.
+
 Practice:
 - LC 84 — Largest Rectangle in Histogram
 - LC 85 — Maximal Rectangle
@@ -232,6 +242,7 @@ Practice:
 - LC 2104 — Sum of Subarray Ranges
 ## Common Form 4: Circular Monotonic Stack
 Use this when the search for a next greater or smaller element wraps from the end of the array back to the beginning.
+
 Instead of creating a second array, simulate two passes:
 ```java
 for (int i = 0; i < 2 * n; i++) {
@@ -244,6 +255,7 @@ for (int i = 0; i < 2 * n; i++) {
 3. During both passes, use current values to resolve waiting indices.
 4. The second pass gives end-of-array elements access to beginning values.
 5. Avoid pushing indices during the second pass.
+
 **Memory flow:** `First pass creates work → Second pass finishes work`
 ```java
 int n = nums.length;
@@ -272,6 +284,7 @@ An element near the end may find its answer near the beginning:
 nums = [5, 1, 2, 3, 4]
 ```
 For `4`, the next greater circular value is `5`.
+
 Practice:
 - LC 503 — Next Greater Element II
 - LC 556 — Next Greater Element III
@@ -285,6 +298,7 @@ Depending on the problem, maintain a number stack, operator stack, or stack of p
 3. Push deferred values or states onto the stack.
 4. Resolve multiplication and division before addition and subtraction when required.
 5. For parentheses, save the outer state and restore it when the inner expression ends.
+
 **Memory flow:** `Read token → Save unfinished state → Resolve in correct order`
 ### Basic Calculator II style template
 ```java
@@ -337,6 +351,7 @@ Practice:
 - LC 772 — Basic Calculator III
 ## Common Form 6: Decode Nested Strings
 Use this when nested sections repeat or transform their contents.
+
 Example:
 ```plain text
 3[a2[c]]
@@ -353,6 +368,7 @@ a2[c]  → acc
 3. Begin a fresh inner string.
 4. When `]` appears, complete the inner string.
 5. Restore the outer string and append the inner string repeatedly.
+
 **Memory flow:** `Save outer state → Build inner state → Restore and combine`
 ```java
 Deque<Integer> counts = new ArrayDeque<>();
@@ -392,6 +408,7 @@ Practice:
 - LC 1190 — Reverse Substrings Between Each Pair of Parentheses
 ## Common Form 7: Stack-Based Simulation
 Use this when items are created and later removed or combined according to LIFO behavior.
+
 Examples:
 - Asteroid collisions
 - Removing adjacent duplicates
@@ -404,6 +421,7 @@ Examples:
 3. Pop while the latest stored element conflicts with or is cancelled by the current element.
 4. Push the current element if it survives.
 5. The remaining stack represents the final state.
+
 **Memory flow:** `Compare with latest → Cancel or combine → Push survivor`
 ### Adjacent-removal template
 ```java
@@ -434,6 +452,7 @@ The extra information must be updated with every push and restored automatically
 3. On push, derive the new state from the previous top.
 4. On pop, remove both the value and its state.
 5. The top always contains the current answer.
+
 **Memory flow:** `Push value with state → Pop restores previous state`
 ### Min Stack using two stacks
 ```java
@@ -484,6 +503,7 @@ Use this for tree traversal, graph traversal, avoiding recursive depth limits, o
 3. Process it.
 4. Push its unvisited neighbors.
 5. Continue until the stack becomes empty.
+
 **Memory flow:** `Push work → Pop latest → Add its next work`
 ### Tree preorder template
 ```java
@@ -508,6 +528,7 @@ while (!stack.isEmpty()) {
 }
 ```
 Push `right` before `left` because the stack processes `left` first.
+
 Practice:
 - LC 144 — Binary Tree Preorder Traversal
 - LC 94 — Binary Tree Inorder Traversal
@@ -516,10 +537,12 @@ Practice:
 - LC 841 — Keys and Rooms
 ## Common Form 10: Recursion Using the Call Stack
 Some problems allow only stack operations and recursion.
+
 Examples:
 - Sort a stack recursively
 - Reverse a stack recursively
 - Insert an element at the bottom
+
 The call stack temporarily stores removed elements.
 ### How it works
 1. Remove the top element.
@@ -527,6 +550,7 @@ The call stack temporarily stores removed elements.
 3. During recursion unwinding, insert the removed element into its correct position.
 4. Each call remembers one element.
 5. The original stack is rebuilt in the required order.
+
 **Memory flow:** `Remove → Solve smaller problem → Reinsert while returning`
 ### Recursive stack sort
 ```java
@@ -576,8 +600,10 @@ Values decrease from bottom to top:
 [9, 7, 4, 2]
 ```
 Commonly useful for finding greater boundaries.
+
 The safer approach is not memorizing the name. Instead ask:
 > Which previous elements does the current value resolve?
+
 ```plain text
 Current greater than stack top → resolve next greater
 Current smaller than stack top → resolve next smaller
@@ -679,6 +705,7 @@ Space: O(n) call stack
 ```
 ## Final Reusable Model
 > A stack stores unresolved work, and the newest unresolved item is always the first one available to resolve.
+
 ```plain text
 Push unfinished work
 → Inspect the latest work
@@ -686,4 +713,5 @@ Push unfinished work
 ```
 For monotonic-stack problems, remember:
 > The current element may resolve several previous elements, so popping usually requires a `while` loop rather than an `if`.
+
 <empty-block/>

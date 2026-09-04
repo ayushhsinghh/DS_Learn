@@ -1,6 +1,8 @@
 Binary search is not simply “searching inside a sorted array.”
+
 The deeper idea is:
 > Find a boundary in a search space where the answer changes from one state to another.
+
 At every step, binary search uses information at `mid` to permanently eliminate half of the remaining candidates.
 ## Core Mental Model
 ```plain text
@@ -22,6 +24,7 @@ Look for these signals:
 - A feasibility condition changes monotonically.
 - The problem asks to minimize the maximum or maximize the minimum.
 > **Most important question:** If I test one candidate, can I prove that every candidate on one side is impossible?
+
 ## Small Intuition Example
 ```plain text
 nums = [2, 4, 7, 11, 15]
@@ -32,20 +35,24 @@ target = 11
 ```
 `nums[mid] = 7`, which is smaller than `11`. Because the array is sorted, everything left of `mid` is also at most `7`. None of those values can be `11`.
 > Moving `low` to `mid + 1` is safe because `mid` and everything before it are too small.
+
 ## Binary Search Vocabulary
 ```java
 int mid = low + (high - low) / 2;
 ```
 Prefer this over `(low + high) / 2` because `low + high` could overflow.
 > **Search-space invariant:** Before every iteration, if the answer exists, it is inside the current search space. Every update must preserve this statement.
+
 ## Common Form 1: Exact-Value Search
 Use this to find one exact target in a sorted collection.
+
 **How it works:**
 1. Search the inclusive range `[low, high]`.
 2. Compare `nums[mid]` with `target`.
 3. Return immediately when they are equal.
 4. If `mid` is too small, discard `mid` and everything left of it.
 5. If `mid` is too large, discard `mid` and everything right of it.
+
 **Memory flow:** `Compare → Discard mid and one half → Find exact value`
 ```java
 int low = 0, high = nums.length - 1;
@@ -58,6 +65,7 @@ while (low <= high) {
 return -1;
 ```
 `low <= high` is used because `[low, high]` is inclusive. When `low == high`, one candidate still remains. We use `mid + 1` and `mid - 1` because `mid` has already been checked.
+
 Practice:
 - LC 704 — Binary Search
 - LC 374 — Guess Number Higher or Lower
@@ -75,6 +83,7 @@ false false false | true true true
 3. If `mid` is invalid, discard it and search right.
 4. Stop when one candidate remains.
 5. That candidate is the first valid position.
+
 **Memory flow:** `Valid → Keep mid and go left | Invalid → Remove mid and go right`
 ```java
 int low = 0, high = nums.length;
@@ -87,6 +96,7 @@ return low;
 ```
 This uses the half-open range `[low, high)`. `high = nums.length` can represent that no valid array element was found.
 Lower bound uses `condition(mid) = nums[mid] >= target`.
+
 Practice:
 - LC 35 — Search Insert Position
 - LC 278 — First Bad Version
@@ -102,6 +112,7 @@ true true true | false false false
 1. If `mid` is valid, keep it and search right.
 2. If invalid, discard it and search left.
 3. Use the upper middle when assigning `low = mid` so the loop always progresses.
+
 **Memory flow:** `Valid → Keep mid and go right | Invalid → Remove mid and go left`
 ```java
 int low = 0, high = nums.length - 1;
@@ -119,11 +130,13 @@ Practice:
 - LC 1802 — Maximum Value at a Given Index
 ## Common Form 4: Search in a Rotated Sorted Array
 A rotated array has two sorted sections; at least one side around `mid` is sorted.
+
 **How it works:**
 1. Check whether `mid` is the target.
 2. Identify the sorted half.
 3. Check whether the target lies inside that half’s boundaries.
 4. Keep it if yes; otherwise search the other half.
+
 **Memory flow:** `Find sorted half → Check target range → Keep correct half`
 ```java
 int low = 0, high = nums.length - 1;
@@ -148,12 +161,15 @@ Practice:
 - LC 154 — Find Minimum in Rotated Sorted Array II
 ## Common Form 5: Minimum or Peak Using Direction
 Use this when the array is not globally sorted but its shape tells you which side contains a minimum or peak.
+
 **How it works:**
 1. Compare `mid` with a useful neighbor or boundary.
 2. Decide whether the sequence is rising, falling, or crossing the rotation.
 3. Preserve `mid` when it may still be the answer.
 4. Continue until one candidate remains.
+
 **Memory flow:** `Read direction → Keep promising side → Converge`
+
 Rotated minimum:
 ```java
 int low = 0, high = nums.length - 1;
@@ -181,12 +197,14 @@ Practice:
 - LC 1095 — Find in Mountain Array
 ## Common Form 6: Binary Search on the Answer
 Use this when the answer is a number inside a range rather than an array index. Common wording includes minimum capacity, minimum speed, minimum days, maximum distance, smallest acceptable limit, or largest feasible value.
+
 **How it works:**
 1. Define the minimum and maximum possible answers.
 2. Test whether `mid` is feasible.
 3. If feasible, keep it and search for a smaller answer.
 4. If infeasible, discard it and every smaller value.
 5. Stop at the minimum feasible answer.
+
 **Memory flow:** `Guess answer → Check feasibility → Keep valid boundary`
 ```java
 int low = minimumPossible;
@@ -220,11 +238,13 @@ Practice:
 Choose the method from the matrix’s exact ordering guarantee.
 ### Form 7A: Matrix Behaves Like One Sorted Array
 Use this when rows are sorted and each row begins after the previous row ends.
+
 **How it works:**
 1. Treat the matrix as a virtual array of length `rows × columns`.
 2. Binary-search a virtual index.
 3. Convert it using `row = mid / columns` and `column = mid % columns`.
 4. Perform a normal exact-value comparison.
+
 **Memory flow:** `Virtual index → Convert coordinates → Normal binary search`
 ```java
 int rows = matrix.length, columns = matrix[0].length;
@@ -244,12 +264,14 @@ Practice:
 - LC 74 — Search a 2D Matrix
 ### Form 7B: Independently Sorted Rows and Columns
 Use this when every row and column is sorted but the matrix is not globally ordered.
+
 **How it works:**
 1. Start at the top-right cell.
 2. Move left when the value is too large.
 3. Move down when it is too small.
 4. Each move eliminates an entire column or row.
 5. Alternatively, binary-search each row in `O(rows × log columns)`.
+
 **Memory flow:** `Check guarantee → Eliminate row or column → Move`
 ```java
 int row = 0, column = matrix[0].length - 1;
@@ -270,12 +292,14 @@ Practice:
 - LC 378 — Kth Smallest Element in a Sorted Matrix
 ## Common Form 8: Binary Search on a Partition
 Use this when sorted collections must be divided into valid left and right portions.
+
 **How it works:**
 1. Binary-search how many elements to take from the smaller array.
 2. Derive the second partition from the required left-side size.
 3. Inspect values immediately around both partitions.
 4. Accept when every left value is no greater than every right value.
 5. Otherwise move the first partition left or right.
+
 **Memory flow:** `Choose partition 1 → Derive partition 2 → Validate boundaries`
 ```java
 int partition1 = low + (high - low) / 2;
@@ -290,6 +314,7 @@ boolean valid = left1 <= right2 && left2 <= right1;
 Movement:
 - `left1 > right2` → partition 1 is too far right.
 - `left2 > right1` → partition 1 is too far left.
+
 Practice:
 - LC 4 — Median of Two Sorted Arrays
 ## Choosing `low < high` or `low <= high`
@@ -359,10 +384,12 @@ Two sorted-array median         → binary search on partition
 - Median of two sorted arrays: `O(log(min(m,n)))` time and `O(1)` space.
 ---
 > **Final reusable model:** Binary search works when testing one candidate gives enough information to permanently eliminate half of an ordered search space.
+
 ```plain text
 Define search space → Define monotonic condition → Test mid 
 → Eliminate half → Preserve candidate
 ```
 > Before moving a boundary, complete: “I can discard this half because __.”<br>If you cannot prove that statement, the binary-search movement is not yet justified.
+
 <empty-block/>
 <empty-block/>

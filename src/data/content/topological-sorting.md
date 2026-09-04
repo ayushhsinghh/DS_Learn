@@ -48,13 +48,16 @@ B must come before C
 C must come before A
 ```
 No ordering can satisfy all three.
+
 Therefore:
 > A directed graph has a valid topological order if and only if it contains no directed cycle.
+
 ---
 ## Core Mental Model
 Topological sorting can be understood in two ways.
 ## Kahn’s algorithm
 > Repeatedly complete nodes whose prerequisites are already resolved.
+
 ```plain text
 Find indegree-zero nodes
 → Process them
@@ -63,6 +66,7 @@ Find indegree-zero nodes
 ```
 ## DFS topological sorting
 > A node should enter the answer only after everything depending on its outgoing path has been processed.
+
 ```plain text
 Explore descendants
 → Finish current node
@@ -82,6 +86,7 @@ Look for these signals:
 - You need to determine whether all dependencies can be satisfied.
 - You need to detect a cycle in a directed graph.
 - The question asks for a valid build, execution, or dependency order.
+
 Common wording:
 ```plain text
 prerequisite
@@ -95,6 +100,7 @@ execution order
 ```
 ### Most important recognition question
 > Does `A` need to happen before `B`?
+
 If yes, represent it using:
 ```plain text
 A → B
@@ -132,6 +138,7 @@ indegree = number of incoming edges
 ```
 In dependency problems, this usually means:
 > The number of unresolved prerequisites for this node.
+
 Example:
 ```plain text
 A → C
@@ -162,6 +169,7 @@ Kahn’s algorithm performs topological sorting using BFS and indegrees.
 6. Decrease the indegree of its outgoing neighbors.
 7. When a neighbor’s indegree becomes zero, add it to the queue.
 8. If fewer than `V` nodes are processed, a cycle exists.
+
 **Memory flow:** `Resolve available node → Remove its dependency effect → Unlock neighbors`
 ```java
 int[] topologicalSort(
@@ -225,12 +233,14 @@ indegree[node] == 0
 ```
 Its indegree reaches zero only once.
 After it reaches zero, no remaining incoming edge can reduce it to zero again.
+
 Therefore:
 ```plain text
 indegree state controls when the node can enter the queue
 ```
 This replaces the normal purpose of `visited`.
 > Kahn’s algorithm still tracks processing state—it tracks it through indegrees instead of a separate visited array.
+
 ---
 ## Detecting a Cycle with Kahn’s Algorithm
 Suppose a cycle exists:
@@ -240,17 +250,20 @@ Suppose a cycle exists:
 3 ← 2
 ```
 Every node in the cycle has at least one incoming edge from another node in the cycle.
+
 Therefore, none of them can reach:
 ```plain text
 indegree = 0
 ```
 The queue eventually becomes empty while some nodes remain unprocessed.
+
 Cycle check:
 ```java
 return processedNodes != vertices;
 ```
 Mental model:
 > If some nodes can never have all prerequisites resolved, they belong to or depend on a cycle.
+
 ---
 ## DFS Topological Sorting
 DFS creates a topological order using finishing time.
@@ -261,6 +274,7 @@ A node is added only after all its outgoing neighbors have been explored.
 3. After all neighbors finish, add the current node to a stack.
 4. Continue until every node is processed.
 5. Pop the stack to obtain topological order.
+
 **Memory flow:** `Explore dependencies forward → Add node while returning → Reverse completion order`
 ```java
 void dfs(
@@ -328,6 +342,7 @@ that edge returns to the active recursive path and creates a cycle.
 4. Recursively process unvisited neighbors.
 5. After every neighbor completes, mark the node `completed`.
 6. Add it to the finishing-order stack.
+
 **Memory flow:** `Enter active path → Explore → Detect return to active path → Complete`
 ```java
 boolean dfs(
@@ -376,6 +391,7 @@ A → B
 ```
 `A` must appear before `B`.
 DFS from `A` first reaches `B`.
+
 Finishing order:
 ```plain text
 B finishes first
@@ -386,12 +402,14 @@ If we add during finishing:
 B, A
 ```
 This is reversed.
+
 Putting nodes onto a stack gives:
 ```plain text
 A, B
 ```
 which is the required topological order.
 > DFS topological sorting is reverse postorder.
+
 ---
 ## Kahn’s Algorithm versus DFS
 ## Kahn’s algorithm
@@ -431,7 +449,9 @@ Several valid answers may exist.
 2. Run Kahn’s algorithm or DFS topological sorting.
 3. Store nodes in the order they become resolved.
 4. Return the result only if every node was processed.
+
 **Memory flow:** `Build dependency graph → Resolve all nodes → Return order`
+
 Kahn’s algorithm template:
 ```java
 while (!queue.isEmpty()) {
@@ -464,6 +484,7 @@ Sometimes the actual order is unnecessary. We only need to determine whether a v
 2. Count how many nodes are processed.
 3. If the count equals the total number of nodes, no cycle exists.
 4. Otherwise, some nodes remain blocked by a cycle.
+
 **Memory flow:** `Count resolved nodes → Compare with total`
 ```java
 int processed = 0;
@@ -485,6 +506,7 @@ return processed == numCourses;
 ```
 ### How it works with DFS
 Return `false` when an edge reaches a currently visiting node.
+
 Practice:
 - LC 207 — Course Schedule
 - LC 802 — Find Eventual Safe States
@@ -492,6 +514,7 @@ Practice:
 ---
 ## Common Form 3: Resolve Dependencies from Available Supplies
 Some nodes are available initially even though they are not part of the result.
+
 Example:
 ```plain text
 Supplies → ingredients already available
@@ -505,6 +528,7 @@ Recipes  → nodes that become available later
 5. Decrease the indegree of recipes depending on it.
 6. When a recipe reaches zero, save it and add it to the queue.
 7. The completed recipe can now act as an ingredient for other recipes.
+
 **Memory flow:** `Start with available resources → Unlock recipes → Use recipes as resources`
 ```java
 for (String supply : supplies) {
@@ -537,6 +561,7 @@ The queue represents:
 resolved and currently usable items
 ```
 It does not represent only recipes.
+
 Practice:
 - LC 2115 — Find All Possible Recipes from Given Supplies
 - Build-system dependency questions
@@ -545,6 +570,7 @@ Practice:
 ## Common Form 4: Infer Ordering from Sorted Information
 Sometimes edges are not provided directly. They must be inferred.
 In Alien Dictionary, two adjacent sorted words reveal the ordering of their first different characters.
+
 Example:
 ```plain text
 "wrt"
@@ -564,6 +590,7 @@ t → f
 3. Add an edge from the first word’s character to the second word’s character.
 4. Stop comparing that word pair after the first difference.
 5. Run topological sorting over all characters.
+
 **Memory flow:** `Infer constraints → Build directed graph → Topologically order symbols`
 ### Invalid prefix case
 This ordering is impossible:
@@ -572,6 +599,7 @@ This ordering is impossible:
 "ab"
 ```
 A longer word cannot appear before its exact prefix in lexicographic order.
+
 Practice:
 - LC 269 — Alien Dictionary
 - LC 953 — Verifying an Alien Dictionary
@@ -586,6 +614,7 @@ If the smallest possible ordering is required, use a min-heap.
 3. Decrease neighbor indegrees normally.
 4. Add newly available nodes to the priority queue.
 5. The result is the lexicographically smallest valid topological ordering.
+
 **Memory flow:** `Track all available nodes → Always choose smallest`
 ```java
 PriorityQueue<Integer> available =
@@ -625,6 +654,7 @@ Practice:
 ---
 ## Common Form 6: Two Independent Topological Orders
 Some problems contain two independent dependency dimensions.
+
 Example:
 ```plain text
 Row conditions
@@ -637,6 +667,7 @@ A number’s row position and column position must each satisfy separate constra
 3. If either sort fails, return no solution.
 4. Convert each order into a position map.
 5. Place every value using its row and column positions.
+
 **Memory flow:** `Sort each dimension → Map values to positions → Combine coordinates`
 ```java
 int[] rowOrder =
@@ -668,6 +699,7 @@ A safe node cannot eventually reach a directed cycle.
 This can be solved with DFS states or reverse-graph topological sorting.
 ### DFS approach
 A node is unsafe if any outgoing path reaches a cycle.
+
 States can represent:
 ```plain text
 0 → unvisited
@@ -686,7 +718,9 @@ Reverse every edge. Then process original terminal nodes like indegree-zero node
 3. Add all terminal nodes to the queue.
 4. When a node is confirmed safe, reduce the unresolved count of nodes leading to it.
 5. A node becomes safe when all of its outgoing paths lead to safe nodes.
+
 **Memory flow:** `Start from terminal nodes → Propagate safety backward`
+
 Practice:
 - LC 802 — Find Eventual Safe States
 - Directed-cycle dependency questions
@@ -701,6 +735,7 @@ This allows prerequisite information to be propagated forward.
 	- Add `node` to the neighbor’s ancestor set.
 	- Add all ancestors of `node` to the neighbor’s set.
 4. Convert the sets into the required output.
+
 **Memory flow:** `Process prerequisites first → Forward accumulated ancestor information`
 ```java
 for (int neighbor : graph.get(node)) {
@@ -724,6 +759,7 @@ Practice:
 ## Common Form 9: Dynamic Programming on a DAG
 A topological order ensures that all incoming dependencies are processed before the current node.
 This makes it useful for dynamic programming on directed acyclic graphs.
+
 Examples:
 - Longest path in a DAG
 - Minimum cost through dependencies
@@ -735,7 +771,9 @@ Examples:
 3. Process nodes in topological order.
 4. Propagate the current node’s result to outgoing neighbors.
 5. If not all nodes are processed, reject because a cycle exists.
+
 **Memory flow:** `Topological order → Finalize prerequisites → Propagate DP forward`
+
 Generic transition:
 ```java
 for (int node : topologicalOrder) {
@@ -768,13 +806,17 @@ Dependencies may cross group boundaries.
 4. Topologically sort both graphs.
 5. Arrange items according to group order while preserving item order.
 6. Fail if either graph contains a cycle.
+
 **Memory flow:** `Order groups → Order items → Combine without breaking either order`
+
 Practice:
 - LC 1203 — Sort Items by Groups Respecting Dependencies
+
 This is an advanced extension of running multiple related topological sorts.
 ---
 ## Multiple Valid Topological Orders
 A DAG may have more than one valid topological order.
+
 Whenever multiple nodes have indegree zero:
 ```plain text
 Any of them may legally appear next.
@@ -797,12 +839,14 @@ During Kahn’s algorithm:
 queue size == 1
 ```
 means only one node can be selected next.
+
 If at any step:
 ```plain text
 queue size > 1
 ```
 multiple valid choices exist, so the topological order is not unique.
 This technique appears in sequence-reconstruction problems.
+
 Practice:
 - LC 444 — Sequence Reconstruction
 ---
@@ -922,6 +966,7 @@ Time: O((V + E) log V)
 ```
 ## Ancestor propagation
 If ancestor sets are copied between nodes, complexity can be significantly larger than ordinary topological sorting.
+
 Depending on representation:
 ```plain text
 Worst case: O(V² + E)

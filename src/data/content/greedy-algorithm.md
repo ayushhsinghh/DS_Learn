@@ -1,7 +1,9 @@
 A greedy algorithm builds an answer by repeatedly making the best decision available **at the current moment**.
 It does not explore every possibility or undo earlier choices.
+
 The difficult part is not making a locally good choice. The difficult part is proving:
 > This local choice cannot prevent us from reaching an optimal final answer.
+
 ## Core Mental Model
 ```plain text
 Choose the best safe option now
@@ -10,6 +12,7 @@ Choose the best safe option now
 → Repeat
 ```
 Greedy is an algorithmic strategy, not a particular data structure.
+
 Depending on the problem, a greedy solution may use:
 - Sorting
 - Two pointers
@@ -27,9 +30,11 @@ Look for these signals:
 - The question asks only for the optimal value, not every possible solution.
 ### Most important recognition question
 > If I make the best-looking choice now, can I prove that replacing any optimal solution’s first choice with mine will not make it worse?
+
 If yes, greedy may work.
 ## When Greedy Does Not Work
 Greedy is dangerous when a locally best choice can damage a better future combination.
+
 Example:
 ```plain text
 Coins = [1, 3, 4]
@@ -48,16 +53,22 @@ This requires dynamic programming rather than a greedy rule.
 ## How to Prove a Greedy Choice
 ### 1. Exchange Argument
 Show that an optimal solution can replace its choice with the greedy choice without becoming worse.
+
 Example:
 > If an optimal meeting schedule begins with a later-finishing meeting, replace it with the earliest-finishing meeting. This leaves at least as much time for future meetings.
+
 ### 2. Staying-Ahead Argument
 Show that after every decision, the greedy solution is at least as good as any alternative so far.
+
 Example:
 > At every position, maintain the farthest index currently reachable.
+
 ### 3. Invariant
 Define something that remains true after every greedy choice.
+
 Example:
 > After processing the first `i` intervals, `end` is the smallest possible ending point among solutions keeping the same number of intervals.
+
 ## Small Intuition Example
 Suppose meetings are:
 ```plain text
@@ -68,6 +79,7 @@ To attend the maximum number of meetings, choose the meeting that ends earliest:
 [2,3]
 ```
 Then `[3,5]` can also be attended.
+
 Answer:
 ```plain text
 [2,3], [3,5] → 2 meetings
@@ -75,8 +87,10 @@ Answer:
 If we choose `[1,4]`, only one meeting can be attended.
 Why is earliest ending greedy?
 > Finishing earlier leaves the maximum remaining space for future meetings.
+
 ## Common Form 1: Sort and Choose the Best Available Candidate
 Use this when sorting exposes a safe order for making decisions.
+
 Typical sorting choices:
 - Smallest first
 - Largest first
@@ -89,6 +103,7 @@ Typical sorting choices:
 3. Process them in greedy order.
 4. Accept a candidate if it remains valid.
 5. Never revisit accepted decisions.
+
 **Memory flow:** `Find safe order → Sort → Accept when valid`
 ```java
 Arrays.sort(items, (a, b) ->
@@ -102,6 +117,7 @@ for (Item item : items) {
 }
 ```
 The difficult part is deciding what `score` should represent.
+
 Practice:
 - LC 455 — Assign Cookies
 - LC 1710 — Maximum Units on a Truck
@@ -110,14 +126,17 @@ Practice:
 - LC 1833 — Maximum Ice Cream Bars
 ## Common Form 2: Interval Scheduling
 Use this when selecting the maximum number of non-overlapping intervals or removing the minimum number of overlaps.
+
 The greedy rule is:
 > Keep the interval that finishes earliest.
+
 ### How it works
 1. Sort intervals by ending point.
 2. Select the first interval.
 3. Accept another interval only if it starts after the last selected interval ends.
 4. Update the ending point after accepting it.
 5. Earliest finishing leaves maximum room for future intervals.
+
 **Memory flow:** `Sort by end → Keep earliest finish → Leave future space`
 ```java
 Arrays.sort(intervals, (a, b) ->
@@ -146,6 +165,7 @@ Practice:
 - Activity Selection Problem
 ## Common Form 3: Greedy Pairing with Two Pointers
 Use this after sorting when small and large elements can be paired strategically.
+
 Examples:
 - Pair the lightest person with the heaviest.
 - Assign the smallest sufficient resource.
@@ -156,6 +176,7 @@ Examples:
 3. Try to pair or assign the current candidates.
 4. If pairing succeeds, move both necessary pointers.
 5. Otherwise, commit the candidate that cannot benefit from waiting.
+
 **Memory flow:** `Sort → Try extreme pairing → Commit unavoidable choice`
 ### Boats to Save People
 ```java
@@ -179,6 +200,7 @@ return boats;
 ```
 Why always take the heaviest person?
 The heaviest remaining person must use a boat. If they can share with the lightest, pair them. Otherwise, they must go alone.
+
 Practice:
 - LC 455 — Assign Cookies
 - LC 881 — Boats to Save People
@@ -194,6 +216,7 @@ Instead of exploring every path, track the best reachable boundary.
 3. Extend the farthest boundary using the current position.
 4. If a position lies beyond the boundary, it cannot be reached.
 5. If the boundary reaches the destination, success is guaranteed.
+
 **Memory flow:** `Confirm reachable → Extend farthest → Never reconsider paths`
 ```java
 int farthest = 0;
@@ -223,6 +246,7 @@ Practice:
 - LC 763 — Partition Labels
 ## Common Form 5: Minimum Jumps Using Greedy Levels
 Jump Game II resembles BFS levels, but the levels can be represented using boundaries instead of a queue.
+
 Maintain:
 ```plain text
 currentEnd = boundary reachable using current jump count
@@ -234,6 +258,7 @@ farthest   = best boundary reachable from this level
 3. When the scan reaches `currentEnd`, one jump level is complete.
 4. Increment the jump count.
 5. Extend `currentEnd` to `farthest`.
+
 **Memory flow:** `Explore current range → Find farthest next range → Take one jump`
 ```java
 int jumps = 0;
@@ -268,6 +293,7 @@ A heap determines **which available candidate** should be chosen.
 3. Choose the best candidate from the heap.
 4. Update the current resource, time, or position.
 5. Repeat until the target is reached or no valid candidate remains.
+
 **Memory flow:** `Unlock candidates → Heap available choices → Pick best now`
 ### IPO-style template
 ```java
@@ -306,8 +332,10 @@ Practice:
 - LC 1642 — Furthest Building You Can Reach
 ## Common Form 7: Greedy Reset
 Use this when a running segment becomes harmful and no future optimal solution benefits from keeping its failed prefix.
+
 The key question is:
 > If the current candidate fails here, can any earlier point inside this candidate become a valid start?
+
 If not, reset after the failure.
 ### Gas Station intuition
 If starting at station `start` causes the tank to become negative at station `i`, then no station between `start` and `i` can be a valid starting point.
@@ -317,6 +345,7 @@ If starting at station `start` causes the tank to become negative at station `i`
 3. Begin a new candidate immediately after the failure.
 4. Continue scanning once.
 5. Use a global condition to verify that a solution exists.
+
 **Memory flow:** `Accumulate → Failure invalidates segment → Reset after failure`
 ```java
 int totalBalance = 0;
@@ -345,6 +374,7 @@ Practice:
 Use this when the current segment should end as soon as all elements associated with it are fully contained.
 ### Partition Labels intuition
 For every character, record its final occurrence.
+
 While scanning a partition:
 ```plain text
 partitionEnd = farthest final occurrence
@@ -357,6 +387,7 @@ When the current index reaches `partitionEnd`, the partition is complete.
 3. Extend the segment’s end using each encountered value’s last occurrence.
 4. When the current index reaches that end, close the segment.
 5. Start the next segment.
+
 **Memory flow:** `Track required end → Extend if necessary → Close when reached`
 ```java
 int[] lastIndex = new int[26];
@@ -388,6 +419,7 @@ Practice:
 - LC 678 — Valid Parenthesis String
 ## Common Form 9: Greedy Construction with a Monotonic Stack
 Use this when you must construct the smallest or largest possible sequence while preserving relative order.
+
 Example:
 ```plain text
 Remove k digits to create the smallest number.
@@ -399,6 +431,7 @@ When a smaller digit arrives, previously selected larger digits may be removed.
 3. While removing the latest value improves the answer and removals remain, pop it.
 4. Add the current value.
 5. If removals remain afterward, remove values from the end.
+
 **Memory flow:** `Better current value → Remove worse previous choices → Build result`
 ```java
 Deque<Character> stack = new ArrayDeque<>();
@@ -505,6 +538,7 @@ Space: O(n)
 ```
 ## Final Reusable Model
 > Greedy works when the best safe decision now can be permanently committed without preventing an optimal final result.
+
 ```plain text
 Define the local choice
 → Prove it is safe

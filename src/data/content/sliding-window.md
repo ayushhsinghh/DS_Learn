@@ -1,5 +1,6 @@
 Sliding window is a two-pointer technique for problems involving a **contiguous range**—a subarray or substring.
 > **Core mental model:** Expand the right side to acquire elements. Shrink the left side when necessary. Maintain enough information to evaluate the current window efficiently.
+
 ## How to Identify Sliding-Window Questions
 Look for these signals:
 - The answer must be a **contiguous** subarray or substring.
@@ -8,6 +9,7 @@ Look for these signals:
 - When one element enters or leaves, you can update the window state efficiently.
 - After moving `right`, an invalid window can be repaired by moving `left` forward.
 > **Most important question:** If I move `right` forward, can I repair the window by moving `left` forward?
+
 If yes, sliding window is probably useful.
 Sliding window usually does **not** apply when:
 - Elements can be selected from arbitrary positions.
@@ -18,14 +20,17 @@ Sliding window usually does **not** apply when:
 - “Maximum sum subarray of size `k`” → fixed-size window.
 - “Longest substring without repeating characters” → variable window; shrink when invalid.
 - “Minimum subarray with sum at least target” → variable window; shrink while valid.
+
 Sliding window usually does **not** apply when the selected elements need not be contiguous, or when removing elements from the left cannot systematically restore validity.
 ## Common Form 1: Fixed-Size Window
 Use this when every candidate range has exactly size `k`.
+
 **How it works:**
 1. Add the element at `right`.
 2. If the window becomes larger than `k`, remove the element at `left` and move `left`.
 3. When the window size is exactly `k`, calculate the answer.
 4. Repeat to process every window of size `k`.
+
 **Memory flow:** `Add → Maintain size k → Calculate`
 ```java
 int left = 0;
@@ -46,6 +51,7 @@ for (int right = 0; right < nums.length; right++) {
 }
 ```
 Small example: `[2,1,5,1,3,2]`, `k = 3` has window sums `8, 7, 9, 6`; the maximum is `9`.
+
 Practice:
 - LC 643 — Maximum Average Subarray I
 - LC 438 — Find All Anagrams in a String
@@ -53,11 +59,13 @@ Practice:
 - LC 1456 — Maximum Number of Vowels in a Substring
 ## Common Form 2: Variable Window — Longest Valid Range
 Expand `right`. When the window becomes invalid, move `left` until it is valid again. Calculate the answer only after validity is restored.
+
 **How it works:**
 1. Add the element at `right`.
 2. If the window becomes invalid, keep removing elements from `left`.
 3. Stop shrinking when the window becomes valid again.
 4. Record the current length because `[left, right]` is now a valid window.
+
 **Memory flow:** `Add → Fix invalid window → Record longest`
 ```java
 int left = 0;
@@ -75,6 +83,7 @@ for (int right = 0; right < nums.length; right++) {
 }
 ```
 > **Invariant:** Whenever the answer is calculated, `[left, right]` is a valid window.
+
 Practice:
 - LC 3 — Longest Substring Without Repeating Characters
 - LC 424 — Longest Repeating Character Replacement
@@ -83,11 +92,13 @@ Practice:
 - LC 1493 — Longest Subarray of 1’s After Deleting One Element
 ## Common Form 3: Variable Window — Shortest Valid Range
 Expand until the window becomes valid. Then record the answer and shrink repeatedly while it remains valid.
+
 **How it works:**
 1. Add elements using `right` until the window becomes valid.
 2. Record the current window length.
 3. Remove the element at `left` to check whether a smaller valid window exists.
 4. Continue shrinking and recording while the window remains valid.
+
 **Memory flow:** `Become valid → Record → Shrink again`
 ```java
 int left = 0;
@@ -107,17 +118,20 @@ return answer == Integer.MAX_VALUE ? 0 : answer;
 ```
 Small example: For `[2,3,1,2,4,3]` and target `7`, the shortest valid window is `[4,3]`, so the answer is `2`.
 > **Key difference:** For longest-valid problems, shrink while **invalid**. For shortest-valid problems, record and shrink while **valid**.
+
 Practice:
 - LC 209 — Minimum Size Subarray Sum
 - LC 76 — Minimum Window Substring
 - LC 1234 — Replace the Substring for Balanced String
 ## Common Form 4: Frequency-Map Window
 Use this when validity depends on the frequency of characters or numbers.
+
 **How it works:**
 1. Add the entering element’s frequency when `right` moves.
 2. Remove the leaving element’s frequency when `left` moves.
 3. Maintain a counter that tells you whether the required frequencies are satisfied.
 4. Use that counter instead of comparing the complete frequency map repeatedly.
+
 **Memory flow:** `Add frequency → Remove frequency → Check requirements`
 ```java
 Map<Character, Integer> frequency = new HashMap<>();
@@ -143,18 +157,21 @@ Choose:
 - `int[128]` for ASCII characters.
 - `HashMap` for arbitrary characters or numbers.
 - A missing-requirements counter to avoid comparing the entire map repeatedly.
+
 Practice:
 - LC 438 — Find All Anagrams in a String
 - LC 567 — Permutation in String
 - LC 76 — Minimum Window Substring
 ## Common Form 5: Count Windows Using At Most
-Problems asking for **exactly ****`k`** can often be transformed:
+Problems asking for **exactly `k`** can often be transformed:
+
 **How it works:**
 1. Add the element at `right`.
 2. If the window violates the “at most `k`” condition, move `left` until it becomes valid.
 3. Once valid, every subarray ending at `right` and starting between `left` and `right` is also valid.
 4. Therefore, add `right - left + 1` to the answer.
 5. For exactly `k`, calculate `atMost(k) - atMost(k - 1)`.
+
 **Memory flow:** `Make valid → Count all valid endings → Subtract for exactly k`
 ```plain text
 exactly(k) = atMost(k) - atMost(k - 1)
@@ -180,18 +197,22 @@ private int atMost(int[] nums, int k) {
 }
 ```
 If `[left, right]` is valid, then every window ending at `right` and starting from `left` through `right` is valid. Their count is `right - left + 1`.
+
 Practice:
 - LC 992 — Subarrays with K Different Integers
 - LC 1248 — Count Number of Nice Subarrays
 - LC 930 — Binary Subarrays With Sum
 ## Common Form 6: Window with a Monotonic Deque
 Use a deque when every window needs its current maximum or minimum.
+
 **How it works:**
 1. Remove indices from the back whose values can never become the window’s maximum.
 2. Add the current index at the back.
 3. Remove the front index if it is outside the current window.
 4. The index at the front now represents the maximum value in the window.
+
 For a minimum window, reverse the comparison.
+
 **Memory flow:** `Remove useless → Add current → Remove expired → Read front`
 ```java
 Deque<Integer> deque = new ArrayDeque<>();
@@ -224,6 +245,7 @@ Practice:
 7. Can every element enter and leave the window at most once?
 > **Reusable flow:** Add `right` → restore the invariant using `left` → calculate the answer.
 > For minimum-valid windows: Add `right` → once valid, calculate and shrink repeatedly.
+
 ## Common Mistakes
 - Using sliding window when the answer is not contiguous.
 - Forgetting to remove the left element from the maintained state.
@@ -241,6 +263,7 @@ Practice:
 - **Fixed alphabet array:** `O(1)` auxiliary space.
 - **HashMap:** `O(k)` or up to `O(n)`, depending on distinct values in the window.
 - **Monotonic deque:** `O(k)` space.
+
 Even with a `while` loop inside a `for` loop, the usual running time is linear:
 ```plain text
 right moves at most n times

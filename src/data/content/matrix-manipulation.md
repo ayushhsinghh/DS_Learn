@@ -1,5 +1,6 @@
 A matrix is a two-dimensional grid where each element is identified by `matrix[row][column]`.
 > **Core mental model:** First decide how cells are related, then define the order in which they should be visited or modified.
+
 ```plain text
 Understand coordinates → Choose traversal order → Protect boundaries → Preserve required information
 ```
@@ -10,6 +11,7 @@ Look for these signals:
 - A cell’s result depends on its position or nearby cells.
 - The matrix must be traversed or modified in place.
 > **Most important questions:** In what order should I visit the cells? If I modify a cell now, will I destroy information needed later?
+
 ## Coordinate Mental Model
 For a matrix with `rows × columns`:
 ```plain text
@@ -25,11 +27,13 @@ boolean valid = row >= 0
 For `[[1,2,3],[4,5,6]]`, `matrix[0][2] = 3` and `matrix[1][1] = 5`.
 ## Common Form 1: Standard Row and Column Traversal
 Use this when every cell must be processed independently.
+
 **How it works:**
 1. The outer loop chooses a row.
 2. The inner loop visits every column in that row.
 3. Process `matrix[row][column]`.
 4. Continue until every cell has been visited.
+
 **Memory flow:** `Choose row → Visit columns → Process cell`
 ```java
 int rows = matrix.length;
@@ -57,13 +61,16 @@ Practice:
 - LC 867 — Transpose Matrix
 ## Common Form 2: Direction-Array Traversal
 Use this when a cell must inspect or interact with surrounding cells.
+
 **How it works:**
 1. Store every allowed movement in a direction array.
 2. Add each direction to the current coordinates.
 3. Check whether the new coordinates are inside the matrix.
 4. Process only valid neighbors.
 5. Include diagonal directions only when the problem permits them.
+
 **Memory flow:** `Current cell → Apply direction → Validate → Process neighbor`
+
 Four-directional movement:
 ```java
 int[][] directions = {
@@ -86,6 +93,7 @@ for (int[] direction : directions) {
 }
 ```
 For eight-directional movement, also include `{-1,-1}`, `{-1,1}`, `{1,-1}`, and `{1,1}`.
+
 Practice:
 - LC 733 — Flood Fill
 - LC 200 — Number of Islands
@@ -103,7 +111,9 @@ Counterclockwise rotation = transpose + reverse every column
 2. Process only cells above the diagonal so each pair is swapped once.
 3. Reverse every row.
 4. The combined transformation rotates the matrix 90 degrees clockwise.
+
 **Memory flow:** `Transpose → Reverse rows → Rotate clockwise`
+
 Small example:
 ```plain text
 Original      Transpose     Reverse rows
@@ -138,6 +148,7 @@ for (int row = 0; row < n; row++) {
 }
 ```
 Starting the transpose column at `row + 1` prevents swapping every pair twice.
+
 Practice:
 - LC 48 — Rotate Image
 - LC 1886 — Determine Whether Matrix Can Be Obtained by Rotation
@@ -178,6 +189,7 @@ For `m` rows and `n` columns:
 - Rotating a square matrix in place: `O(n²)` time and `O(1)` space.
 ---
 > **Final reusable model:** Define the coordinate meaning, choose the traversal order, validate every movement, and preserve information before modifying cells.
+
 ```plain text
 Define coordinates → Choose traversal → Check boundaries → Modify safely
 ```

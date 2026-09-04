@@ -8,6 +8,7 @@ Days
 Steps
 ```
 The answer at one position depends on answers calculated for earlier or later positions.
+
 Typical states:
 ```plain text
 dp[i] = answer for the prefix ending at position i
@@ -22,6 +23,7 @@ Common objectives include:
 - Find the maximum value
 - Determine whether a valid solution exists
 - Select elements under adjacency restrictions
+
 Examples:
 ```plain text
 Ways to reach stair i
@@ -31,6 +33,7 @@ Ways to decode the first i characters
 ```
 #### Core mental model
 > Solve the sequence one position at a time and reuse answers calculated for nearby positions.
+
 ---
 ## 2. How to Identify It
 Look for these signals:
@@ -58,12 +61,15 @@ best answer up to index i
 ```
 #### Recognition question
 > Can the answer at position `i` be calculated using answers from earlier or later positions?
+
 If yes, consider Linear 1D DP.
 ---
 ## 3. State Definition and Recursive Function Contract
 Before writing recursion or a DP array, define exactly what one state means.
+
 Complete this sentence:
 > `solve(i)` returns .
+
 Examples:
 ```plain text
 solve(i)
@@ -105,6 +111,7 @@ right to left
 ```
 #### State-validation question
 > If two recursive calls have the same index, are they solving exactly the same remaining problem?
+
 If yes, one index is sufficient.
 If the answer also depends on another condition, such as whether something is currently held or how many operations remain, additional state is required.
 ---
@@ -140,6 +147,7 @@ int solve(int[] nums, int index) {
 ```
 Recursive contract:
 > `solve(index)` returns the maximum amount obtainable from houses `index` through the end.
+
 Decision tree:
 ```plain text
                solve(0)
@@ -321,6 +329,7 @@ if (memo[index] != -1) {
 ```
 #### Choosing an uncomputed marker
 Using `-1` is safe only if `-1` cannot be a valid answer.
+
 Alternatives include:
 ```java
 Integer[] memo;
@@ -336,8 +345,10 @@ boolean[] computed;
 ---
 ## 8. Tabulation Template
 Tabulation calculates the same recurrence iteratively.
+
 House Robber prefix definition:
 > `dp[i]` is the maximum money obtainable from houses `0` through `i`.
+
 ```java
 int rob(int[] nums) {
     int n = nums.length;
@@ -390,6 +401,7 @@ Initial recursive call
 ```
 #### Important requirement
 The meaning of the recursive state and tabulation state can differ.
+
 For example:
 ```plain text
 Memoization:
@@ -432,7 +444,9 @@ for (int i = n - 1; i >= 0; i--) {
 ```
 #### Dependency rule
 > Before calculating `dp[i]`, every state used by its recurrence must already be available.
+
 Do not choose iteration order based only on habit.
+
 Draw the dependency:
 ```plain text
 dp[i - 2] ─┐
@@ -443,6 +457,7 @@ The arrows show that smaller indices must be calculated first.
 ---
 ## 10. Space Optimization
 If every state depends on only a fixed number of previous states, the entire array is unnecessary.
+
 House Robber uses:
 ```plain text
 dp[i - 1]
@@ -495,11 +510,13 @@ Keep the complete DP array when:
 - Intermediate answers are required.
 - The array makes the solution meaningfully clearer.
 - You have not yet validated the basic recurrence.
+
 Correctness comes before space optimization.
 ---
 ## 11. Common Problem Forms
 ### Common Form 1: Count Ways to Reach a Position
 The current position can be reached from a fixed set of previous positions.
+
 Example:
 ```plain text
 Reach stair i from:
@@ -511,6 +528,7 @@ i - 2
 2. Identify every position that can move directly to `i`.
 3. Add the number of ways of reaching those positions.
 4. Initialize the starting position with one empty way.
+
 **Memory flow:** `Collect all valid previous ways → Sum them`
 ```java
 int climbStairs(int n) {
@@ -546,6 +564,7 @@ Each position has a cost, and several previous positions may lead to it.
 3. Choose the cheapest previous state.
 4. Add the cost required for the current transition or position.
 5. Return the destination state.
+
 **Memory flow:** `Choose cheapest predecessor → Add current cost`
 ```java
 int minCostClimbingStairs(int[] cost) {
@@ -580,6 +599,7 @@ Practice:
 ---
 ### Common Form 3: Take or Skip with Adjacency Restrictions
 Selecting the current item prevents selecting an adjacent or nearby item.
+
 Typical recurrence:
 ```plain text
 take = value[i] + dp[i - 2]
@@ -592,6 +612,7 @@ dp[i] = max(take, skip)
 2. Calculate the result from selecting it.
 3. If selected, combine it with the most recent compatible state.
 4. Keep the better result.
+
 **Memory flow:** `Take with compatible state → Compare with skipping`
 ```java
 int take =
@@ -612,6 +633,7 @@ Practice:
 ### Common Form 4: Circular Linear DP
 The first and last positions are adjacent.
 They cannot both be selected.
+
 Break the circular problem into two linear ranges:
 ```plain text
 Case 1:
@@ -625,6 +647,7 @@ Use positions 1 through n - 1
 2. Exclude the first element and solve the remaining line.
 3. Return the better result.
 4. Handle a single-element input separately.
+
 **Memory flow:** `Break circular conflict → Solve two lines → Choose better answer`
 ```java
 int rob(int[] nums) {
@@ -650,6 +673,7 @@ Practice:
 ---
 ### Common Form 5: Decode or Parse a Prefix
 One or more characters may form the final valid token of a prefix.
+
 For Decode Ways:
 ```plain text
 Use one digit
@@ -660,6 +684,7 @@ Use two digits
 2. If the last one-character token is valid, add `dp[length - 1]`.
 3. If the last two-character token is valid, add `dp[length - 2]`.
 4. Invalid token choices contribute nothing.
+
 **Memory flow:** `Check valid ending lengths → Add ways before each ending`
 ```java
 int numDecodings(String s) {
@@ -708,7 +733,9 @@ The dependency is not limited to `i - 1` and `i - 2`.
 3. Evaluate the candidate answer from each transition.
 4. Combine those candidates.
 5. Store the current answer.
+
 **Memory flow:** `Try valid transitions → Combine candidate states`
+
 Generic template:
 ```java
 for (int current = 0;
@@ -731,11 +758,13 @@ Practice:
 - LC 2140 — Solving Questions With Brainpower
 - LC 983 — Minimum Cost For Tickets
 - LC 2369 — Check if There Is a Valid Partition
+
 Some jump problems also have greedy solutions, so always check whether DP is necessary.
 ---
 ### Common Form 7: Transform Values into Linear Positions
 Sometimes the input order is not the important structure.
 Instead, values themselves form neighboring positions.
+
 For Delete and Earn:
 ```plain text
 points[value]
@@ -752,6 +781,7 @@ This becomes House Robber over the value axis.
 2. Treat every possible value as a linear position.
 3. Recognize that adjacent values conflict.
 4. Apply maximum non-adjacent-sum DP.
+
 **Memory flow:** `Aggregate values → Convert value conflicts into adjacency → Apply take/skip`
 ```java
 int[] points = new int[maxValue + 1];
@@ -772,6 +802,7 @@ Practice:
 ---
 ### Common Form 8: Maintain Multiple Results per Position
 Sometimes one scalar answer does not preserve enough information for future transitions.
+
 Maximum Product Subarray requires both:
 ```plain text
 maximum product ending here
@@ -783,6 +814,7 @@ A negative value can turn the previous minimum into the new maximum.
 2. Carry both maximum and minimum results.
 3. Update both using the current value.
 4. Maintain the best global answer.
+
 **Memory flow:** `Preserve multiple extremes → Current value may swap their roles`
 ```java
 int maxProduct(int[] nums) {
@@ -828,6 +860,7 @@ Practice:
 ## 12. Answer Reconstruction
 Space-optimized DP usually preserves only the optimal value.
 If the problem asks which elements were selected, keep the complete DP array or a separate choice array.
+
 For House Robber:
 ```plain text
 If dp[i] == dp[i - 1]
@@ -864,6 +897,7 @@ Collections.reverse(selectedIndices);
 ```
 #### Reconstruction principle
 > Compare the current DP value against the transitions that could have produced it.
+
 If several choices produce the same optimal value, multiple valid reconstructions may exist.
 ---
 ## 13. Quick Interview Checklist
@@ -925,6 +959,7 @@ Stack: O(n)
 ```
 ### Memoization
 One index produces `O(n)` unique states.
+
 If each state performs constant work:
 ```plain text
 Time:  O(n)

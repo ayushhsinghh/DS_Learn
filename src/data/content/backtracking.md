@@ -1,4 +1,5 @@
 Backtracking is a recursive technique for exploring multiple possible decisions.
+
 At every step:
 ```plain text
 Choose one option
@@ -16,6 +17,7 @@ It is commonly used to generate:
 ---
 ## Core Mental Model
 > Backtracking builds one candidate answer at a time and abandons it when it cannot lead to a valid result.
+
 ```plain text
 Make a choice
 → Update current state
@@ -33,6 +35,7 @@ current.remove(current.size() - 1);
 ---
 ## Recursion versus Backtracking
 Ordinary recursion solves smaller versions of a problem.
+
 Backtracking additionally manages mutable decision state:
 ```plain text
 Recursion:
@@ -61,6 +64,7 @@ take 2  skip 2  take 2  skip 2
 Each root-to-leaf route represents one sequence of decisions.
 Backtracking performs DFS over this implicit decision tree.
 > You normally do not build this tree explicitly. Recursive calls represent its branches.
+
 ---
 ## Anatomy of Backtracking
 Most backtracking solutions contain:
@@ -110,6 +114,7 @@ Look for these signals:
 - The answer requires trying a decision and later reversing it.
 - The input constraints are relatively small.
 - The problem naturally forms a decision tree.
+
 Common question wording:
 ```plain text
 Return all...
@@ -121,10 +126,12 @@ Count all possible...
 ```
 ### Most important recognition question
 > Do I need to explore several choices from the current state and then return to try the remaining choices?
+
 If yes, backtracking is likely appropriate.
 ---
 ## The Backtracking State
 Before coding, identify what changes along one recursive path.
+
 Common state components:
 ```plain text
 Current index
@@ -138,6 +145,7 @@ Current position
 ```
 Also define the recursive contract:
 > `backtrack(state)` explores all valid answers that can be created from the current state.
+
 ---
 ## Common Forms
 ## Common Form 1: Include or Exclude
@@ -153,6 +161,7 @@ This is the natural pattern for subsets and subsequences.
 3. Remove the current element.
 4. Recursively process the next index without it.
 5. Save the path when every index has been considered.
+
 **Memory flow:** `Take → Explore → Undo → Skip → Explore`
 ```java
 void subsets(
@@ -209,6 +218,7 @@ This pattern is common when order does not matter and choices after the current 
 4. Recurse from the next allowed index.
 5. Undo the choice.
 6. Continue the loop to try another candidate.
+
 **Memory flow:** `Choose next candidate from remaining range → Explore → Undo`
 ```java
 void combinations(
@@ -235,11 +245,13 @@ void combinations(
 ```
 ### Meaning of `start`
 `start` ensures that previously considered elements are not selected again.
+
 For:
 ```plain text
 [1, 2, 3]
 ```
 After selecting `2`, future choices start after `2`.
+
 This prevents generating different orders of the same combination:
 ```plain text
 [1, 2]
@@ -265,6 +277,7 @@ Every recursive level chooses one unused element for the next position.
 4. Add it to the current permutation.
 5. Recursively fill the next position.
 6. Remove it and mark it unused.
+
 **Memory flow:** `Choose unused element → Fill next position → Restore availability`
 ```java
 void permutations(
@@ -308,6 +321,7 @@ Practice:
 ---
 ## Common Form 4: Reusable Choices
 Some problems allow the same candidate to be chosen multiple times.
+
 Example:
 ```plain text
 Candidates = [2, 3, 6, 7]
@@ -323,6 +337,7 @@ After selecting `2`, recursion may start again from the same index.
 4. Recurse using the same index when reuse is allowed.
 5. Undo the choice.
 6. Try the next candidate.
+
 **Memory flow:** `Choose candidate → Reduce target → Reuse or advance → Undo`
 ```java
 void combinationSum(
@@ -369,6 +384,7 @@ Practice:
 ---
 ## Common Form 5: Handling Duplicate Answers
 When the input contains duplicate values, different indices may generate identical answers.
+
 Example:
 ```plain text
 nums = [1, 2, 2]
@@ -379,6 +395,7 @@ Without duplicate handling, `[1, 2]` may be generated twice.
 2. At one recursive level, use only the first occurrence of an equal value.
 3. Skip later equal values at that same level.
 4. Allow equal values at deeper levels when the problem permits them.
+
 **Memory flow:** `Sort → Skip equal sibling choices → Allow valid deeper choices`
 ```java
 Arrays.sort(nums);
@@ -414,6 +431,7 @@ if (i > 0 && nums[i] == nums[i - 1]) {
 }
 ```
 This may skip equal values across every level and remove valid answers.
+
 Practice:
 - LC 40 — Combination Sum II
 - LC 47 — Permutations II
@@ -422,6 +440,7 @@ Practice:
 ---
 ## Common Form 6: String Partitioning
 Partitioning problems choose the next substring rather than the next individual element.
+
 Example:
 ```plain text
 "aab"
@@ -439,6 +458,7 @@ Possible palindrome partition:
 5. Add it to the current partition.
 6. Recurse from `end + 1`.
 7. Remove the substring and try a different cut.
+
 **Memory flow:** `Choose next cut → Validate piece → Explore suffix → Undo cut`
 ```java
 void partition(
@@ -472,6 +492,7 @@ void partition(
 ```
 ### Meaning of the recursive state
 > `partition(start)` explores every valid partition of the suffix beginning at `start`.
+
 Practice:
 - LC 131 — Palindrome Partitioning
 - LC 93 — Restore IP Addresses
@@ -480,6 +501,7 @@ Practice:
 ---
 ## Common Form 7: Grid Backtracking
 Grid backtracking explores possible paths through neighboring cells.
+
 Common directions:
 ```plain text
 up
@@ -495,6 +517,7 @@ A cell may usually be used only once in the current path.
 4. Explore every permitted neighbor.
 5. Restore the cell before returning.
 6. Return whether a valid path was found.
+
 **Memory flow:** `Validate cell → Mark → Explore neighbors → Unmark`
 ```java
 boolean search(
@@ -530,6 +553,7 @@ boolean search(
 ```
 ### Why restore the cell?
 The cell is unavailable only for the current path. Another path starting elsewhere may validly use it.
+
 Practice:
 - LC 79 — Word Search
 - LC 212 — Word Search II
@@ -539,6 +563,7 @@ Practice:
 ---
 ## Common Form 8: Constraint Placement
 These problems place items while ensuring that no constraints are violated.
+
 Examples:
 - Place queens on a board
 - Fill a Sudoku board
@@ -552,6 +577,7 @@ Examples:
 5. Recursively fill the next position.
 6. If it fails, remove the placement.
 7. Continue trying other choices.
+
 **Memory flow:** `Select position → Test choices → Place → Explore → Remove`
 ### N-Queens structure
 ```java
@@ -608,6 +634,7 @@ Practice:
 ---
 ## Common Form 9: Backtracking with Pruning
 Pruning stops exploring a branch when it is already impossible or cannot improve the answer.
+
 Without pruning:
 ```plain text
 Explore every branch
@@ -622,7 +649,9 @@ Reject useless branches early
 3. If optimizing an answer, estimate the best result this branch could achieve.
 4. Stop if it cannot beat the current best.
 5. Otherwise, continue exploring choices.
+
 **Memory flow:** `Check possibility → Abandon impossible branch → Explore useful branches`
+
 Common pruning conditions:
 ```java
 if (remaining < 0) {
@@ -658,6 +687,7 @@ for (int i = start;
 }
 ```
 This avoids starting branches without enough remaining elements.
+
 Practice:
 - LC 39 — Combination Sum
 - LC 51 — N-Queens
@@ -720,6 +750,7 @@ for (int i = 0; i < nums.length; i++)
 ```
 Used for:
 - Permutations
+
 This is one of the most important backtracking decisions.
 ---
 ## When to Save an Answer
@@ -760,6 +791,7 @@ remaining - nums[i]
 index + 1
 ```
 These changes do not require manual restoration.
+
 Some state is mutable:
 ```java
 List<Integer> current
@@ -786,6 +818,7 @@ Examples:
 - Word Search
 - Sudoku Solver
 - Determine whether an arrangement exists
+
 Short-circuit as soon as a solution is found.
 ## Collect answers
 Use when every valid solution is required:
@@ -793,6 +826,7 @@ Use when every valid solution is required:
 backtrack(...);
 ```
 Do not stop after finding the first result.
+
 Examples:
 - Subsets
 - Permutations

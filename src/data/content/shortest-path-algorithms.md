@@ -1,5 +1,6 @@
 A shortest-path problem asks:
 > What is the minimum cost required to travel from one node or state to another?
+
 The meaning of cost depends on the problem:
 ```plain text
 Number of edges
@@ -15,6 +16,7 @@ The four primary algorithms are:
 2. Dijkstra’s algorithm
 3. Bellman–Ford
 4. Floyd–Warshall
+
 The correct algorithm depends mainly on:
 ```plain text
 Edge weights
@@ -111,6 +113,7 @@ distance[source] = 0;
 ```
 The meaning is:
 > `distance[node]` stores the best cost currently known for reaching `node`.
+
 Initially:
 ```plain text
 Source      → distance 0
@@ -121,6 +124,7 @@ As edges are relaxed, distances improve.
 ## Why a Node May Be Discovered More Than Once
 In ordinary BFS, the first discovery is optimal because every edge has equal cost.
 In a weighted graph, a node may first be discovered through an expensive path and later through a cheaper one.
+
 Example:
 ```plain text
 A ──10──→ B
@@ -205,6 +209,7 @@ Use BFS when:
 - You need the minimum number of transformations.
 - You need the minimum number of grid steps.
 - You need the nearest occurrence of something.
+
 Do not use Dijkstra when ordinary BFS is sufficient. BFS is simpler and faster.
 ---
 ## 2. Dijkstra’s Algorithm
@@ -216,6 +221,7 @@ It uses a min-priority queue to process the node with the smallest currently kno
 ---
 ## Dijkstra’s Core Mental Model
 > Always continue from the currently cheapest reachable node.
+
 ```plain text
 Take cheapest state
 → Try extending its path
@@ -317,6 +323,7 @@ long[] dijkstra(
 ---
 ## Why Skip Stale Priority-Queue Entries?
 Java’s `PriorityQueue` does not efficiently update an existing entry.
+
 If a shorter path is found, we add a new state:
 ```plain text
 (node B, distance 10)
@@ -342,6 +349,7 @@ A visited array can be used when a node is finalized after polling, but the stal
 ---
 ## Why Dijkstra Requires Non-Negative Weights
 Dijkstra assumes that when the smallest-distance state is processed, a later path cannot make it cheaper.
+
 A negative edge can violate this assumption:
 ```plain text
 A → B = 5
@@ -369,6 +377,7 @@ It can also detect a reachable negative-weight cycle.
 ---
 ## Bellman–Ford Core Mental Model
 > Repeatedly relax every edge until shortest paths have had enough opportunities to propagate.
+
 A shortest simple path can contain at most:
 ```plain text
 V - 1 edges
@@ -435,6 +444,7 @@ long[] bellmanFord(
 ---
 ## Why `V - 1` Iterations?
 After one complete relaxation round, shortest paths using at most one edge can propagate.
+
 After two rounds:
 ```plain text
 paths using at most two edges
@@ -448,6 +458,7 @@ If it contains more, it must repeat a vertex and therefore contain a cycle.
 ---
 ## Detecting a Negative Cycle
 After the standard `V - 1` rounds, perform one additional relaxation pass.
+
 If any reachable distance still improves:
 ```plain text
 a reachable negative cycle exists
@@ -478,6 +489,7 @@ It uses dynamic programming over possible intermediate nodes.
 ## Floyd–Warshall Core Mental Model
 For every pair `(from, to)`, ask:
 > Is the path cheaper if it is allowed to pass through `via`?
+
 ```java
 distance[from][to] = Math.min(
     distance[from][to],
@@ -533,7 +545,9 @@ for (int via = 0; via < n; via++) {
 ## Why Must `via` Be the Outer Loop?
 The dynamic-programming meaning is:
 > After processing `via`, distances may use nodes `0` through `via` as intermediate vertices.
+
 The previous stage must be complete before allowing the next intermediate node.
+
 Therefore:
 ```java
 for (via)
@@ -548,6 +562,7 @@ After Floyd–Warshall:
 distance[node][node] < 0
 ```
 means a negative cycle is reachable from that node.
+
 Normally:
 ```plain text
 distance[node][node] = 0
@@ -561,6 +576,7 @@ Use Floyd–Warshall when:
 - Many queries will ask about different source-destination pairs.
 - A matrix representation is convenient.
 - Negative edges may exist, but negative cycles do not invalidate the requested result.
+
 Avoid it for a large sparse graph because:
 ```plain text
 Time:  O(V³)
@@ -570,6 +586,7 @@ Space: O(V²)
 ## Common Forms
 ## Common Form 1: Unweighted Shortest Path
 Every move has equal cost.
+
 Examples:
 - Fewest graph edges
 - Minimum number of moves
@@ -581,6 +598,7 @@ Examples:
 3. Discover every unvisited neighbor at distance `current + 1`.
 4. The first discovery of a node is its shortest distance.
 5. Stop early when the destination is found.
+
 **Memory flow:** `Explore distance d → Discover distance d + 1`
 ```java
 queue.offer(source);
@@ -608,6 +626,7 @@ Practice:
 ---
 ## Common Form 2: Multi-Source Shortest Distance
 Several sources begin at distance `0`.
+
 Examples:
 - Infection spreads from several cells.
 - Find every cell’s distance from the nearest zero.
@@ -619,6 +638,7 @@ Examples:
 3. Run one BFS from all sources together.
 4. Each undiscovered node is reached from its nearest source.
 5. BFS levels represent simultaneous expansion.
+
 **Memory flow:** `Initialize every source → Expand together → Record nearest distance`
 ```java
 for (int source : sources) {
@@ -649,6 +669,7 @@ Practice:
 ## Common Form 3: Implicit-State Shortest Path
 Sometimes graph nodes and edges are not provided explicitly.
 A state represents a node, and a valid operation generates a neighbor.
+
 Examples:
 ```plain text
 Lock combination
@@ -663,7 +684,9 @@ Current position
 3. Skip forbidden or previously visited states.
 4. Add new states to BFS.
 5. Return the level when the target state is reached.
+
 **Memory flow:** `State → Generate legal moves → BFS by number of moves`
+
 Open Lock example:
 ```plain text
 "0000"
@@ -675,6 +698,7 @@ Neighbors:
 "0001", "0009"
 ```
 You do not need to build all `10,000` nodes before BFS. Generate neighbors only when a state is processed.
+
 Practice:
 - LC 752 — Open the Lock
 - LC 127 — Word Ladder
@@ -691,17 +715,21 @@ Edges have different non-negative costs.
 4. Poll the state with the smallest current distance.
 5. Relax all outgoing edges.
 6. Add improved neighbor states to the queue.
+
 **Memory flow:** `Poll cheapest node → Relax weighted edges → Queue improvements`
+
 Practice:
 - LC 743 — Network Delay Time
 - LC 787 — Cheapest Flights Within K Stops
 - LC 1514 — Path with Maximum Probability
 - LC 1976 — Number of Ways to Arrive at Destination
 - LC 2662 — Minimum Cost of a Path With Special Roads
+
 For LC 787, ordinary Dijkstra requires additional stop-count state; bounded Bellman–Ford is often simpler.
 ---
 ## Common Form 5: Minimax Path
 Some paths are not scored by adding edge costs.
+
 In Path With Minimum Effort, path cost is:
 ```plain text
 maximum edge difference along the path
@@ -715,6 +743,7 @@ We want to minimize that maximum.
 	- new edge cost
 4. Relax the neighbor if this candidate effort is smaller.
 5. Use a min-priority queue as in Dijkstra.
+
 **Memory flow:** `Carry worst edge so far → Minimize that worst value`
 ```java
 int edgeDifference =
@@ -730,6 +759,7 @@ int candidateEffort = Math.max(
 ```
 Why `Math.max`?
 The path’s effort is determined by its most difficult edge.
+
 Practice:
 - LC 1631 — Path With Minimum Effort
 - LC 778 — Swim in Rising Water
@@ -737,6 +767,7 @@ Practice:
 ---
 ## Common Form 6: Maximum-Probability or Maximum-Product Path
 Sometimes the best path maximizes a value rather than minimizing it.
+
 For probabilities:
 ```plain text
 path probability
@@ -749,6 +780,7 @@ Use a max-priority queue.
 3. Multiply by each outgoing edge probability.
 4. Update a neighbor when the new probability is larger.
 5. Stop when the destination is removed as the best state.
+
 **Memory flow:** `Poll most promising path → Multiply relationship → Keep maximum`
 ```java
 double candidate =
@@ -801,6 +833,7 @@ Practice:
 ---
 ## Common Form 8: Shortest Path with Limited Stops or Edges
 The state is not described only by the current node.
+
 Two routes reaching the same node may have:
 ```plain text
 Different cost
@@ -813,6 +846,7 @@ A slightly more expensive path may be useful if it used fewer stops.
 3. Copy the previous distance array before each round.
 4. Read from the previous array and write into the copy.
 5. This prevents one round from using more than one new edge.
+
 **Memory flow:** `One relaxation round → Allow one additional edge`
 ```java
 int[] distance = new int[n];
@@ -847,6 +881,7 @@ for (int edgesUsed = 0;
 ```
 ### Why copy the array?
 If updates are immediately reused during the same round, one iteration could travel across several edges.
+
 The copied array guarantees:
 ```plain text
 Iteration 1 → paths using at most 1 edge
@@ -866,7 +901,9 @@ Bellman–Ford repeatedly relaxes all edges.
 3. Skip edges whose source remains unreachable.
 4. Stop early if an iteration performs no update.
 5. Optionally use one additional pass to detect a negative cycle.
+
 **Memory flow:** `Relax every edge repeatedly → Propagate cheaper paths`
+
 Practice:
 - Bellman–Ford shortest-path problems
 - Currency-arbitrage variants
@@ -874,6 +911,7 @@ Practice:
 ---
 ## Common Form 10: Detect a Negative Cycle
 A negative cycle allows the path cost to decrease indefinitely.
+
 Example:
 ```plain text
 A → B = 2
@@ -888,7 +926,9 @@ Repeating the cycle keeps reducing total cost.
 2. Perform one additional round.
 3. If any reachable distance improves, a negative cycle exists.
 4. If detecting a cycle anywhere, initialize appropriately or use a super-source.
+
 **Memory flow:** `Finish normal relaxation → Test whether improvement is still possible`
+
 Practice:
 - Detect Negative Cycle
 - Currency Arbitrage
@@ -902,6 +942,7 @@ The problem needs shortest distances for many or all source-destination pairs.
 3. Set every diagonal entry to zero.
 4. Try each node as an intermediate vertex.
 5. Update every `from → to` pair through that intermediate.
+
 **Memory flow:** `Allow one more intermediate node → Improve every pair`
 ```java
 for (int via = 0; via < n; via++) {
@@ -936,9 +977,12 @@ How many nodes can be reached with shortest distance <= threshold?
 2. For every source, count destinations inside the threshold.
 3. Compare these counts.
 4. Apply the required tie-breaking rule.
+
 For small graphs, use Floyd–Warshall.
 For larger sparse graphs with non-negative weights, run Dijkstra from each source.
+
 **Memory flow:** `Compute distances → Count values inside threshold → Apply tie rule`
+
 Practice:
 - LC 1334 — Find the City With the Smallest Number of Neighbors
 ---
@@ -951,6 +995,7 @@ Store the predecessor responsible for each improvement.
 2. After reaching the destination, follow parent links backward.
 3. Continue until the source is reached.
 4. Reverse the collected nodes.
+
 **Memory flow:** `Improve distance → Save predecessor → Trace destination backward`
 ```java
 if (candidate < distance[next]) {
@@ -1024,6 +1069,7 @@ Avoid:
 Integer.MAX_VALUE + weight
 ```
 It may overflow into a negative number.
+
 Always check reachability before adding:
 ```java
 if (distance[from] == infinity) {
@@ -1035,6 +1081,7 @@ Prefer:
 long[] distance
 ```
 for large path costs.
+
 Safe infinity:
 ```java
 long infinity = Long.MAX_VALUE / 4;

@@ -1,4 +1,5 @@
 A Binary Search Tree (BST) is a binary tree with an ordering rule.
+
 For every node:
 ```plain text
 All values in the left subtree  < node.val
@@ -18,6 +19,7 @@ Because values are ordered, many BST operations can discard an entire subtree, s
 ---
 ## Core BST Invariant
 > Every node creates a valid range for all its descendants.
+
 For example:
 ```plain text
   8
@@ -61,6 +63,7 @@ Left → Node → Right
 ```
 Because the left subtree contains smaller values and the right subtree contains larger values:
 > Inorder traversal of a valid BST produces values in increasing order.
+
 Example:
 ```plain text
     5
@@ -120,6 +123,7 @@ Look for these signals:
 - The question can eliminate the left or right subtree using comparisons.
 ### Most important recognition question
 > Can the BST ordering rule tell me that one entire subtree is irrelevant?
+
 If yes, use the BST property instead of traversing the entire tree.
 ---
 ## Common Forms
@@ -136,6 +140,7 @@ target = node.val → found
 3. If the target is smaller, move left.
 4. If the target is larger, move right.
 5. Stop when the target is found or the current node becomes `null`.
+
 **Memory flow:** `Compare → Eliminate one subtree → Continue`
 ### Iterative template
 ```java
@@ -185,6 +190,7 @@ Practice:
 ---
 ## Common Form 2: Validate a BST
 A valid BST must satisfy the ordering rule across complete subtrees.
+
 This tree is invalid:
 ```plain text
   10
@@ -200,6 +206,7 @@ Although `6 < 15`, it is inside the right subtree of `10`, so it must also be gr
 3. For the left child, the current value becomes the upper bound.
 4. For the right child, the current value becomes the lower bound.
 5. Recursively validate both subtrees.
+
 **Memory flow:** `Carry allowed range downward → Narrow range at every node`
 ```java
 boolean isValidBST(TreeNode root) {
@@ -271,6 +278,7 @@ Insertion searches for the appropriate empty position while preserving BST order
 3. If the value is larger, insert into the right subtree.
 4. Reconnect the returned subtree.
 5. Return the current root.
+
 **Memory flow:** `Find null position → Create node → Reconnect while returning`
 ```java
 TreeNode insertIntoBST(
@@ -292,6 +300,7 @@ TreeNode insertIntoBST(
 ```
 ### Recursive contract
 > `insertIntoBST(root, value)` returns the root of the updated subtree after inserting `value`.
+
 Practice:
 - LC 701 — Insert into a Binary Search Tree
 - LC 1382 — Balance a Binary Search Tree
@@ -320,6 +329,7 @@ Then delete the replacement value from its original position.
 3. When the target is found, handle its child case.
 4. For two children, copy the successor’s value.
 5. Recursively delete that successor.
+
 **Memory flow:** `Search → Handle child case → Return updated subtree root`
 ```java
 TreeNode deleteNode(
@@ -369,12 +379,14 @@ Deletion can change the root of a subtree:
 root.left = deleteNode(root.left, key);
 ```
 Without assignment, the parent may continue pointing to the deleted node.
+
 Practice:
 - LC 450 — Delete Node in a BST
 - LC 669 — Trim a Binary Search Tree
 ---
 ## Common Form 5: Ordered Inorder Problems
 Use inorder when the question depends on sorted BST order.
+
 Examples:
 - kth smallest
 - minimum difference
@@ -387,6 +399,7 @@ Examples:
 3. Compare it with previously processed values when required.
 4. Traverse the right subtree.
 5. Stop early when the answer is found.
+
 **Memory flow:** `Generate values in sorted order → Process only what is needed`
 ### Kth-smallest template
 ```java
@@ -465,6 +478,7 @@ smallest value > node
 2. If the current value is greater, move left.
 3. If the current value is smaller, save it as a candidate and move right.
 4. A larger valid candidate may exist in the right subtree.
+
 **Memory flow:** `Save valid candidate → Search for a closer candidate`
 ```java
 Integer floor(TreeNode root, int target) {
@@ -529,6 +543,7 @@ p and q are both larger  → LCA is in the right subtree
 They split across sides  → current node is the LCA
 ```
 The current node may itself equal one target.
+
 **Memory flow:** `Compare both targets → Move together or stop at split`
 ```java
 TreeNode lowestCommonAncestor(
@@ -555,12 +570,14 @@ TreeNode lowestCommonAncestor(
 ```
 ### Split-point mental model
 > The LCA is the first node where the two target values no longer move in the same direction.
+
 Practice:
 - LC 235 — Lowest Common Ancestor of a BST
 - LC 236 — Lowest Common Ancestor of a Binary Tree
 ---
 ## Common Form 8: Range-Based BST Problems
 BST ordering allows entire subtrees to be skipped.
+
 For a required range:
 ```plain text
 [low, high]
@@ -575,6 +592,7 @@ node.val > high → right subtree is also too large
 2. If it is too small, skip the entire left subtree.
 3. If it is too large, skip the entire right subtree.
 4. If it is inside the range, process it and explore both subtrees.
+
 **Memory flow:** `Compare with range → Prune impossible subtree`
 ### Range-sum template
 ```java
@@ -621,6 +639,7 @@ To produce a balanced BST from a sorted array, choose the middle element as the 
 3. Values after the middle belong to the right subtree.
 4. Recursively construct both sides.
 5. Return the current root.
+
 **Memory flow:** `Choose middle → Build left half → Build right half`
 ```java
 TreeNode build(
@@ -648,6 +667,7 @@ Choosing the middle keeps the two subtree sizes close:
 Height: O(log n)
 ```
 Repeatedly inserting sorted values would instead create a skewed tree.
+
 Practice:
 - LC 108 — Convert Sorted Array to BST
 - LC 109 — Convert Sorted List to BST
@@ -664,6 +684,7 @@ It performs controlled iterative inorder traversal.
 3. Pop that node when `next()` is called.
 4. Push the left chain of its right subtree.
 5. Repeat until the stack becomes empty.
+
 **Memory flow:** `Store path to next smallest → Pop one → Prepare its successor`
 ```java
 class BSTIterator {
@@ -758,6 +779,7 @@ Examples requiring both sides:
 - Transform every value
 - Find structural properties unrelated to ordering
 > Do not force BST search into a problem where the ordering does not eliminate any possibilities.
+
 ---
 ## Duplicate Values
 Different BST definitions may handle duplicates differently:
@@ -768,6 +790,7 @@ Duplicates always placed right
 Duplicates counted inside the node
 ```
 LeetCode BST problems commonly assume distinct values unless stated otherwise.
+
 Always check the problem’s rule before using:
 ```plain text
 < and >
@@ -847,6 +870,7 @@ Space: O(h)
 ```
 ## Range queries
 With pruning, only relevant parts may be visited.
+
 Worst case:
 ```plain text
 Time: O(n)
@@ -866,6 +890,7 @@ Space:          O(h)
 ---
 ## Final Reusable Model
 > A BST is a binary tree where ordering allows you to either generate sorted values or eliminate an entire subtree.
+
 ```plain text
 Compare with current node
 → Move left or right

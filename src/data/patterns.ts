@@ -39,7 +39,10 @@ const definitions: PatternDefinition[] = [
   { title: 'Linear 1D Dynamic Programming', slug: 'linear-1d-dynamic-programming', sectionCount: 17, collection: 'Dynamic Programming', load: () => import('./content/linear-1d-dynamic-programming.md?raw') },
   { title: '0/1 Knapsack Dynamic Programming', slug: '0-1-knapsack-dynamic-programming', sectionCount: 17, collection: 'Dynamic Programming', load: () => import('./content/0-1-knapsack-dynamic-programming.md?raw') },
   { title: 'Unbounded Knapsack Dynamic Programming', slug: 'unbounded-knapsack-dynamic-programming', sectionCount: 17, collection: 'Dynamic Programming', load: () => import('./content/unbounded-knapsack-dynamic-programming.md?raw') },
-  { title: 'Sequence, Subsequence and Palindrome Dynamic Programming', slug: 'sequence-subsequence-and-palindrome-dynamic-programming', sectionCount: 18, collection: 'Dynamic Programming', load: () => import('./content/sequence-subsequence-and-palindrome-dynamic-programming.md?raw') },
+  { title: 'Sequence Dynamic Programming', slug: 'sequence-subsequence-and-palindrome-dynamic-programming', sectionCount: 18, collection: 'Dynamic Programming', load: () => import('./content/sequence-subsequence-and-palindrome-dynamic-programming.md?raw') },
+  { title: 'Grid Dynamic Programming', slug: 'grid-dynamic-programming', sectionCount: 17, collection: 'Dynamic Programming', load: () => import('./content/grid-dynamic-programming.md?raw') },
+  { title: 'Interval Dynamic Programming', slug: 'interval-dynamic-programming', sectionCount: 17, collection: 'Dynamic Programming', load: () => import('./content/interval-dynamic-programming.md?raw') },
+  { title: 'Tree Dynamic Programming', slug: 'tree-dynamic-programming', sectionCount: 17, collection: 'Dynamic Programming', load: () => import('./content/tree-dynamic-programming.md?raw') },
 ]
 
 export const patterns: PatternSummary[] = definitions.map(({ load: _load, ...summary }) => summary)

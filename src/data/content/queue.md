@@ -11,6 +11,7 @@ Front             Back
 `1` entered first, so it is processed first.
 ## Core Mental Model
 > A queue processes older work before newer work.
+
 ```plain text
 Add new work at the back
 → Process old work from the front
@@ -26,8 +27,10 @@ Look for these signals:
 - Old or useless candidates must be removed from opposite ends.
 ### Most important recognition question
 > Should the item that arrived first be processed first?
+
 For monotonic deque problems, ask:
 > Can older candidates become permanently useless when a better value arrives?
+
 ## Basic Queue and Deque Operations in Java
 ### Queue
 ```java
@@ -58,6 +61,7 @@ LinkedList
 for most stack and queue implementations.
 ## Common Form 1: Basic FIFO Simulation
 Use this when tasks, requests, or objects must be processed in the order they arrive.
+
 Examples:
 - People waiting for tickets
 - Recent requests
@@ -70,6 +74,7 @@ Examples:
 3. Process that element.
 4. Add any newly created work at the back.
 5. Continue until the queue becomes empty or the stopping condition is reached.
+
 **Memory flow:** `Add at back → Remove from front → Process in order`
 ```java
 Queue<Integer> queue = new ArrayDeque<>();
@@ -102,6 +107,7 @@ Remove 2
 Queue: [3, 4]
 ```
 The relative arrival order is preserved.
+
 Practice:
 - LC 933 — Number of Recent Calls
 - LC 1700 — Number of Students Unable to Eat Lunch
@@ -111,6 +117,7 @@ Practice:
 - LC 1823 — Find the Winner of the Circular Game
 ## Common Form 2: Circular Queue
 A circular queue implements a fixed-capacity queue using an array.
+
 When an index reaches the end of the array, it wraps back to the beginning:
 ```plain text
 nextIndex = (currentIndex + 1) % capacity
@@ -138,6 +145,7 @@ The current rear element is located at:
 4. Insert at `(front + size) % capacity`.
 5. Remove by advancing `front` using modulo arithmetic.
 6. Reuse array positions after the indices wrap around.
+
 **Memory flow:** `Calculate index → Wrap with modulo → Reuse storage`
 ```java
 class MyCircularQueue {
@@ -248,6 +256,7 @@ while the logical queue order is:
 [20, 30, 40]
 ```
 Always interpret positions relative to `front`.
+
 Practice:
 - LC 622 — Design Circular Queue
 - LC 641 — Design Circular Deque
@@ -255,9 +264,11 @@ Practice:
 - Design a Ring Buffer
 ## Common Form 3: Monotonic Deque
 A monotonic deque maintains useful candidates in sorted order while processing a sliding window.
+
 It supports operations from both ends:
 - The front stores the current best candidate.
 - The back is used to remove candidates that have become useless.
+
 For a sliding-window maximum, values are kept in decreasing order:
 ```plain text
 largest → ... → smallest
@@ -265,10 +276,12 @@ front             back
 ```
 ## What Should the Deque Store?
 Usually store **indices**, not values.
+
 An index gives you:
 - The value: `nums[index]`
 - Its position
 - Whether it has left the current window
+
 If only values are stored, detecting expired elements becomes difficult when duplicates exist.
 ## Two Reasons an Index Is Removed
 ### 1. It has expired
@@ -283,6 +296,7 @@ deque.peekFirst() <= right - k
 ```
 ### 2. A better candidate has arrived
 For a maximum window, suppose the deque contains index `i`, and the current index is `j`.
+
 If:
 ```plain text
 j > i
@@ -292,6 +306,7 @@ then `i` is useless because `j`:
 - Has a value at least as large
 - Appears later
 - Will remain in future windows longer
+
 Therefore, remove `i` from the back.
 ### How it works
 1. Remove indices from the front when they are outside the current window.
@@ -299,6 +314,7 @@ Therefore, remove `i` from the back.
 3. Add the current index at the back.
 4. Once the first complete window is formed, the front contains its maximum.
 5. Repeat for every window.
+
 **Memory flow:** `Remove expired → Remove weaker → Add current → Read best`
 ## Sliding-Window Maximum Template
 ```java
@@ -405,6 +421,7 @@ Final result so far:
 ```
 ## Why Not Use a Normal Queue?
 A normal queue can remove expired elements from the front, but it cannot efficiently remove weaker elements from the back.
+
 Without removing weaker candidates, finding the maximum may require scanning the entire window:
 ```plain text
 O(k) per window
@@ -526,6 +543,7 @@ Space: O(k)
 The deque cannot contain more useful indices than the current window size.
 ## Final Reusable Model
 > A queue preserves arrival order, while a monotonic deque additionally removes candidates that can no longer contribute to a future answer.
+
 ```plain text
 Normal queue:
 Add at back → Remove from front
@@ -536,5 +554,6 @@ Remove expired → Remove useless → Add current → Read front
 For monotonic-deque problems, always explain both removal rules:
 1. Remove the front because it is outside the window.
 2. Remove from the back because a newer candidate is better.
+
 <empty-block/>
 <empty-block/>

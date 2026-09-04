@@ -31,7 +31,7 @@ The initial educational material was imported from the Notion pages “DSA Revis
 - One direct route per pattern.
 - Shared long-form reader layout with section links, pattern progress, and previous/next navigation.
 - The initial content imports must remain faithful to the supplied Notion sources; future website content may evolve independently.
-- The current seed contains 25 pattern pages, including four Dynamic Programming topics.
+- The current seed contains 28 pattern pages, including seven Dynamic Programming topics.
 
 ## Brand Commitments
 
@@ -40,7 +40,7 @@ The initial educational material was imported from the Notion pages “DSA Revis
 
 ## Evidence on Hand
 
-- Seed content: 21 lessons imported from “DSA Revision” and four lessons imported from the supplied “Dynamic Programming” Notion page.
+- Seed content: 21 lessons imported from “DSA Revision” and seven lessons imported from the supplied “Dynamic Programming” Notion page.
 - Content-to-route model: `src/data/patterns.ts`.
 - Current application and navigation behavior: `src/App.tsx`.
 - Current responsive presentation: `src/styles.css`.
