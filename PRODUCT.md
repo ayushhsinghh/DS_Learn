@@ -22,7 +22,7 @@ The product organizes DSA revision around separate pattern pages that share one 
 
 Learners browse or search the pattern library, open a dedicated pattern route, move through its sections, and use previous/next navigation to continue revision.
 
-The initial educational material was imported from the Notion pages “DSA Revision” and “Dynamic Programming.” Those imports are seed data only. The website is now an independent content surface and may be edited without synchronizing changes back to Notion.
+The initial educational material was imported from the Notion pages “DSA Revision,” “Dynamic Programming,” and “Bit Manipulation.” Those imports are seed data only. The website is now an independent content surface and may be edited without synchronizing changes back to Notion.
 
 ## Capabilities and Constraints
 
@@ -31,7 +31,7 @@ The initial educational material was imported from the Notion pages “DSA Revis
 - One direct route per pattern.
 - Shared long-form reader layout with section links, pattern progress, and previous/next navigation.
 - The initial content imports must remain faithful to the supplied Notion sources; future website content may evolve independently.
-- The current seed contains 28 pattern pages, including seven Dynamic Programming topics.
+- The current seed contains 30 pattern pages, including seven Dynamic Programming topics.
 
 ## Brand Commitments
 
@@ -40,7 +40,7 @@ The initial educational material was imported from the Notion pages “DSA Revis
 
 ## Evidence on Hand
 
-- Seed content: 21 lessons imported from “DSA Revision” and seven lessons imported from the supplied “Dynamic Programming” Notion page.
+- Seed content: 21 lessons imported from “DSA Revision,” seven lessons imported from “Dynamic Programming,” and two lessons imported from “Bit Manipulation.”
 - Content-to-route model: `src/data/patterns.ts`.
 - Current application and navigation behavior: `src/App.tsx`.
 - Current responsive presentation: `src/styles.css`.

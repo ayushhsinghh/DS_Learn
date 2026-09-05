@@ -1,5 +1,5 @@
-import { isValidElement, useEffect, useRef, useState, type MouseEvent, type ReactNode, type WheelEvent } from 'react'
-import Markdown from 'react-markdown'
+import { isValidElement, memo, useEffect, useMemo, useRef, useState, type MouseEvent, type ReactNode, type WheelEvent } from 'react'
+import Markdown, { type Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { loadPattern, patterns, prefetchPattern, slugify, type Pattern } from './data/patterns'
 import { appHref, Arrow, Mark, navigate, PageState, SkipLink } from './SiteChrome'
@@ -91,11 +91,43 @@ function LoadFailure({ message }: { message: string }) {
   )
 }
 
+const PatternArticle = memo(function PatternArticle({ pattern, patternIndex }: { pattern: Pattern; patternIndex: number }) {
+  const markdownComponents = useMemo<Components>(() => ({
+    h2({ children, node }) {
+      const id = pattern.sections.find((section) => section.line === node?.position?.start.line)?.id ?? slugify(nodeText(children))
+      return <h2 id={id}>{children}</h2>
+    },
+    h3({ children }) {
+      return <h3>{children}</h3>
+    },
+    pre({ children }) {
+      return <>{children}</>
+    },
+    code({ children, className, ...props }) {
+      const language = /language-([^\s]+)/.exec(className ?? '')?.[1]
+      const code = String(children)
+      if (language || code.includes('\n')) return <CodeBlock code={code} language={language ?? ''} />
+      return <code className={className} {...props}>{children}</code>
+    },
+    a({ href, children }) {
+      return <a href={href} target="_blank" rel="noreferrer">{children}</a>
+    },
+  }), [pattern.sections])
+
+  return (
+    <article>
+      <div className="article-kicker"><span>DSA PATTERN</span><span>{String(patternIndex + 1).padStart(2, '0')}</span></div>
+      <h1>{pattern.title}</h1>
+      <div className="article-rule" />
+      <Markdown remarkPlugins={[remarkGfm]} components={markdownComponents}>{pattern.content}</Markdown>
+    </article>
+  )
+})
+
 function PatternReader({ pattern }: { pattern: Pattern }) {
   const patternIndex = patterns.findIndex((item) => item.slug === pattern.slug)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [headerHidden, setHeaderHidden] = useState(false)
-  const [headerCompact, setHeaderCompact] = useState(false)
+  const [headerMode, setHeaderMode] = useState<'full' | 'hidden' | 'compact'>('full')
   const menuButtonRef = useRef<HTMLButtonElement>(null)
   const contentsRef = useRef<HTMLElement>(null)
   const pageScrollRef = useRef({ x: 0, y: 0 })
@@ -141,7 +173,7 @@ function PatternReader({ pattern }: { pattern: Pattern }) {
     const closeMenu = (event: KeyboardEvent) => {
       if (event.key !== 'Escape') return
       setMenuOpen(false)
-      setHeaderHidden(false)
+      setHeaderMode('full')
       window.requestAnimationFrame(() => menuButtonRef.current?.focus({ preventScroll: true }))
     }
     document.body.style.overflow = 'hidden'
@@ -165,8 +197,7 @@ function PatternReader({ pattern }: { pattern: Pattern }) {
     const closeOnDesktop = () => {
       if (!desktop.matches) return
       setMenuOpen(false)
-      setHeaderHidden(false)
-      setHeaderCompact(false)
+      setHeaderMode('full')
     }
     desktop.addEventListener('change', closeOnDesktop)
     return () => desktop.removeEventListener('change', closeOnDesktop)
@@ -174,36 +205,48 @@ function PatternReader({ pattern }: { pattern: Pattern }) {
 
   useEffect(() => {
     const mobile = window.matchMedia('(max-width: 900px)')
-    let lastScrollY = window.scrollY
+    let lastScrollY = Math.max(0, window.scrollY)
+    let direction = 0
+    let distance = 0
     let frame = 0
 
     const updateHeader = () => {
       frame = 0
-      const currentScrollY = window.scrollY
+      const currentScrollY = Math.max(0, window.scrollY)
 
       if (!mobile.matches || menuOpen || currentScrollY <= 24) {
-        setHeaderHidden(false)
-        setHeaderCompact(false)
+        setHeaderMode('full')
         lastScrollY = currentScrollY
+        direction = 0
+        distance = 0
         return
       }
 
       const delta = currentScrollY - lastScrollY
-      if (Math.abs(delta) < 8) return
-      const scrollingDown = delta > 0
-      setHeaderHidden(scrollingDown)
-      setHeaderCompact(!scrollingDown)
       lastScrollY = currentScrollY
+      if (Math.abs(delta) < 1) return
+
+      const nextDirection = Math.sign(delta)
+      if (nextDirection !== direction) {
+        direction = nextDirection
+        distance = 0
+      }
+      distance += Math.abs(delta)
+      if (distance < 12) return
+
+      setHeaderMode(nextDirection > 0 ? 'hidden' : 'compact')
+      distance = 0
     }
 
     const onScroll = () => {
       if (!frame) frame = window.requestAnimationFrame(updateHeader)
     }
     const onViewportChange = () => {
-      lastScrollY = window.scrollY
+      lastScrollY = Math.max(0, window.scrollY)
+      direction = 0
+      distance = 0
       if (!mobile.matches) {
-        setHeaderHidden(false)
-        setHeaderCompact(false)
+        setHeaderMode('full')
       }
     }
 
@@ -234,20 +277,19 @@ function PatternReader({ pattern }: { pattern: Pattern }) {
 
   function closeContents() {
     setMenuOpen(false)
-    setHeaderHidden(false)
-    setHeaderCompact(window.scrollY > 24)
+    setHeaderMode(window.scrollY > 24 ? 'compact' : 'full')
     window.requestAnimationFrame(() => menuButtonRef.current?.focus({ preventScroll: true }))
   }
 
   function toggleContents() {
-    setHeaderHidden(false)
+    setHeaderMode('full')
     setMenuOpen((open) => !open)
   }
 
   return (
     <div className="reader-shell">
       <SkipLink />
-      <header className={`reader-header ${headerHidden || menuOpen ? 'is-hidden' : ''} ${headerCompact ? 'is-compact' : ''}`} inert={menuOpen ? true : undefined} aria-hidden={menuOpen || undefined}>
+      <header className={`reader-header ${headerMode === 'hidden' || menuOpen ? 'is-hidden' : ''} ${headerMode === 'compact' ? 'is-compact' : ''}`} inert={menuOpen ? true : undefined} aria-hidden={menuOpen || undefined}>
         <Mark />
         <div className="reader-progress" aria-label={`Pattern ${patternIndex + 1} of ${patterns.length}`}>
           <span>{String(patternIndex + 1).padStart(2, '0')} / {patterns.length}</span>
@@ -271,35 +313,7 @@ function PatternReader({ pattern }: { pattern: Pattern }) {
       </aside>
 
       <main className="reader-main" id="main" inert={menuOpen ? true : undefined} aria-hidden={menuOpen || undefined}>
-        <article>
-          <div className="article-kicker"><span>DSA PATTERN</span><span>{String(patternIndex + 1).padStart(2, '0')}</span></div>
-          <h1>{pattern.title}</h1>
-          <div className="article-rule" />
-          <Markdown
-            remarkPlugins={[remarkGfm]}
-            components={{
-              h2({ children, node }) {
-                const id = pattern.sections.find((section) => section.line === node?.position?.start.line)?.id ?? slugify(nodeText(children))
-                return <h2 id={id}>{children}</h2>
-              },
-              h3({ children }) {
-                return <h3>{children}</h3>
-              },
-              pre({ children }) {
-                return <>{children}</>
-              },
-              code({ children, className, ...props }) {
-                const language = /language-([^\s]+)/.exec(className ?? '')?.[1]
-                const code = String(children)
-                if (language || code.includes('\n')) return <CodeBlock code={code} language={language ?? ''} />
-                return <code className={className} {...props}>{children}</code>
-              },
-              a({ href, children }) {
-                return <a href={href} target="_blank" rel="noreferrer">{children}</a>
-              },
-            }}
-          >{pattern.content}</Markdown>
-        </article>
+        <PatternArticle pattern={pattern} patternIndex={patternIndex} />
 
         <nav className="article-pager" aria-label="Pattern pagination">
           {previous ? (
