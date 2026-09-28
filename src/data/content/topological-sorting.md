@@ -19,6 +19,7 @@ Valid topological orders include:
 0, 2, 1, 3
 ```
 Both are valid because every dependency appears before the node that depends on it.
+
 ---
 ## When Is Topological Sorting Possible?
 Topological sorting is possible only for a:
@@ -106,6 +107,7 @@ If yes, represent it using:
 A → B
 ```
 and consider topological sorting.
+
 ---
 ## Constructing the Graph
 Suppose:
@@ -130,6 +132,7 @@ Not:
 dependent → prerequisite
 ```
 unless the selected algorithm and meaning are deliberately designed that way.
+
 ---
 ## Understanding Indegree
 For a node:
@@ -157,6 +160,7 @@ After processing `B`:
 indegree[C] = 0
 ```
 Now `C` is available.
+
 ---
 ## Kahn’s Algorithm
 Kahn’s algorithm performs topological sorting using BFS and indegrees.
@@ -321,6 +325,7 @@ int[] topologicalSort(
 ### Important limitation
 A simple boolean `visited` array creates an order, but it does not correctly detect a directed cycle.
 For cycle detection, DFS needs three states.
+
 ---
 ## Three-State DFS
 Each node can be in one of three states:
@@ -812,6 +817,7 @@ Practice:
 - LC 1203 — Sort Items by Groups Respecting Dependencies
 
 This is an advanced extension of running multiple related topological sorts.
+
 ---
 ## Multiple Valid Topological Orders
 A DAG may have more than one valid topological order.
@@ -831,6 +837,7 @@ Valid orders:
 1, 0, 2
 ```
 Unless the question asks for a specific ordering, either answer is valid.
+
 ---
 ## Detecting Whether the Order Is Unique
 During Kahn’s algorithm:
@@ -878,6 +885,7 @@ If `above` must appear above `below`:
 above → below
 ```
 The input pair order does not always equal the graph edge direction. Interpret what the pair means.
+
 ---
 ## Common Mistakes
 - Building edges in the wrong direction.
@@ -971,6 +979,7 @@ Depending on representation:
 Worst case: O(V² + E)
 ```
 or greater with expensive set merging.
+
 ---
 ## Final Reusable Model
 ## Kahn’s algorithm

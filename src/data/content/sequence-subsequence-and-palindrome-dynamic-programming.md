@@ -74,7 +74,7 @@ Look for these signals:
 - The answer depends on an interval `[left, right]`.
 - The two boundary characters determine the next state.
 - The question asks for the longest, shortest, count, or feasibility.
-#### Pattern-identification guide
+### Pattern-identification guide
 ```plain text
 One sequence + ordering relationship
 → Single-sequence/LIS DP
@@ -91,10 +91,11 @@ Characters must remain contiguous
 Characters may be skipped
 → Subsequence DP
 ```
-#### Recognition question
+### Recognition question
 > Am I preserving relative order while selecting, comparing, or matching sequence elements?
 
 If yes, this DP family is likely relevant.
+
 ---
 ## 3. State Definition and Recursive Function Contract
 Different forms use different state shapes.
@@ -134,6 +135,7 @@ Contract:
 > What information about the unprocessed sequences can change the future answer?
 
 That information belongs in the state.
+
 ---
 ## 4. Brute-Force Recursive Decision
 ### Single-sequence decision
@@ -670,7 +672,7 @@ Keep the full table when:
 ---
 ## Common Form 1: Longest Increasing Subsequence
 Select the longest strictly increasing subsequence from one array.
-#### How it works
+### How it works
 1. Let every element be the ending of a subsequence.
 2. Examine every earlier element.
 3. Extend compatible subsequences.
@@ -713,7 +715,7 @@ Practice:
 ---
 ## Common Form 2: Reconstruct or Count LIS
 Track additional information with the LIS length.
-#### How it works
+### How it works
 For reconstruction:
 ```plain text
 parent[i] = predecessor selected before i
@@ -787,7 +789,7 @@ String predecessor
 Pair compatibility
 Object nesting
 ```
-#### How it works
+### How it works
 1. Order states so valid predecessors are processed first.
 2. Define the compatibility relationship.
 3. Try extending every compatible predecessor.
@@ -852,7 +854,7 @@ Practice:
 ---
 ## Common Form 4: Longest Common Subsequence
 Find the longest subsequence appearing in both sequences.
-#### How it works
+### How it works
 1. Compare the current characters.
 2. If they match, use both and move both indices.
 3. If they differ, skip from either sequence.
@@ -877,7 +879,7 @@ Practice:
 ---
 ## Common Form 5: Print Longest Common Subsequence
 Use the completed LCS table to reconstruct one valid LCS.
-#### How it works
+### How it works
 1. Start at `dp[m][n]`.
 2. If the characters match, add that character and move diagonally.
 3. Otherwise, move toward the neighboring cell with the larger LCS value.
@@ -924,7 +926,7 @@ Practice:
 ---
 ## Common Form 6: Longest Common Substring
 Find the longest contiguous segment appearing in both strings.
-#### How it works
+### How it works
 1. Let `dp[i][j]` represent the common suffix ending at both current characters.
 2. If characters match, extend the diagonal suffix.
 3. If they differ, reset the state to zero.
@@ -975,7 +977,7 @@ m + n - LCS length
 ```
 Why?
 The common characters should be included only once.
-#### How it works
+### How it works
 1. Build the LCS table.
 2. Trace backward through both strings.
 3. When characters match, add one copy.
@@ -1050,7 +1052,7 @@ Deletions
 Insertions
 = second.length - LCS
 ```
-#### How it works
+### How it works
 1. Find the LCS length.
 2. Delete characters from the first string that are outside the LCS.
 3. Insert characters from the second string that are outside the LCS.
@@ -1094,7 +1096,7 @@ dp[i][j]
 = minimum operations to convert
   first i characters into first j characters
 ```
-#### How it works
+### How it works
 1. If characters match, move diagonally without an operation.
 2. Otherwise, try insertion, deletion, and replacement.
 3. Add one for the current operation.
@@ -1161,7 +1163,7 @@ dp[i][j]
 = number of ways the first i source characters
   can form the first j target characters
 ```
-#### How it works
+### How it works
 If the current characters match:
 ```plain text
 Use source character
@@ -1209,7 +1211,7 @@ Practice:
 ---
 ## Common Form 11: Interleaving Two Sequences
 Determine whether a third string can be formed by interleaving two strings while preserving the order of each.
-#### How it works
+### How it works
 1. Let `i` and `j` be the consumed lengths of the first two strings.
 2. The third-string index is `i + j`.
 3. Try consuming from the first string if its next character matches.
@@ -1269,7 +1271,7 @@ Interval DP
 or
 LCS(text, reverse(text))
 ```
-#### How it works
+### How it works
 1. Compare the left and right characters.
 2. If they match, include both and solve the inner interval.
 3. Otherwise, skip either boundary.
@@ -1301,7 +1303,7 @@ State:
 palindrome[left][right]
 = whether text[left...right] is a palindrome
 ```
-#### How it works
+### How it works
 A substring is a palindrome when:
 ```plain text
 Boundary characters match
@@ -1358,7 +1360,7 @@ Practice:
 ## Common Form 14: Count Palindromic Substrings
 Count every palindromic interval.
 Different positions count as different substrings even if their text is equal.
-#### How it works
+### How it works
 1. Determine whether every interval is palindromic.
 2. When an interval is valid, increase the count.
 3. Equal boundaries extend an already-valid inner interval.
@@ -1408,7 +1410,7 @@ Minimum insertions
 = string length - LPS length
 ```
 The same formula gives the minimum deletions needed to produce a palindrome.
-#### How it works
+### How it works
 1. Find the Longest Palindromic Subsequence.
 2. Preserve those characters.
 3. Insert or delete every character outside that subsequence.
@@ -1437,7 +1439,7 @@ Palindrome preprocessing
 +
 Partition DP
 ```
-#### How it works
+### How it works
 1. Precompute which substrings are palindromes or how many changes each substring needs.
 2. Define `dp[end]` as the minimum partition cost for a prefix.
 3. Try every possible beginning of the final partition.
@@ -1537,6 +1539,7 @@ dp[i][j] came from dp[i - 1][j - 1]
 > Start at the final DP state and repeatedly determine which transition produced its value.
 
 Full DP storage is usually required for reconstruction.
+
 ---
 ## 13. Quick Interview Checklist
 1. Is the input one sequence or two?

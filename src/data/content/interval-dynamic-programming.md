@@ -29,7 +29,7 @@ Typical objectives include:
 - Whether an interval satisfies some condition
 - Optimal order for removing, cutting, or merging elements
 
-#### Core mental model
+### Core mental model
 
 > Solve smaller intervals first, then combine them to solve larger intervals.
 
@@ -69,7 +69,7 @@ minimum score for a range
 
 ```
 
-#### Recognition questions
+### Recognition questions
 
 Ask:
 
@@ -81,7 +81,7 @@ Or:
 
 If yes, consider Interval DP.
 
-#### Important distinction
+### Important distinction
 
 The input being an array does not automatically mean Interval DP.
 
@@ -232,7 +232,7 @@ minimum over every possible cut
 
 ```
 
-#### Brute-force code
+### Brute-force code
 
 ```java
 private int solve(int[] cuts, int left, int right) {
@@ -259,7 +259,7 @@ private int solve(int[] cuts, int left, int right) {
 
 ```
 
-#### Why is the current interval cost added?
+### Why is the current interval cost added?
 
 The current operation cuts a stick of length:
 
@@ -270,7 +270,7 @@ cuts[right] - cuts[left]
 
 The two recursive calls calculate only the future costs of processing the resulting pieces.
 
-#### Why does recursion become expensive?
+### Why does recursion become expensive?
 
 The same interval is solved repeatedly.
 
@@ -697,7 +697,7 @@ dp[k][right]
 for every possible `k`.
 These values belong to many rows and columns of the table.
 
-#### When optimization may be possible
+### When optimization may be possible
 
 Space optimization may work if the recurrence uses only:
 
@@ -710,7 +710,7 @@ dp[left + 1][right - 1]
 
 Even then, optimization can make the solution harder to understand and may prevent answer reconstruction.
 
-#### Interview recommendation
+### Interview recommendation
 
 > First implement the clear `O(n²)` table. Optimize only when constraints require it and the dependency pattern clearly allows it.
 
@@ -721,7 +721,7 @@ Even then, optimization can make the solution harder to understand and may preve
 
 You are given a sequence of matrices and must determine the multiplication order with minimum cost.
 
-#### How it works
+### How it works
 
 Try every matrix position as the final division between the left chain and right chain. Solve both smaller chains and add the cost of multiplying their results.
 Suppose matrix `i` has dimensions:
@@ -731,7 +731,7 @@ dimensions[i - 1] × dimensions[i]
 
 ```
 
-#### State
+### State
 
 ```plain text
 dp[left][right]
@@ -739,7 +739,7 @@ dp[left][right]
 
 ```
 
-#### Transition
+### Transition
 
 ```plain text
 dp[left][right]
@@ -754,7 +754,7 @@ min over split k {
 
 ```
 
-#### Code
+### Code
 
 ```java
 public int matrixMultiplication(int[] dimensions) {
@@ -802,12 +802,12 @@ Practice:
 
 This appears when removing an element changes its neighbors.
 
-#### How it works
+### How it works
 
 Choosing the first element is difficult because future neighbors are unknown. Instead, assume `k` is the last element removed from the current interval. At that moment, the interval’s external boundaries are guaranteed to be its neighbors.
 This is the key idea behind Burst Balloons.
 
-#### State
+### State
 
 ```plain text
 dp[left][right]
@@ -816,7 +816,7 @@ dp[left][right]
 
 ```
 
-#### Transition
+### Transition
 
 If `k` is the last balloon burst:
 
@@ -831,7 +831,7 @@ max over k {
 
 ```
 
-#### Code
+### Code
 
 ```java
 public int maxCoins(int[] nums) {
@@ -886,11 +886,11 @@ Practice:
 
 You must perform cuts, and every cut costs the length of the current piece.
 
-#### How it works
+### How it works
 
 Add the outer boundaries, sort every cut position, and try every internal cut as the first cut for the current interval. The first cut divides it into two independent pieces.
 
-#### State
+### State
 
 ```plain text
 dp[left][right]
@@ -899,7 +899,7 @@ dp[left][right]
 
 ```
 
-#### Transition
+### Transition
 
 ```plain text
 dp[left][right]
@@ -912,7 +912,7 @@ min over cut {
 
 ```
 
-#### Code
+### Code
 
 ```java
 public int minCost(int length, int[] cuts) {
@@ -968,11 +968,11 @@ Practice:
 
 A polygon must be divided into triangles while minimizing the total score.
 
-#### How it works
+### How it works
 
 Choose a third vertex `k` to create a triangle with the interval boundaries `left` and `right`. That triangle divides the polygon interval into two smaller polygon intervals.
 
-#### State
+### State
 
 ```plain text
 dp[left][right]
@@ -981,7 +981,7 @@ dp[left][right]
 
 ```
 
-#### Transition
+### Transition
 
 ```plain text
 dp[left][right]
@@ -994,7 +994,7 @@ min over k {
 
 ```
 
-#### Code
+### Code
 
 ```java
 public int minScoreTriangulation(int[] values) {
@@ -1041,11 +1041,11 @@ Practice:
 
 The answer depends on whether the two ends of an interval match.
 
-#### How it works
+### How it works
 
 Compare the boundary elements. Matching boundaries may allow both boundaries to participate in the answer. Otherwise, discard one boundary and choose the better remaining interval.
 
-#### State
+### State
 
 ```plain text
 dp[left][right]
@@ -1053,7 +1053,7 @@ dp[left][right]
 
 ```
 
-#### Transition for longest palindromic subsequence
+### Transition for longest palindromic subsequence
 
 ```plain text
 If characters match:
@@ -1069,7 +1069,7 @@ dp[left][right]
 
 ```
 
-#### Code
+### Code
 
 ```java
 public int longestPalindromeSubseq(String text) {
@@ -1119,12 +1119,12 @@ Practice:
 
 Two players take turns selecting elements, and both play optimally.
 
-#### How it works
+### How it works
 
 Define the state from the current player’s perspective. Store the maximum score advantage the current player can obtain over the opponent.
 This avoids separately tracking both players’ scores.
 
-#### State
+### State
 
 ```plain text
 dp[left][right]
@@ -1133,7 +1133,7 @@ dp[left][right]
 
 ```
 
-#### Transition
+### Transition
 
 If the current player takes the left value:
 
@@ -1151,7 +1151,7 @@ nums[right] - dp[left][right - 1]
 
 ```
 
-#### Code
+### Code
 
 ```java
 public boolean predictTheWinner(int[] nums) {
@@ -1198,11 +1198,11 @@ Practice:
 
 Different divisions of an expression produce different results.
 
-#### How it works
+### How it works
 
 Try every operator as the final operator evaluated. The operator divides the expression into independent left and right expressions. Combine every result from both sides.
 
-#### State
+### State
 
 ```plain text
 solve(left, right)
@@ -1210,7 +1210,7 @@ solve(left, right)
 
 ```
 
-#### Code
+### Code
 
 ```java
 private Map<String, List<Integer>> memo = new HashMap<>();
@@ -1285,12 +1285,12 @@ Practice:
 
 Adjacent groups must be repeatedly merged, and each merge has a cost.
 
-#### How it works
+### How it works
 
 Try every valid position where the interval’s final merge can be divided. Prefix sums provide the total value of an interval in constant time.
 Some problems require an additional state representing how many groups the interval should become.
 
-#### Basic state
+### Basic state
 
 ```plain text
 dp[left][right]
@@ -1298,7 +1298,7 @@ dp[left][right]
 
 ```
 
-#### Basic transition
+### Basic transition
 
 ```plain text
 dp[left][right]
@@ -1311,7 +1311,7 @@ min over split {
 
 ```
 
-#### Code for merging without additional restrictions
+### Code for merging without additional restrictions
 
 ```java
 public int minimumMergeCost(int[] nums) {
@@ -1375,11 +1375,11 @@ Practice:
 
 Repeated equal values can sometimes be processed together.
 
-#### How it works
+### How it works
 
 Normally, process the final element separately. If an earlier matching element exists, delay processing the final element and combine it with that earlier occurrence. This may reduce the total number of operations.
 
-#### State
+### State
 
 ```plain text
 dp[left][right]
@@ -1387,7 +1387,7 @@ dp[left][right]
 
 ```
 
-#### Strange Printer transition
+### Strange Printer transition
 
 Default:
 
@@ -1416,7 +1416,7 @@ min(
 
 ```
 
-#### Code
+### Code
 
 ```java
 public int strangePrinter(String text) {
@@ -1527,7 +1527,7 @@ reconstruct(split + 1, right);
 
 ```
 
-#### Parenthesization reconstruction
+### Parenthesization reconstruction
 
 ```java
 private String buildOrder(

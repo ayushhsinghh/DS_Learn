@@ -31,7 +31,7 @@ This pattern commonly appears as:
 - Rod cutting
 - Minimum number of perfect squares
 - Exact-sum construction with unlimited pieces
-#### Core mental model
+### Core mental model
 > Taking an item does not remove it from future choices.
 
 ---
@@ -58,10 +58,11 @@ Cut a rod
 Minimum number of pieces
 Number of combinations
 ```
-#### Recognition question
+### Recognition question
 > After selecting the current item, am I allowed to select it again?
 
 If yes, consider Unbounded Knapsack.
+
 ---
 ## 3. State Definition and Recursive Function Contract
 The standard recursive state contains:
@@ -100,6 +101,7 @@ For some bottom-up solutions, the item dimension can be removed:
 dp[amount]
 ```
 The loop order then determines whether items are reusable and whether order matters.
+
 ---
 ## 4. Brute-Force Recursive Decision
 At item `index`, there are two choices.
@@ -158,6 +160,7 @@ Unbounded Knapsack take:
 solve(index, remaining - item)
 ```
 In Unbounded Knapsack, taking the item keeps its index available.
+
 ---
 ## 5. Base Cases
 Base cases depend on the objective.
@@ -363,6 +366,7 @@ A problem-specific value is often simpler:
 int infinity = amount + 1;
 ```
 No valid answer can require more than `amount` coins when every coin value is positive and coin `1` is the smallest theoretical unit.
+
 ---
 ## 8. Tabulation Template
 Define:
@@ -412,7 +416,7 @@ int unboundedKnapsack(
     return dp[numberOfItems][capacity];
 }
 ```
-#### Important transition
+### Important transition
 Skip reads from the previous row:
 ```java
 dp[item - 1][capacity]
@@ -485,6 +489,7 @@ dp[2 × coin]
 ```
 can reuse that updated result during the same item iteration.
 That represents selecting the current coin again.
+
 ---
 ## 10. Space Optimization
 The two-dimensional Unbounded Knapsack can usually be reduced to one array.
@@ -542,6 +547,7 @@ minimization does not distinguish ordering
 ```
 Both loop orders can still produce the minimum number when transitions are otherwise correct.
 For counting, however, loop order changes the meaning of the answer dramatically.
+
 ---
 ## Common Form 1: Maximum Value with Reusable Items
 Each item has:
@@ -551,7 +557,7 @@ Value
 Unlimited copies
 ```
 The goal is to maximize total value without exceeding capacity.
-#### How it works
+### How it works
 1. Process every item type.
 2. For every capacity, compare taking and skipping.
 3. Taking reads the current item row or an already updated one-dimensional state.
@@ -575,7 +581,7 @@ Practice:
 ---
 ## Common Form 2: Minimum Items to Reach an Exact Target
 Choose reusable values to create an exact target using the fewest items.
-#### How it works
+### How it works
 1. Define `dp[amount]` as the minimum items required for that amount.
 2. Initialize `dp[0] = 0`.
 3. Initialize other states as impossible.
@@ -632,7 +638,7 @@ and
 [2, 1, 2]
 ```
 represent the same combination.
-#### How it works
+### How it works
 1. Define `dp[amount]` as the number of combinations.
 2. Initialize `dp[0] = 1`.
 3. Process one coin type at a time.
@@ -672,7 +678,7 @@ and
 [2, 1]
 ```
 are different answers.
-#### How it works
+### How it works
 1. Define `dp[target]` as the number of ordered sequences forming the target.
 2. Process target amounts in the outer loop.
 3. Try every possible final number in the inner loop.
@@ -741,6 +747,7 @@ Amount outer
 Item inner
 ```
 The recurrence may look similar, but loop order changes what is counted.
+
 ---
 ## Common Form 5: Rod Cutting
 A rod of length `n` can be cut into pieces.
@@ -750,7 +757,7 @@ Weight   → piece length
 Value    → price of that piece
 Capacity → total rod length
 ```
-#### How it works
+### How it works
 1. Treat every possible piece length as an item.
 2. Its weight is the amount of rod consumed.
 3. Its value is the price earned.
@@ -780,6 +787,7 @@ Practice:
 - LC 1547 — Minimum Cost to Cut a Stick uses interval DP, not this pattern
 
 The last distinction is important: not every cutting problem is Knapsack.
+
 ---
 ## Common Form 6: Minimum Number of Perfect Squares or Pieces
 Available reusable items are generated rather than directly provided.
@@ -789,7 +797,7 @@ For Perfect Squares:
 1, 4, 9, 16, ...
 ```
 Each square can be used repeatedly.
-#### How it works
+### How it works
 1. Generate every square not exceeding the target.
 2. Treat each square as a reusable item.
 3. Set `dp[0] = 0`.
@@ -837,7 +845,7 @@ State:
 dp[amount]
 = whether amount can be formed
 ```
-#### How it works
+### How it works
 1. Initialize `dp[0] = true`.
 2. Process every reusable item.
 3. Move amount forward.
@@ -877,7 +885,7 @@ using permitted lengths
 and maximize the number of cuts
 ```
 Unused capacity is not allowed.
-#### How it works
+### How it works
 1. Define `dp[length]` as the maximum number of pieces forming exactly that length.
 2. Initialize impossible lengths with negative infinity.
 3. Set `dp[0] = 0`.
@@ -904,7 +912,7 @@ for (int piece : pieces) {
     }
 }
 ```
-#### Why not initialize everything to zero?
+### Why not initialize everything to zero?
 Zero would incorrectly mean every length is achievable using zero pieces.
 
 Practice:
@@ -952,10 +960,11 @@ If the target is reachable:
 ```plain text
 currentAmount eventually becomes 0
 ```
-#### Reconstruction principle
+### Reconstruction principle
 > Store which reusable item produced each improved state, then repeatedly subtract that item.
 
 The same item may appear multiple times in the reconstructed answer.
+
 ---
 ## 13. Quick Interview Checklist
 1. Can every item be reused?
@@ -1054,6 +1063,7 @@ Space: O(n)
 ```
 #### Pseudo-polynomial complexity
 `O(nC)` depends on the numeric value of the capacity, so it is pseudo-polynomial rather than polynomial solely in the encoded input length.
+
 ---
 ## 16. Practice Progression
 ### Foundation

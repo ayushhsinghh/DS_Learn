@@ -31,7 +31,7 @@ Minimum cost to reach day i
 Maximum money from houses 0 through i
 Ways to decode the first i characters
 ```
-#### Core mental model
+### Core mental model
 > Solve the sequence one position at a time and reuse answers calculated for nearby positions.
 
 ---
@@ -59,10 +59,11 @@ reach the final position
 decode the sequence
 best answer up to index i
 ```
-#### Recognition question
+### Recognition question
 > Can the answer at position `i` be calculated using answers from earlier or later positions?
 
 If yes, consider Linear 1D DP.
+
 ---
 ## 3. State Definition and Recursive Function Contract
 Before writing recursion or a DP array, define exactly what one state means.
@@ -114,6 +115,7 @@ right to left
 
 If yes, one index is sufficient.
 If the answer also depends on another condition, such as whether something is currently held or how many operations remain, additional state is required.
+
 ---
 ## 4. Brute-Force Recursive Decision
 First express every valid choice recursively.
@@ -160,6 +162,7 @@ solve(4) solve(3)   solve(3)  solve(2)
 ```
 States such as `solve(2)` and `solve(3)` repeat.
 That repeated work creates the need for DP.
+
 ---
 ## 5. Base Cases
 Base cases represent the smallest states that can be answered directly.
@@ -306,7 +309,7 @@ Arrays.fill(memo, -1);
 
 return solve(nums, 0, memo);
 ```
-#### Memoization flow
+### Memoization flow
 ```plain text
 Call solve(i)
 → Check base case
@@ -316,7 +319,7 @@ Call solve(i)
 → Store memo[i]
 → Return memo[i]
 ```
-#### Important ordering
+### Important ordering
 Check an out-of-range base case before accessing the memo:
 ```java
 if (index >= nums.length) {
@@ -327,7 +330,7 @@ if (memo[index] != -1) {
     return memo[index];
 }
 ```
-#### Choosing an uncomputed marker
+### Choosing an uncomputed marker
 Using `-1` is safe only if `-1` cannot be a valid answer.
 
 Alternatives include:
@@ -411,6 +414,7 @@ Tabulation:
 dp[i] = answer from 0 through i
 ```
 That is valid, but the base cases and recurrence must match the selected definition.
+
 ---
 ## 9. Correct Iteration Order
 The state dependencies determine the iteration direction.
@@ -454,6 +458,7 @@ dp[i - 2] ─┐
 dp[i - 1] ─┘
 ```
 The arrows show that smaller indices must be calculated first.
+
 ---
 ## 10. Space Optimization
 If every state depends on only a fixed number of previous states, the entire array is unnecessary.
@@ -512,6 +517,7 @@ Keep the complete DP array when:
 - You have not yet validated the basic recurrence.
 
 Correctness comes before space optimization.
+
 ---
 ## Common Form 1: Count Ways to Reach a Position
 The current position can be reached from a fixed set of previous positions.
@@ -522,7 +528,7 @@ Reach stair i from:
 i - 1
 i - 2
 ```
-#### How it works
+### How it works
 1. Define `dp[i]` as the number of ways to reach position `i`.
 2. Identify every position that can move directly to `i`.
 3. Add the number of ways of reaching those positions.
@@ -557,7 +563,7 @@ Practice:
 ---
 ## Common Form 2: Minimum Cost to Reach the End
 Each position has a cost, and several previous positions may lead to it.
-#### How it works
+### How it works
 1. Define the minimum cost required to reach each position.
 2. Identify every valid previous position.
 3. Choose the cheapest previous state.
@@ -606,7 +612,7 @@ skip = dp[i - 1]
 
 dp[i] = max(take, skip)
 ```
-#### How it works
+### How it works
 1. Calculate the result from skipping the current item.
 2. Calculate the result from selecting it.
 3. If selected, combine it with the most recent compatible state.
@@ -641,7 +647,7 @@ Use positions 0 through n - 2
 Case 2:
 Use positions 1 through n - 1
 ```
-#### How it works
+### How it works
 1. Exclude the final element and solve the remaining line.
 2. Exclude the first element and solve the remaining line.
 3. Return the better result.
@@ -678,7 +684,7 @@ For Decode Ways:
 Use one digit
 Use two digits
 ```
-#### How it works
+### How it works
 1. Define `dp[length]` as the number of ways to decode the first `length` characters.
 2. If the last one-character token is valid, add `dp[length - 1]`.
 3. If the last two-character token is valid, add `dp[length - 2]`.
@@ -726,7 +732,7 @@ Practice:
 ## Common Form 6: Variable-Length Jumps
 The current state can transition to several possible future positions.
 The dependency is not limited to `i - 1` and `i - 2`.
-#### How it works
+### How it works
 1. Define what solving or reaching position `i` means.
 2. Examine every position that can transition to it.
 3. Evaluate the candidate answer from each transition.
@@ -759,6 +765,7 @@ Practice:
 - LC 2369 — Check if There Is a Valid Partition
 
 Some jump problems also have greedy solutions, so always check whether DP is necessary.
+
 ---
 ## Common Form 7: Transform Values into Linear Positions
 Sometimes the input order is not the important structure.
@@ -775,7 +782,7 @@ x - 1
 x + 1
 ```
 This becomes House Robber over the value axis.
-#### How it works
+### How it works
 1. Aggregate the total contribution of each value.
 2. Treat every possible value as a linear position.
 3. Recognize that adjacent values conflict.
@@ -808,7 +815,7 @@ maximum product ending here
 minimum product ending here
 ```
 A negative value can turn the previous minimum into the new maximum.
-#### How it works
+### How it works
 1. Identify every extreme value future states may need.
 2. Carry both maximum and minimum results.
 3. Update both using the current value.
@@ -894,10 +901,11 @@ while (index >= 0) {
 
 Collections.reverse(selectedIndices);
 ```
-#### Reconstruction principle
+### Reconstruction principle
 > Compare the current DP value against the transitions that could have produced it.
 
 If several choices produce the same optimal value, multiple valid reconstructions may exist.
+
 ---
 ## 13. Quick Interview Checklist
 1. What does `solve(i)` return?

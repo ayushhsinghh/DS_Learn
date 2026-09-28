@@ -1,8 +1,9 @@
-import { cloneElement, isValidElement, memo, useEffect, useMemo, useRef, useState, type MouseEvent, type ReactNode, type WheelEvent } from 'react'
+import { cloneElement, isValidElement, memo, useEffect, useMemo, useRef, useState, type MouseEvent, type ReactNode } from 'react'
 import Markdown, { type Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { loadPattern, patterns, prefetchPattern, sentenceCaseHeading, type Pattern } from './data/patterns'
 import { appHref, Arrow, Mark, navigate, PageState, SkipLink } from './SiteChrome'
+import leetcodeSlugs from './data/leetcode-slugs.json'
 
 const javaKeywords = new Set([
   'abstract', 'assert', 'boolean', 'break', 'byte', 'case', 'catch', 'char', 'class', 'const',
@@ -93,40 +94,15 @@ function nodeText(value: ReactNode): string {
   return ''
 }
 
-const leetcodeSlugOverrides: Record<string, string> = {
-  '69': 'sqrtx',
-  '215': 'kth-largest-element-in-an-array',
-  '236': 'lowest-common-ancestor-of-a-binary-tree',
-  '673': 'number-of-longest-increasing-subsequence',
-  '968': 'binary-tree-cameras',
-  '1047': 'remove-all-adjacent-duplicates-in-string',
-  '1123': 'lowest-common-ancestor-of-deepest-leaves',
-  '1326': 'minimum-number-of-taps-to-open-to-water-a-garden',
-  '1489': 'find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree',
-  '1644': 'lowest-common-ancestor-of-a-binary-tree-ii',
-  '1650': 'lowest-common-ancestor-of-a-binary-tree-iii',
-}
-
-function leetcodeSlugFromQuestion(number: string, title: string) {
-  if (leetcodeSlugOverrides[number]) return leetcodeSlugOverrides[number]
-  const canonicalTitle = title
-    .replace(/, (?:conceptually related|multiplicative variation|using a small state instead of a full mask|for the undirected variation)$/i, '')
-    .replace(/ uses interval DP, not this pattern$/i, '')
-  return canonicalTitle
-    .normalize('NFKD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/['’‘]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '')
-}
 
 function LeetCodePracticeItem({ children }: { children?: ReactNode }) {
   const question = nodeText(children).trim().match(/^LC\s*(\d+)\s*[—–-]\s*(.+)$/i)
   if (!question) return <li>{children}</li>
 
   const [, number, title] = question
-  const slug = leetcodeSlugFromQuestion(number, title)
+  const slug = leetcodeSlugs[number as keyof typeof leetcodeSlugs]
+  // Unknown IDs stay readable rather than sending learners to a guessed URL.
+  if (!slug) return <li>{children}</li>
   const href = `https://leetcode.com/problems/${slug}/`
   const isParagraph = isValidElement<{ children?: ReactNode }>(children) && children.type === 'p'
   const linkChildren = isParagraph ? children.props.children : children
@@ -171,10 +147,13 @@ const PatternArticle = memo(function PatternArticle({ pattern, patternIndex }: {
     h2({ children, node }) {
       const section = pattern.sections.find((item) => item.line === node?.position?.start.line)
       if (!section) return <h3>{sentenceCaseMarkdownHeading(children, removeSequenceNumber)}</h3>
-      return <h2 id={section.id}>{sentenceCaseMarkdownHeading(children, removeSequenceNumber)}</h2>
+      return <h2 id={section.id} tabIndex={-1}>{sentenceCaseMarkdownHeading(children, removeSequenceNumber)}</h2>
     },
     h3({ children }) {
       return <h3>{sentenceCaseMarkdownHeading(children, removeSequenceNumber)}</h3>
+    },
+    h4({ children }) {
+      return <h4>{sentenceCaseMarkdownHeading(children, removeSequenceNumber)}</h4>
     },
     li({ children }) {
       return <LeetCodePracticeItem>{children}</LeetCodePracticeItem>
@@ -250,9 +229,19 @@ function PatternReader({ pattern }: { pattern: Pattern }) {
       contentsRef.current?.querySelector<HTMLAnchorElement>('a')?.focus({ preventScroll: true })
     })
     const closeMenu = (event: KeyboardEvent) => {
+      if (event.key === 'Tab') {
+        const controls = contentsRef.current?.querySelectorAll<HTMLElement>('button, a[href]')
+        const first = controls?.[0]
+        const last = controls?.[controls.length - 1]
+        if (first && last && (event.shiftKey ? document.activeElement === first : document.activeElement === last)) {
+          event.preventDefault()
+          ;(event.shiftKey ? last : first).focus()
+        }
+        return
+      }
       if (event.key !== 'Escape') return
       setMenuOpen(false)
-      setHeaderMode('full')
+      setHeaderMode(window.scrollY > 24 ? 'compact' : 'full')
       window.requestAnimationFrame(() => menuButtonRef.current?.focus({ preventScroll: true }))
     }
     document.body.style.overflow = 'hidden'
@@ -272,7 +261,7 @@ function PatternReader({ pattern }: { pattern: Pattern }) {
   }, [menuOpen])
 
   useEffect(() => {
-    const desktop = window.matchMedia('(min-width: 901px)')
+    const desktop = window.matchMedia('(width > 1120px)')
     const closeOnDesktop = () => {
       if (!desktop.matches) return
       setMenuOpen(false)
@@ -344,14 +333,10 @@ function PatternReader({ pattern }: { pattern: Pattern }) {
     window.requestAnimationFrame(() => {
       if (window.location.hash !== `#${id}`) window.history.pushState({}, '', `#${id}`)
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      document.getElementById(id)?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' })
+      const heading = document.getElementById(id)
+      heading?.focus({ preventScroll: true })
+      heading?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' })
     })
-  }
-
-  function scrollContents(event: WheelEvent<HTMLElement>) {
-    event.preventDefault()
-    event.stopPropagation()
-    event.currentTarget.scrollTop += event.deltaY
   }
 
   function closeContents() {
@@ -380,7 +365,7 @@ function PatternReader({ pattern }: { pattern: Pattern }) {
         </button>
       </header>
 
-      <aside id="pattern-navigation" className="pattern-nav">
+      <aside id="pattern-navigation" className="pattern-nav" inert={menuOpen ? true : undefined} aria-hidden={menuOpen || undefined}>
         <p className="nav-label">PATTERN LIBRARY</p>
         <nav aria-label="DSA patterns">
           {patterns.map((item, index) => (
@@ -410,7 +395,7 @@ function PatternReader({ pattern }: { pattern: Pattern }) {
         </nav>
       </main>
 
-      <aside ref={contentsRef} id="page-contents" className={`on-this-page ${menuOpen ? 'is-open' : ''}`} onWheel={scrollContents}>
+      <aside ref={contentsRef} id="page-contents" className={`on-this-page ${menuOpen ? 'is-open' : ''}`}>
         <div className="contents-heading">
           <p className="nav-label">ON THIS PAGE</p>
           <button className="menu-button contents-close" onClick={closeContents} aria-label="Close page contents">Close</button>

@@ -15,6 +15,7 @@ A ──1── B
 C ──3── D
 ```
 An MST selects enough low-cost edges to connect all four nodes without creating a cycle.
+
 ---
 ## Important Terminology
 ## Spanning
@@ -65,6 +66,7 @@ roads, cables, pipes, bridges
 > Are we minimizing the total cost of connecting the entire graph, rather than the travel cost from one source?
 
 If yes, consider a Minimum Spanning Tree.
+
 ---
 ## MST versus Shortest Path
 These solve different optimization problems.
@@ -80,6 +82,7 @@ all vertices become connected
 ```
 An MST does not guarantee the shortest route from the source to every node.
 A shortest-path tree does not necessarily have the minimum total connection cost.
+
 ---
 ## Fundamental MST Properties
 ## Exactly `V - 1` edges
@@ -103,11 +106,13 @@ Group A | Group B
 ```
 The cheapest edge crossing this division is safe to include in some MST.
 This is the core intuition behind both Prim and Kruskal.
+
 ---
 ## Cycle Property
 If an edge is the uniquely heaviest edge in a cycle, it does not need to belong to an MST.
 Why?
 Removing that edge keeps the cycle’s vertices connected while reducing total cost.
+
 ---
 ## Kruskal’s Algorithm
 Kruskal processes all edges globally from smallest to largest weight.
@@ -122,6 +127,7 @@ It uses Union-Find to determine whether adding an edge would create a cycle.
 7. Stop after selecting `V - 1` edges.
 
 **Memory flow:** `Sort all edges → Add cheapest non-cycling edge → Merge components`
+
 ---
 ## Kruskal Template
 ```java
@@ -196,6 +202,7 @@ If false:
 The edge joins two separate components
 ```
 The edge can safely expand the spanning forest.
+
 ---
 ## Prim’s Algorithm
 Prim grows one connected tree from a starting node.
@@ -210,6 +217,7 @@ At every step, it chooses the cheapest edge connecting the current tree to an un
 7. Continue until every node has joined the MST.
 
 **Memory flow:** `Grow one tree → Select cheapest boundary edge → Add new node`
+
 ---
 ## Prim State
 ```java
@@ -228,6 +236,7 @@ The priority queue is ordered by:
 Cost of connecting this node to the current MST
 ```
 It is not necessarily the total distance from the starting node.
+
 ---
 ## Prim Template
 ```java
@@ -288,6 +297,7 @@ queue.offer(new State(start, 0));
 ```
 Its contribution to total cost is zero.
 Every later node contributes the cost of the selected edge that connects it to the existing tree.
+
 ---
 ## Why Prim May Add a Node Several Times
 A node may be reachable through several candidate edges:
@@ -326,6 +336,7 @@ edgeWeight
 ```
 Dijkstra minimizes source-to-node path distances.
 Prim minimizes the total cost of the selected tree edges.
+
 ---
 ## Prim with a Best-Connection Array
 Prim can store the cheapest known edge connecting each node to the current MST.
@@ -347,6 +358,7 @@ if (!inMst[next]
 ```
 This avoids inserting candidates that are already known to be worse.
 The priority queue can still contain stale entries, so `inMst` remains useful.
+
 ---
 ## Kruskal versus Prim
 ## Prefer Kruskal when
@@ -376,6 +388,7 @@ Because:
 log E and log V
 ```
 are closely related for ordinary graphs, both are often similar in practice.
+
 ---
 ## Common Form 1: Standard Minimum Cost to Connect All Nodes
 The graph directly provides weighted undirected edges.
@@ -532,6 +545,7 @@ Practice:
 - LC 1168 — Optimize Water Distribution in a Village
 
 This is one of the most important MST modeling techniques.
+
 ---
 ## Common Form 5: Stop When All Nodes Become Connected
 Sometimes edges arrive sorted by time or cost.
@@ -567,6 +581,7 @@ Practice:
 - LC 1101 — The Earliest Moment When Everyone Become Friends
 
 This is closely related to Kruskal because edges are processed in sorted order.
+
 ---
 ## Common Form 6: Minimum Bottleneck Connection
 Sometimes the objective is not the total edge cost.
@@ -598,6 +613,7 @@ Practice:
 - Minimum Bottleneck Path
 
 These problems can also be solved with minimax Dijkstra or binary search plus connectivity testing.
+
 ---
 ## Common Form 7: Critical and Pseudo-Critical MST Edges
 An MST problem may ask how individual edges affect the optimal answer.
@@ -618,6 +634,7 @@ Practice:
 - LC 1489 — Find Critical and Pseudo-Critical Edges in Minimum Spanning Tree
 
 This repeated-Kruskal approach is appropriate because the problem constraints are relatively small.
+
 ---
 ## Common Form 8: Maximum Spanning Tree
 Sometimes we want the largest total selected edge weight while still connecting all vertices without cycles.
@@ -716,6 +733,7 @@ selected.add(
 );
 ```
 Skip the artificial starting edge whose parent does not exist.
+
 ---
 ## Detecting a Disconnected Graph
 An MST exists only if every vertex can be connected.
@@ -732,6 +750,7 @@ If the condition fails:
 No spanning tree exists
 ```
 Return the failure value required by the problem.
+
 ---
 ## Handling Duplicate Edge Weights
 Duplicate weights do not cause a problem.
@@ -828,6 +847,7 @@ Running Kruskal for every edge can require approximately:
 O(E² log E)
 ```
 This is acceptable only when constraints are small enough.
+
 ---
 ## Final Algorithm Selection Model
 ```plain text

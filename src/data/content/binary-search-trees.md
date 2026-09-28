@@ -16,6 +16,7 @@ This rule applies to the entire subtree—not only the immediate children.
   4   7 13
 ```
 Because values are ordered, many BST operations can discard an entire subtree, similar to binary search.
+
 ---
 ## Core BST Invariant
 > Every node creates a valid range for all its descendants.
@@ -39,6 +40,7 @@ and
 smaller than 8
 ```
 Therefore, checking only the immediate parent-child relationship is insufficient.
+
 ---
 ## BST versus Binary Tree
 A binary tree guarantees only:
@@ -77,6 +79,7 @@ Inorder:
 2, 3, 4, 5, 7, 9
 ```
 This property is central to many BST problems.
+
 ---
 ## Balanced and Skewed BSTs
 A balanced BST has height approximately:
@@ -109,6 +112,7 @@ Average/Balanced: O(log n)
 Worst/Skewed:     O(n)
 ```
 A BST is not automatically balanced.
+
 ---
 ## How to Identify BST Problems
 Look for these signals:
@@ -125,6 +129,7 @@ Look for these signals:
 > Can the BST ordering rule tell me that one entire subtree is irrelevant?
 
 If yes, use the BST property instead of traversing the entire tree.
+
 ---
 ## Common Form 1: Search in a BST
 Compare the target with the current node.

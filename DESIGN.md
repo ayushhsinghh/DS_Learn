@@ -291,7 +291,7 @@ Gold Study Paper, Deep Pine Ink body text, Note Ochre heading treatment, and a `
 
 ### Code
 
-Inline code uses Editorial Vermilion on Inline Code Paper. Fenced code uses a Code Surface panel, a darker caption strip, a vermilion rule, pale base text, and semantic Java token colors. Blocks longer than twelve lines collapse into native disclosures; captions state language and line count. Code and tables use `content-visibility: auto` below the fold.
+Inline code uses Editorial Vermilion on Inline Code Paper. Fenced code uses a Code Surface panel, a darker caption strip, a vermilion rule, pale base text, and semantic Java token colors. Blocks longer than twelve lines collapse into native disclosures; captions state language and line count. Code and tables retain their real layout heights so section links land reliably; code-summary keyboard focus uses a coral inset outline on the dark caption surface.
 
 ### Tables
 

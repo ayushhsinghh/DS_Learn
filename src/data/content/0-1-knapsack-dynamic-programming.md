@@ -28,7 +28,7 @@ The pattern also appears when there are no explicit weights and values:
 - Minimize the difference between two subset sums
 - Assign `+` or `-` signs to numbers
 - Select items under multiple capacity constraints
-#### Core mental model
+### Core mental model
 > For every item, decide whether to take it once or skip it permanently.
 
 ---
@@ -57,10 +57,11 @@ Count subsets with sum k
 Maximum value within capacity
 Assign plus or minus signs
 ```
-#### Recognition question
+### Recognition question
 > Am I deciding independently for every item whether to include it once or exclude it?
 
 If yes, consider 0/1 Knapsack.
+
 ---
 ## 3. State Definition and Recursive Function Contract
 The standard state contains:
@@ -141,7 +142,7 @@ int solve(
     return Math.max(take, skip);
 }
 ```
-#### Why does take use `index + 1`?
+### Why does take use `index + 1`?
 ```java
 solve(index + 1, capacity - weights[index])
 ```
@@ -278,6 +279,7 @@ Count subsets    → take + skip
 Minimum result   → min(take, skip)
 ```
 The state structure remains similar; the combination operation changes.
+
 ---
 ## 7. Memoization Template
 ### Maximum-value template
@@ -381,6 +383,7 @@ true  → possible
 false → impossible
 ```
 A primitive `boolean[][]` cannot distinguish uncomputed from computed `false` without an additional visited structure.
+
 ---
 ## 8. Tabulation Template
 Define:
@@ -435,14 +438,14 @@ int knapsack(
     return dp[numberOfItems][capacity];
 }
 ```
-#### Why use `item - 1`?
+### Why use `item - 1`?
 DP row `item` represents the first `item` items.
 
 The current item’s input-array index is:
 ```plain text
 item - 1
 ```
-#### Why do both choices read the previous row?
+### Why do both choices read the previous row?
 ```plain text
 skip → dp[item - 1][capacity]
 
@@ -450,6 +453,7 @@ take → dp[item - 1][capacity - weight]
 ```
 Both choices consume the current item’s decision.
 Reading from the previous row ensures the item is not reused.
+
 ---
 ## 9. Correct Iteration Order
 ### Two-dimensional DP
@@ -568,6 +572,7 @@ Unbounded Knapsack:
 usually iterate capacity from low to high
 ```
 This direction difference controls whether the current item can be reused.
+
 ---
 ## Common Form 1: Maximum Value Within Capacity
 Each item has:
@@ -576,7 +581,7 @@ Weight
 Value
 ```
 We need the maximum total value without exceeding capacity.
-#### How it works
+### How it works
 1. Process each item once.
 2. For every capacity, compare taking and skipping it.
 3. Taking uses the previous item state at reduced capacity.
@@ -598,7 +603,7 @@ Practice:
 ---
 ## Common Form 2: Subset Sum Feasibility
 Determine whether some subset adds exactly to a target.
-#### How it works
+### How it works
 1. Define `dp[sum]` as whether the sum is achievable.
 2. Initialize `dp[0] = true`.
 3. Process every number once.
@@ -639,7 +644,7 @@ If total sum is `S`, two equal subsets must each have:
 ```plain text
 S / 2
 ```
-#### How it works
+### How it works
 1. Calculate the total sum.
 2. If it is odd, equal partitioning is impossible.
 3. Set the target to `sum / 2`.
@@ -672,7 +677,7 @@ the difference is:
 ```plain text
 abs(totalSum - 2 × sum1)
 ```
-#### How it works
+### How it works
 1. Find all achievable subset sums.
 2. Only inspect sums up to `totalSum / 2`.
 3. Choose the achievable sum closest to half.
@@ -704,7 +709,7 @@ Instead of storing feasibility, store the number of ways.
 dp[sum]
 = number of subsets producing sum
 ```
-#### How it works
+### How it works
 1. Initialize `dp[0] = 1`.
 2. Process each number once.
 3. Iterate sums backward.
@@ -732,7 +737,7 @@ int countSubsets(
     return dp[target];
 }
 ```
-#### How zeros behave
+### How zeros behave
 For `number == 0`:
 ```java
 dp[sum] += dp[sum];
@@ -776,7 +781,7 @@ P = (totalSum + target) / 2
 The problem becomes:
 > Count subsets whose sum is `(totalSum + target) / 2`.
 
-#### Validity checks
+### Validity checks
 A solution is impossible when:
 ```plain text
 abs(target) > totalSum
@@ -785,7 +790,7 @@ or:
 ```plain text
 totalSum + target is odd
 ```
-#### How it works
+### How it works
 1. Calculate the total sum.
 2. Validate the target range.
 3. Validate parity.
@@ -823,7 +828,7 @@ State:
 dp[zeros][ones]
 = maximum items selectable
 ```
-#### How it works
+### How it works
 1. Calculate each item’s resource consumption.
 2. Process every item once.
 3. Iterate every capacity dimension backward.
@@ -874,7 +879,7 @@ index
 remaining profit
 remaining members
 ```
-#### How it works
+### How it works
 1. Add a DP dimension for every condition that changes future decisions.
 2. Take or skip each item.
 3. Reduce all resources affected by taking.
@@ -949,6 +954,7 @@ Collections.reverse(selected);
 #### Important note
 If take and skip produce the same optimal value, several optimal subsets may exist.
 The reconstruction above returns one valid optimal subset.
+
 ---
 ## 13. Quick Interview Checklist
 1. Can every item be selected at most once?
@@ -1041,6 +1047,7 @@ Space: O(C1 × C2)
 #### Pseudo-polynomial complexity
 `O(nC)` depends on the numeric capacity, not only the number of input values.
 If capacity is extremely large, standard knapsack DP may be impractical even when `n` is moderate.
+
 ---
 ## 16. Practice Progression
 ### Foundation

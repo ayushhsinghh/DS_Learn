@@ -45,6 +45,7 @@ Backtracking:
 Choose → Explore → Undo → Try another choice
 ```
 Every backtracking solution uses recursion, but not every recursive solution uses backtracking.
+
 ---
 ## Decision Tree Mental Model
 For:
@@ -128,6 +129,7 @@ Count all possible...
 > Do I need to explore several choices from the current state and then return to try the remaining choices?
 
 If yes, backtracking is likely appropriate.
+
 ---
 ## The Backtracking State
 Before coding, identify what changes along one recursive path.
@@ -751,6 +753,7 @@ Used for:
 - Permutations
 
 This is one of the most important backtracking decisions.
+
 ---
 ## When to Save an Answer
 ## Save at every recursive state
@@ -782,6 +785,7 @@ if (index == nums.length) {
 }
 ```
 The base case depends on what qualifies as a complete answer.
+
 ---
 ## Mutable State versus Value State
 Some state is passed by value:
@@ -942,6 +946,7 @@ Worst-case search: approximately O(n!)
 Stack: O(n)
 ```
 Pruning significantly reduces practical work but does not necessarily change the theoretical worst case.
+
 ---
 ## Final Reusable Model
 ```plain text

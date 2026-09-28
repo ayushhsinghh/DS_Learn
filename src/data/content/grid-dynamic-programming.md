@@ -19,7 +19,7 @@ Depending on the problem, `dp[row][col]` may represent:
 - Best answer starting from the cell
 - Size of a shape ending at the cell
 
-#### Core mental model
+### Core mental model
 
 > Treat every cell as a state and determine which neighboring states can transition into it.
 
@@ -57,13 +57,13 @@ move only right or down
 
 ```
 
-#### Recognition question
+### Recognition question
 
 > If I know the answer for neighboring cells, can I calculate the answer for the current cell?
 
 If yes, consider Grid DP.
 
-#### Important warning
+### Important warning
 
 Not every grid problem is DP.
 
@@ -183,7 +183,7 @@ int solve(int[][] grid, int row, int col) {
 
 ```
 
-#### Recursive decision tree
+### Recursive decision tree
 
 From `(0, 0)`:
 
@@ -199,7 +199,7 @@ From `(0, 0)`:
 The same cell `(1,1)` is calculated multiple times.
 That repeated work is the signal to use DP.
 
-#### Brute-force complexity
+### Brute-force complexity
 
 For right and down movement:
 
@@ -544,7 +544,7 @@ return dp[rows - 1][cols - 1];
 
 The iteration order comes from the recurrence dependencies.
 
-#### Rule
+### Rule
 
 > Every dependency must already be calculated before the current state.
 
@@ -720,11 +720,11 @@ Avoid immediate space optimization when:
 
 Find the number of ways to travel from the top-left to the bottom-right.
 
-#### How it works
+### How it works
 
 Each cell receives paths from the cells that can directly enter it. With right/down movement, those cells are above and left.
 
-#### State
+### State
 
 ```plain text
 dp[row][col]
@@ -732,7 +732,7 @@ dp[row][col]
 
 ```
 
-#### Transition
+### Transition
 
 ```plain text
 dp[row][col]
@@ -741,7 +741,7 @@ dp[row][col]
 
 ```
 
-#### Code
+### Code
 
 ```java
 public int uniquePaths(int rows, int cols) {
@@ -779,11 +779,11 @@ Practice:
 
 Some cells cannot be used.
 
-#### How it works
+### How it works
 
 A blocked cell contributes zero paths. Every unblocked cell receives paths from valid neighboring cells.
 
-#### State
+### State
 
 ```plain text
 dp[row][col]
@@ -791,7 +791,7 @@ dp[row][col]
 
 ```
 
-#### Code
+### Code
 
 ```java
 public int uniquePathsWithObstacles(int[][] grid) {
@@ -838,11 +838,11 @@ Practice:
 
 Every cell contains a cost or reward.
 
-#### How it works
+### How it works
 
 Choose the best predecessor and then include the current cell’s value.
 
-#### State
+### State
 
 ```plain text
 dp[row][col]
@@ -850,7 +850,7 @@ dp[row][col]
 
 ```
 
-#### Transition
+### Transition
 
 ```plain text
 dp[row][col]
@@ -859,7 +859,7 @@ dp[row][col]
 
 ```
 
-#### Code
+### Code
 
 ```java
 public int minPathSum(int[][] grid) {
@@ -905,11 +905,11 @@ Practice:
 
 You move from one row to the next using a set of allowed columns.
 
-#### How it works
+### How it works
 
 Every cell checks which cells from the previous row can enter it, selects the best one, and includes its own value.
 
-#### State
+### State
 
 ```plain text
 dp[row][col]
@@ -917,7 +917,7 @@ dp[row][col]
 
 ```
 
-#### Transition
+### Transition
 
 ```plain text
 dp[row][col]
@@ -930,7 +930,7 @@ dp[row][col]
 
 ```
 
-#### Code
+### Code
 
 ```java
 public int minFallingPathSum(int[][] matrix) {
@@ -984,11 +984,11 @@ Practice:
 
 Each position can move to one of two positions in the following row.
 
-#### How it works
+### How it works
 
 Starting from the bottom, each cell chooses the better of its two children. This gradually compresses the triangle into one answer.
 
-#### State
+### State
 
 ```plain text
 dp[col]
@@ -997,7 +997,7 @@ dp[col]
 
 ```
 
-#### Code
+### Code
 
 ```java
 public int minimumTotal(List<List<Integer>> triangle) {
@@ -1031,11 +1031,11 @@ Practice:
 
 The answer depends on the current cell and how many moves remain.
 
-#### How it works
+### How it works
 
 The same cell can produce a different answer depending on the remaining move count. Therefore, remaining moves must be included in the state.
 
-#### State
+### State
 
 ```plain text
 dp[row][col][moves]
@@ -1045,7 +1045,7 @@ dp[row][col][moves]
 
 ```
 
-#### Recurrence
+### Recurrence
 
 ```plain text
 solve(row, col, moves)
@@ -1055,7 +1055,7 @@ for all four directions
 
 ```
 
-#### Code structure
+### Code structure
 
 ```java
 private int solve(
@@ -1101,11 +1101,11 @@ Practice:
 
 Two people or robots move through the grid simultaneously.
 
-#### How it works
+### How it works
 
 At a given row, the future answer depends on both agents’ columns. Their row is usually identical, so the state needs one row and two columns.
 
-#### State
+### State
 
 ```plain text
 solve(row, col1, col2)
@@ -1130,7 +1130,7 @@ This produces:
 
 ```
 
-#### Recurrence structure
+### Recurrence structure
 
 ```java
 int answer = Integer.MIN_VALUE;
@@ -1175,11 +1175,11 @@ Practice:
 
 The goal is to find the largest square or another structure inside a binary matrix.
 
-#### How it works
+### How it works
 
 A cell can extend a square only when its top, left, and top-left neighbors can also support that square. The weakest neighbor limits its size.
 
-#### State
+### State
 
 ```plain text
 dp[row][col]
@@ -1188,7 +1188,7 @@ dp[row][col]
 
 ```
 
-#### Transition
+### Transition
 
 If the current cell is `1`:
 
@@ -1203,7 +1203,7 @@ dp[row][col]
 
 ```
 
-#### Code
+### Code
 
 ```java
 public int maximalSquare(char[][] matrix) {
@@ -1249,11 +1249,11 @@ Practice:
 
 Sometimes the future determines how much resource is required at the current cell.
 
-#### How it works
+### How it works
 
 Instead of calculating what has been accumulated so far, work backward and calculate the minimum resource needed to safely enter every cell.
 
-#### State
+### State
 
 ```plain text
 dp[row][col]
@@ -1261,7 +1261,7 @@ dp[row][col]
 
 ```
 
-#### Transition
+### Transition
 
 ```plain text
 requiredAfterCurrent
@@ -1274,7 +1274,7 @@ dp[row][col]
 
 We use `max(1, ...)` because health must never drop below `1`.
 
-#### Code
+### Code
 
 ```java
 public int calculateMinimumHP(int[][] dungeon) {
@@ -1333,11 +1333,11 @@ Practice:
 
 The choice in the current row depends on which column was selected previously.
 
-#### How it works
+### How it works
 
 For every cell, check valid selections from the previous row. If some columns are forbidden, exclude them from the transition.
 
-#### State
+### State
 
 ```plain text
 dp[row][col]
@@ -1345,7 +1345,7 @@ dp[row][col]
 
 ```
 
-#### Basic transition
+### Basic transition
 
 ```plain text
 dp[row][col]
@@ -1355,7 +1355,7 @@ grid[row][col]
 
 ```
 
-#### Code structure
+### Code structure
 
 ```java
 for (int row = 1; row < rows; row++) {
@@ -1440,11 +1440,11 @@ Collections.reverse(path);
 
 ```
 
-#### Alternative reconstruction
+### Alternative reconstruction
 
 If the full DP table is available, compare neighboring values and determine which transition produced the current answer.
 
-#### Important consequence
+### Important consequence
 
 Space optimization may prevent reconstruction because previous rows have been discarded.
 

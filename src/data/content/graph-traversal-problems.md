@@ -25,6 +25,7 @@ Unlike a tree:
 - There may not be a single root.
 
 Because of these differences, graph traversal normally requires a `visited` structure.
+
 ---
 ## Core Mental Model
 > Start from a node, process it, and discover its unvisited neighbors.
@@ -36,6 +37,7 @@ BFS → Explore all nearby nodes before moving farther
 ```
 Both can visit every reachable node.
 The major difference is the order in which they explore nodes.
+
 ---
 ## DFS versus BFS
 ## Depth-First Search
@@ -175,6 +177,7 @@ graph.get(u).add(v);
 Space: O(V + E)
 ```
 This is usually the preferred representation for interview problems.
+
 ---
 ## Adjacency Matrix
 ```java
@@ -243,6 +246,7 @@ for (int[] edge : edges) {
 > Does the relationship work in one direction or both?
 
 Many graph solutions fail because the graph was constructed in the wrong direction.
+
 ---
 ## Why We Need `visited`
 Consider:
@@ -975,6 +979,7 @@ Use this outer loop when the question concerns:
 - Complete graph traversal
 
 Do not use it when the question asks only what is reachable from a specific source.
+
 ---
 ## Marking Visited: Global versus Current Path
 These represent different ideas.
@@ -998,6 +1003,7 @@ Used for:
 
 A node may be globally visited but no longer belong to the current recursive path.
 We will cover this distinction fully in cycle detection.
+
 ---
 ## BFS Level versus Distance Array
 Both can track distance.

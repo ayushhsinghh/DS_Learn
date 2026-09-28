@@ -18,6 +18,7 @@ The tree rooted at node `2` is itself a complete smaller tree:
 4   5
 ```
 This self-similar structure is why recursion works naturally with trees.
+
 ---
 ## TreeNode Structure
 In Java:
@@ -144,6 +145,7 @@ Every node has only one child:
       4
 ```
 A skewed tree behaves like a linked list and can produce recursion depth `O(n)`.
+
 ---
 ## What Is Tree Traversal?
 Traversal means visiting every tree node in a defined order.
@@ -283,6 +285,7 @@ Look for these signals:
 > Should the current node be processed before, between, or after its children?
 
 That decision identifies preorder, inorder, or postorder.
+
 ---
 ## Common Form 1: Recursive Preorder Traversal
 Preorder processes the current node before visiting its children.
@@ -708,6 +711,7 @@ Before coding, complete:
 > `solve(node)` returns  for the subtree rooted at `node`.
 
 This return contract is more important than choosing preorder or postorder by name.
+
 ---
 ## Null Base Cases and Neutral Values
 The correct `null` return depends on what the parent does with the answer.
@@ -736,6 +740,7 @@ if (node == null) {
 }
 ```
 The base value must behave correctly when combined by the parent.
+
 ---
 ## Quick Interview Checklist
 1. What does `solve(node)` return?
@@ -805,6 +810,7 @@ Time:  O(n)
 Space: O(1)
 ```
 Although predecessor links may be examined more than once, each temporary edge is created and removed once, keeping total work linear.
+
 ---
 ## Final Reusable Model
 > Every tree node represents a smaller subtree. Decide when to process the node and define exactly what its subtree returns.

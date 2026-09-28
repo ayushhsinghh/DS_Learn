@@ -35,7 +35,7 @@ Typical objectives include:
 - Find answers for every possible root
 - Combine choices made across child subtrees
 
-#### Core mental model
+### Core mental model
 
 > Each child solves its subtree and returns exactly the information its parent needs.
 
@@ -74,7 +74,7 @@ maximum independent set
 
 ```
 
-#### Recognition questions
+### Recognition questions
 
 Ask:
 
@@ -86,7 +86,7 @@ Or:
 
 If yes, consider Tree DP.
 
-#### Tree DP versus ordinary DFS
+### Tree DP versus ordinary DFS
 
 A DFS only describes the traversal.
 
@@ -127,7 +127,7 @@ int dfs(TreeNode node) {
 
 ```
 
-#### Important observation
+### Important observation
 
 A rooted tree normally has no repeated subproblems because every subtree is reached once.
 Therefore, Tree DP often does not need a separate memoization map.
@@ -171,7 +171,7 @@ dfs(node, parent)
 
 ```
 
-#### Single-state return
+### Single-state return
 
 Use one value when the parent needs only one piece of information:
 
@@ -187,7 +187,7 @@ Examples:
 - Downward path sum
 - Number of nodes in the subtree
 
-#### Multiple-state return
+### Multiple-state return
 
 Use an array or class when the parent needs multiple possibilities:
 
@@ -219,7 +219,7 @@ class State {
 
 ```
 
-#### Global answer versus returned answer
+### Global answer versus returned answer
 
 Some problems require two different values:
 
@@ -816,11 +816,11 @@ Examples:
 - Number of leaves
 - Minimum or maximum value
 
-#### How it works
+### How it works
 
 Each child returns its subtree result. The current node combines all child results and adds its own contribution.
 
-#### State
+### State
 
 ```plain text
 dfs(node)
@@ -828,7 +828,7 @@ dfs(node)
 
 ```
 
-#### Recurrence
+### Recurrence
 
 ```plain text
 height(node)
@@ -837,7 +837,7 @@ height(node)
 
 ```
 
-#### Code
+### Code
 
 ```java
 public int maxDepth(TreeNode root) {
@@ -866,11 +866,11 @@ Practice:
 
 The complete answer may pass through the current node and use contributions from two children.
 
-#### How it works
+### How it works
 
 Each child returns one extendable branch. The current node combines the two best branches for the global answer but returns only one branch to its parent.
 
-#### State
+### State
 
 ```plain text
 dfs(node)
@@ -878,14 +878,14 @@ dfs(node)
 
 ```
 
-#### Complete path through a node
+### Complete path through a node
 
 ```plain text
 node.value + left contribution + right contribution
 
 ```
 
-#### Returned path
+### Returned path
 
 ```plain text
 node.value + max(left contribution, right contribution)
@@ -894,7 +894,7 @@ node.value + max(left contribution, right contribution)
 
 A parent cannot extend both branches because that would create a fork rather than a path.
 
-#### Code
+### Code
 
 ```java
 class Solution {
@@ -946,7 +946,7 @@ Practice:
 
 Selecting a node restricts which neighboring nodes may be selected.
 
-#### How it works
+### How it works
 
 Return two answers for every subtree:
 
@@ -958,7 +958,7 @@ skip = answer when the current node is not selected
 
 When the current node is selected, its children must be skipped. When it is skipped, each child independently chooses its better state.
 
-#### State
+### State
 
 ```plain text
 state[0] = maximum value when node is selected
@@ -966,7 +966,7 @@ state[1] = maximum value when node is skipped
 
 ```
 
-#### Recurrence
+### Recurrence
 
 ```plain text
 take(node)
@@ -985,7 +985,7 @@ max(take(left), skip(left))
 
 ```
 
-#### Code
+### Code
 
 ```java
 class Solution {
@@ -1029,7 +1029,7 @@ Practice:
 
 The parent must know more than selected or skipped.
 
-#### How it works
+### How it works
 
 Define a small set of precise states describing the current node’s relationship with its parent and children.
 
@@ -1042,7 +1042,7 @@ For Binary Tree Cameras, a node can be:
 
 ```
 
-#### State contract
+### State contract
 
 ```plain text
 dfs(node)
@@ -1051,7 +1051,7 @@ dfs(node)
 
 ```
 
-#### Greedy Tree DP transitions
+### Greedy Tree DP transitions
 
 ```plain text
 If any child needs coverage:
@@ -1065,7 +1065,7 @@ Otherwise:
 
 ```
 
-#### Code
+### Code
 
 ```java
 class Solution {
@@ -1104,7 +1104,7 @@ class Solution {
 
 ```
 
-#### Why does null return covered?
+### Why does null return covered?
 
 A missing node does not require a camera.
 Returning the covered state prevents its parent from placing an unnecessary camera.
@@ -1121,7 +1121,7 @@ Practice:
 
 The answer depends on which direction or edge type was used previously.
 
-#### How it works
+### How it works
 
 Return a separate state for each possible continuation direction.
 
@@ -1138,7 +1138,7 @@ goRight
 
 A left move must be followed by a right move, and a right move must be followed by a left move.
 
-#### State
+### State
 
 ```plain text
 dfs(node) returns:
@@ -1146,7 +1146,7 @@ dfs(node) returns:
 
 ```
 
-#### Code
+### Code
 
 ```java
 class Solution {
@@ -1179,7 +1179,7 @@ class Solution {
 
 ```
 
-#### Why does null return `-1`?
+### Why does null return `-1`?
 
 For a leaf:
 
@@ -1202,7 +1202,7 @@ Practice:
 
 Each subtree produces a quantity that contributes to the final result.
 
-#### How it works
+### How it works
 
 The child returns information such as subtree size, total excess, or required resources. The parent combines these contributions, while a global answer records the cost of moving information across edges.
 
@@ -1224,7 +1224,7 @@ absolute value of the child balance
 
 ```
 
-#### Code
+### Code
 
 ```java
 class Solution {
@@ -1269,7 +1269,7 @@ Practice:
 
 Find an answer for every node as though that node were the root.
 
-#### How it works
+### How it works
 
 Use two DFS passes:
 
@@ -1319,7 +1319,7 @@ answer[node]
 
 ```
 
-#### Code
+### Code
 
 ```java
 class Solution {
@@ -1402,7 +1402,7 @@ Practice:
 
 Select a limited number of elements from different subtrees.
 
-#### How it works
+### How it works
 
 Every child subtree provides multiple possibilities:
 
@@ -1415,7 +1415,7 @@ childDP[count]
 
 The parent merges one child at a time, similar to combining knapsack groups.
 
-#### State
+### State
 
 ```plain text
 dp[node][count]
@@ -1424,7 +1424,7 @@ dp[node][count]
 
 ```
 
-#### Child-merging transition
+### Child-merging transition
 
 Suppose:
 
@@ -1454,7 +1454,7 @@ max(
 
 ```
 
-#### Generic code structure
+### Generic code structure
 
 ```java
 private int[] dfs(
@@ -1540,12 +1540,12 @@ Practice:
 
 Count the number of valid ways to assign states to tree nodes.
 
-#### How it works
+### How it works
 
 Calculate the number of possibilities for each possible state of the current node. Child subtrees are independent after the current node’s state is fixed, so their counts are multiplied.
 Suppose adjacent nodes cannot both be selected.
 
-#### State
+### State
 
 ```plain text
 selected[node]
@@ -1556,7 +1556,7 @@ skipped[node]
 
 ```
 
-#### Transition
+### Transition
 
 If the current node is selected, every child must be skipped:
 
@@ -1578,7 +1578,7 @@ product(
 
 ```
 
-#### Code
+### Code
 
 ```java
 private static final long MOD = 1_000_000_007L;

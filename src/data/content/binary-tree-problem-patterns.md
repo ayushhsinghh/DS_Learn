@@ -734,6 +734,7 @@ Path backtracking uses:
 Current path: O(h)
 ```
 If every complete path is returned, output storage may itself be larger than `O(n)`.
+
 ---
 ## Final Reusable Model
 ```plain text

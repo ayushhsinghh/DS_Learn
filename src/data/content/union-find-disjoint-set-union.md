@@ -42,6 +42,7 @@ When an edge connects two components:
 union(0, 3)
 ```
 one component root is attached to the other.
+
 ---
 ## When to Use Union-Find
 Look for these signals:
@@ -58,6 +59,7 @@ Look for these signals:
 > Am I repeatedly connecting two items and asking whether they already belong to the same connected group?
 
 If yes, Union-Find is likely appropriate.
+
 ---
 ## Union-Find State
 The basic structure contains:
@@ -81,6 +83,7 @@ size[root]
 ```
 stores the number of nodes in the component represented by `root`.
 The size value is meaningful only for representative roots.
+
 ---
 ## Initial State
 Initially, every node belongs to its own component:
@@ -180,6 +183,7 @@ Therefore:
 find(4) = 1
 ```
 Node `1` is the representative of the component.
+
 ---
 ## Path Compression
 Without optimization:
@@ -236,6 +240,7 @@ Correct:
 if (size[rootFirst] < size[rootSecond])
 ```
 Only component roots store the current component size.
+
 ---
 ## Union by Rank
 Rank approximates the height of the representative tree.
@@ -257,6 +262,7 @@ Union by rank
 ```
 Both work well with path compression. You do not need both simultaneously.
 Union by size is often easier because it also gives component sizes.
+
 ---
 ## Understanding `union` Return Value
 A useful `union` method returns:
@@ -279,6 +285,7 @@ boolean union(int first, int second) {
 }
 ```
 This directly supports cycle detection and successful-merge counting.
+
 ---
 ## Common Form 1: Basic Dynamic Connectivity
 Edges are added, and we need to determine whether nodes belong to the same connected component.
@@ -787,6 +794,7 @@ It does not directly answer:
 What is the path from u to v?
 ```
 Use BFS or DFS when the actual path is needed.
+
 ---
 ## Union-Find versus Directed Graph Algorithms
 Standard Union-Find ignores edge direction.
@@ -846,6 +854,7 @@ n + 1
 ```
 Check the labels before initializing the DSU.
 A wrong array size is one of the most common implementation bugs.
+
 ---
 ## Quick Interview Checklist
 1. What represents one DSU node?

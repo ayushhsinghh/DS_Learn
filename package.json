@@ -4,7 +4,10 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "test": "node --test scripts/hardening.test.mjs",
+    "predev": "node scripts/generate-section-counts.mjs",
     "dev": "vite",
+    "prebuild": "node scripts/generate-section-counts.mjs && npm test",
     "build": "tsc -b && vite build",
     "preview": "vite preview"
   },

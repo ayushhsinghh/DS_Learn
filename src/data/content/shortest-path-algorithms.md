@@ -42,6 +42,7 @@ This operation is called:
 Edge relaxation
 ```
 The algorithms differ in the order and number of times they relax edges.
+
 ---
 ## Shortest-Path Decision Guide
 ```plain text
@@ -95,6 +96,7 @@ Source      → distance 0
 Other nodes → infinity because no path is known
 ```
 As edges are relaxed, distances improve.
+
 ---
 ## Why a Node May Be Discovered More Than Once
 In ordinary BFS, the first discovery is optimal because every edge has equal cost.
@@ -114,6 +116,7 @@ Later:
 A → C → B = 2
 ```
 Therefore, weighted shortest-path algorithms must allow distance improvement.
+
 ---
 ## BFS Shortest Path
 BFS finds the shortest path in:
@@ -136,6 +139,7 @@ Layer 2 → nodes two edges away
 Layer 3 → nodes three edges away
 ```
 Therefore, the first time a node is discovered, it has been reached using the minimum number of edges.
+
 ---
 ## BFS Template
 ```java
@@ -175,6 +179,7 @@ distance == -1 → undiscovered
 distance >= 0  → already discovered
 ```
 A separate `visited` array is unnecessary.
+
 ---
 ## When to Prefer BFS
 Use BFS when:
@@ -186,6 +191,7 @@ Use BFS when:
 - You need the nearest occurrence of something.
 
 Do not use Dijkstra when ordinary BFS is sufficient. BFS is simpler and faster.
+
 ---
 ## Dijkstra’s Algorithm
 Dijkstra finds shortest paths from one source when every edge weight is non-negative.
@@ -193,6 +199,7 @@ Dijkstra finds shortest paths from one source when every edge weight is non-nega
 edgeWeight >= 0
 ```
 It uses a min-priority queue to process the node with the smallest currently known distance.
+
 ---
 ## Dijkstra’s Core Mental Model
 > Always continue from the currently cheapest reachable node.
@@ -312,6 +319,7 @@ if (current.distance != distance[current.node]) {
 }
 ```
 This prevents unnecessary processing.
+
 ---
 ## Why Dijkstra Does Not Need a `visited` Array
 The distance array determines whether a priority-queue entry is current.
@@ -321,6 +329,7 @@ current.distance == distance[current.node]
 means this entry represents the best known distance.
 An older entry is ignored.
 A visited array can be used when a node is finalized after polling, but the stale-entry pattern is often simpler and safer.
+
 ---
 ## Why Dijkstra Requires Non-Negative Weights
 Dijkstra assumes that when the smallest-distance state is processed, a later path cannot make it cheaper.
@@ -336,6 +345,7 @@ The later path gives:
 A → C → B = -10
 ```
 Dijkstra’s greedy finalization is therefore invalid with negative edges.
+
 ---
 ## Early Exit in Dijkstra
 If only one destination is needed:
@@ -345,10 +355,12 @@ if (current.node == destination) {
 }
 ```
 This is safe when the state is removed as the current minimum after stale entries are skipped.
+
 ---
 ## Bellman–Ford
 Bellman–Ford finds shortest paths from one source even when some edges have negative weights.
 It can also detect a reachable negative-weight cycle.
+
 ---
 ## Bellman–Ford Core Mental Model
 > Repeatedly relax every edge until shortest paths have had enough opportunities to propagate.
@@ -358,6 +370,7 @@ A shortest simple path can contain at most:
 V - 1 edges
 ```
 Therefore, relaxing all edges `V - 1` times is sufficient when no negative cycle exists.
+
 ---
 ## Edge-List Representation
 Bellman–Ford works naturally with an edge list:
@@ -430,6 +443,7 @@ paths using at most V - 1 edges
 ```
 Any simple path contains at most `V - 1` edges.
 If it contains more, it must repeat a vertex and therefore contain a cycle.
+
 ---
 ## Detecting a Negative Cycle
 After the standard `V - 1` rounds, perform one additional relaxation pass.
@@ -456,10 +470,12 @@ for (Edge edge : edges) {
 Why?
 A normal shortest path should already be finalized after `V - 1` rounds.
 Continued improvement means repeatedly traveling through a negative cycle keeps reducing the cost.
+
 ---
 ## Floyd–Warshall Algorithm
 Floyd–Warshall calculates shortest paths between every pair of vertices.
 It uses dynamic programming over possible intermediate nodes.
+
 ---
 ## Floyd–Warshall Core Mental Model
 For every pair `(from, to)`, ask:
@@ -496,6 +512,7 @@ distance[to][from] =
     Math.min(distance[to][from], weight);
 ```
 Using `Math.min` handles multiple edges between the same pair.
+
 ---
 ## Floyd–Warshall Template
 ```java
@@ -530,6 +547,7 @@ for (via)
         for (to)
 ```
 Changing this order can violate the DP transition.
+
 ---
 ## Floyd–Warshall and Negative Cycles
 After Floyd–Warshall:
@@ -543,6 +561,7 @@ Normally:
 distance[node][node] = 0
 ```
 A negative diagonal means traveling through a cycle can reduce the cost below zero.
+
 ---
 ## When to Prefer Floyd–Warshall
 Use Floyd–Warshall when:
@@ -700,6 +719,7 @@ Practice:
 - LC 2662 — Minimum Cost of a Path With Special Roads
 
 For LC 787, ordinary Dijkstra requires additional stop-count state; bounded Bellman–Ford is often simpler.
+
 ---
 ## Common Form 5: Minimax Path
 Some paths are not scored by adding edge costs.
@@ -1036,6 +1056,7 @@ source → destination
 ## Minimum spanning tree
 Minimizes the total edge cost required to connect every node.
 A Minimum Spanning Tree does not guarantee the shortest route between every pair.
+
 ---
 ## Integer Overflow and Infinity
 Avoid:
@@ -1061,6 +1082,7 @@ Safe infinity:
 long infinity = Long.MAX_VALUE / 4;
 ```
 This leaves room for addition without overflow.
+
 ---
 ## Common Mistakes
 - Using BFS when edge weights differ.
@@ -1158,6 +1180,7 @@ Space: O(V²)
 Time: O(V × (V + E) log V)
 ```
 This may be preferable to Floyd–Warshall for sparse graphs.
+
 ---
 ## Final Algorithm Selection Model
 ```plain text
