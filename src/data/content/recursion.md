@@ -559,7 +559,10 @@ void insertSorted(
     stack.push(top);
 }
 ```
+`Decode String` is related recursive-call-stack practice, not a stack-sorting exercise.
+
 Practice:
+- LC 394 — Decode String
 - Sort a Stack Using Recursion
 - Reverse a Stack Using Recursion
 - Delete the Middle Element of a Stack

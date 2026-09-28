@@ -126,7 +126,6 @@ Look for these signals:
 
 If yes, use the BST property instead of traversing the entire tree.
 ---
-## Common Forms
 ## Common Form 1: Search in a BST
 Compare the target with the current node.
 ```plain text

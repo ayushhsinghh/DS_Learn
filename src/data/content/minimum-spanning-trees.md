@@ -377,7 +377,6 @@ log E and log V
 ```
 are closely related for ordinary graphs, both are often similar in practice.
 ---
-## Common Forms
 ## Common Form 1: Standard Minimum Cost to Connect All Nodes
 The graph directly provides weighted undirected edges.
 ### How it works
@@ -495,6 +494,7 @@ paidEdges.sort(
 );
 ```
 Practice:
+- LC 1319 — Number of Operations to Make Network Connected
 - Minimum Cost to Repair or Connect a Network
 - Connecting Cities with Existing Roads
 - Amazon-style network connection problems
@@ -639,6 +639,11 @@ edges.sort(
 );
 ```
 Use this only when the problem explicitly asks to maximize total connection value.
+
+LeetCode does not have a standard problem asking for a maximum-total spanning tree. The following is a related maximum-bottleneck path problem, not a maximum-total spanning-tree problem.
+
+Practice:
+- LC 1102 — Path With Maximum Minimum Value
 ---
 ## Common Form 9: MST Savings
 Some questions provide the cost of every existing edge and ask how much cost can be saved while keeping the graph connected.
@@ -655,7 +660,10 @@ total original cost - MST cost
 long savings =
     totalEdgeCost - minimumSpanningTreeCost;
 ```
+This problem maximizes the number of removable edges, not weighted MST savings, so it is an adjacent connectivity/savings exercise.
+
 Practice:
+- LC 1579 — Remove Max Number of Edges to Keep Graph Fully Traversable
 - Network Savings
 - Dark Roads
 - Infrastructure cost-reduction problems
@@ -672,6 +680,10 @@ The real MST decision is between those components.
 
 **Memory flow:** `Compress existing groups → Connect component representatives`
 This frequently appears in infrastructure and network-upgrade questions.
+
+Practice:
+- LC 1319 — Number of Operations to Make Network Connected
+- LC 1579 — Remove Max Number of Edges to Keep Graph Fully Traversable
 ---
 ## Recovering the Selected MST Edges
 If the question requires the actual connections, not only total cost, save each accepted edge.

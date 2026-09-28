@@ -71,38 +71,13 @@ Several starting sources spread simultaneously
 ```
 ---
 ## Quick Comparison
-<table header-row="true">
-<tr>
-<td>Algorithm</td>
-<td>Graph requirement</td>
-<td>Finds</td>
-<td>Time</td>
-</tr>
-<tr>
-<td>BFS</td>
-<td>Equal-weight or unweighted edges</td>
-<td>One source to all nodes</td>
-<td>`O(V + E)`</td>
-</tr>
-<tr>
-<td>Dijkstra</td>
-<td>Non-negative weights</td>
-<td>One source to all nodes</td>
-<td>`O((V + E) log V)`</td>
-</tr>
-<tr>
-<td>Bellman–Ford</td>
-<td>Negative weights allowed</td>
-<td>One source to all nodes</td>
-<td>`O(VE)`</td>
-</tr>
-<tr>
-<td>Floyd–Warshall</td>
-<td>Negative edges allowed, no negative cycle</td>
-<td>Every pair</td>
-<td>`O(V³)`</td>
-</tr>
-</table>
+| Algorithm | Graph requirement | Finds | Time |
+| --- | --- | --- | --- |
+| BFS | Equal-weight or unweighted edges | One source to all nodes | `O(V + E)` |
+| Dijkstra | Non-negative weights | One source to all nodes | `O((V + E) log V)` |
+| Bellman–Ford | Negative weights allowed | One source to all nodes | `O(VE)` |
+| Floyd–Warshall | Negative edges allowed, no negative cycle | Every pair | `O(V³)` |
+
 ---
 ## What Is a Distance Array?
 ```java
@@ -140,7 +115,7 @@ A → C → B = 2
 ```
 Therefore, weighted shortest-path algorithms must allow distance improvement.
 ---
-## 1. BFS Shortest Path
+## BFS Shortest Path
 BFS finds the shortest path in:
 ```plain text
 Unweighted graphs
@@ -212,7 +187,7 @@ Use BFS when:
 
 Do not use Dijkstra when ordinary BFS is sufficient. BFS is simpler and faster.
 ---
-## 2. Dijkstra’s Algorithm
+## Dijkstra’s Algorithm
 Dijkstra finds shortest paths from one source when every edge weight is non-negative.
 ```plain text
 edgeWeight >= 0
@@ -371,7 +346,7 @@ if (current.node == destination) {
 ```
 This is safe when the state is removed as the current minimum after stale entries are skipped.
 ---
-## 3. Bellman–Ford Algorithm
+## Bellman–Ford
 Bellman–Ford finds shortest paths from one source even when some edges have negative weights.
 It can also detect a reachable negative-weight cycle.
 ---
@@ -482,7 +457,7 @@ Why?
 A normal shortest path should already be finalized after `V - 1` rounds.
 Continued improvement means repeatedly traveling through a negative cycle keeps reducing the cost.
 ---
-## 4. Floyd–Warshall Algorithm
+## Floyd–Warshall Algorithm
 Floyd–Warshall calculates shortest paths between every pair of vertices.
 It uses dynamic programming over possible intermediate nodes.
 ---
@@ -583,7 +558,6 @@ Time:  O(V³)
 Space: O(V²)
 ```
 ---
-## Common Forms
 ## Common Form 1: Unweighted Shortest Path
 Every move has equal cost.
 

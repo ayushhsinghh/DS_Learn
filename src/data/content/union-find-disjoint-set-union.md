@@ -280,7 +280,6 @@ boolean union(int first, int second) {
 ```
 This directly supports cycle detection and successful-merge counting.
 ---
-## Common Forms
 ## Common Form 1: Basic Dynamic Connectivity
 Edges are added, and we need to determine whether nodes belong to the same connected component.
 ### How it works

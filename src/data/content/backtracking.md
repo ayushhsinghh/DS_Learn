@@ -147,7 +147,6 @@ Also define the recursive contract:
 > `backtrack(state)` explores all valid answers that can be created from the current state.
 
 ---
-## Common Forms
 ## Common Form 1: Include or Exclude
 Each item has two decisions:
 ```plain text

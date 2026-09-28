@@ -440,7 +440,6 @@ Time:  O(V + E)
 Space: O(V + E)
 ```
 ---
-## Common Forms
 ## Common Form 1: Return One Valid Ordering
 The question asks for any ordering satisfying all dependencies.
 Several valid answers may exist.

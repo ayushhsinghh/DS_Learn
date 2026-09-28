@@ -312,7 +312,6 @@ if (!visited[next]) {
 }
 ```
 ---
-## Common Forms
 ## Common Form 1: Recursive DFS Traversal
 Recursive DFS explores one neighbor completely before trying the next neighbor.
 ### How it works

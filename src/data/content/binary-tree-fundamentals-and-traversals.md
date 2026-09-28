@@ -284,7 +284,6 @@ Look for these signals:
 
 That decision identifies preorder, inorder, or postorder.
 ---
-## Common Forms
 ## Common Form 1: Recursive Preorder Traversal
 Preorder processes the current node before visiting its children.
 ```plain text

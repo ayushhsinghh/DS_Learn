@@ -44,7 +44,6 @@ Am I changing links or constructing a new tree?
 → Tree modification or construction
 ```
 ---
-## Common Forms
 ## Common Form 1: Height-Based Problems
 These problems require information from both child subtrees before the current node can calculate its answer.
 

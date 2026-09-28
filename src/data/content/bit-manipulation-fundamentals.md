@@ -405,9 +405,8 @@ The key interview mindset is:
 
 ---
 
-## Core Patterns
 
-## Check, Set, Clear, and Toggle Bits
+## Common Form 1: Check, Set, Clear, and Toggle Bits
 
 To work with bit position `i`, create:
 
@@ -448,7 +447,7 @@ Use this pattern when the question asks you to inspect or modify a particular bi
 - LC 231 — Power of Two
 - LC 338 — Counting Bits
 
-## XOR Cancellation
+## Common Form 2: XOR Cancellation
 
 XOR removes values that appear in pairs:
 
@@ -495,7 +494,7 @@ Use this when:
 
 **Important:** Basic XOR cancellation works when duplicates appear exactly twice.
 
-## Counting Set Bits
+## Common Form 3: Counting Set Bits
 
 A set bit is a bit whose value is `1`.
 To repeatedly remove the rightmost set bit:
@@ -538,7 +537,7 @@ Use this when the question asks for:
 - LC 338 — Counting Bits
 - LC 1356 — Sort Integers by the Number of 1 Bits
 
-## Lowest Set Bit and Power of Two
+## Common Form 4: Lowest Set Bit and Power of Two
 
 The expression below isolates the rightmost `1` bit:
 
@@ -582,7 +581,7 @@ Use this pattern for:
 - LC 342 — Power of Four
 - LC 762 — Prime Number of Set Bits in Binary Representation
 
-## Bit-by-Bit Counting
+## Common Form 5: Bit-by-Bit Counting
 
 Instead of processing each number completely, examine the same bit position across all numbers.
 Example: every number appears three times except one.
@@ -639,7 +638,7 @@ Use this when:
 - LC 477 — Total Hamming Distance
 - LC 1318 — Minimum Flips to Make `a OR b` Equal to `c`
 
-## Prefix XOR for Range Queries
+## Common Form 6: Prefix XOR for Range Queries
 
 Prefix XOR lets us calculate the XOR of any subarray quickly.
 
@@ -686,7 +685,7 @@ Use this when:
 - LC 1442 — Count Triplets That Can Form Two Arrays of Equal XOR
 - LC 1738 — Find Kth Largest XOR Coordinate Value
 
-## Maximum XOR Using a Binary Trie
+## Common Form 7: Maximum XOR Using a Binary Trie
 
 To maximize:
 
@@ -737,7 +736,7 @@ Space: O(32 × n) = O(n)
 - LC 1707 — Maximum XOR With an Element From Array
 - LC 2935 — Maximum Strong Pair XOR II
 
-## Arithmetic Using Bits
+## Common Form 8: Arithmetic Using Bits
 
 Binary addition follows the same idea as normal addition:
 

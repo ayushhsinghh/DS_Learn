@@ -803,9 +803,8 @@ For large trees, consider iterative postorder traversal.
 
 ---
 
-## 11. Common Problem Forms
 
-### Common Form 1: Subtree Aggregation
+## Common Form 1: Subtree Aggregation
 
 Calculate a property for every subtree.
 
@@ -863,7 +862,7 @@ Practice:
 
 ---
 
-### Common Form 2: A Path Uses Two Child Branches
+## Common Form 2: A Path Uses Two Child Branches
 
 The complete answer may pass through the current node and use contributions from two children.
 
@@ -943,7 +942,7 @@ Practice:
 
 ---
 
-### Common Form 3: Take or Skip a Node
+## Common Form 3: Take or Skip a Node
 
 Selecting a node restricts which neighboring nodes may be selected.
 
@@ -1026,7 +1025,7 @@ Practice:
 
 ---
 
-### Common Form 4: Multiple Semantic States
+## Common Form 4: Multiple Semantic States
 
 The parent must know more than selected or skipped.
 
@@ -1118,7 +1117,7 @@ Practice:
 
 ---
 
-### Common Form 5: Direction-Dependent Tree DP
+## Common Form 5: Direction-Dependent Tree DP
 
 The answer depends on which direction or edge type was used previously.
 
@@ -1199,7 +1198,7 @@ Practice:
 
 ---
 
-### Common Form 6: Subtree Contribution to a Global Answer
+## Common Form 6: Subtree Contribution to a Global Answer
 
 Each subtree produces a quantity that contributes to the final result.
 
@@ -1266,7 +1265,7 @@ Practice:
 
 ---
 
-### Common Form 7: Rerooting DP
+## Common Form 7: Rerooting DP
 
 Find an answer for every node as though that node were the root.
 
@@ -1399,7 +1398,7 @@ Practice:
 
 ---
 
-### Common Form 8: Tree Knapsack
+## Common Form 8: Tree Knapsack
 
 Select a limited number of elements from different subtrees.
 
@@ -1525,8 +1524,11 @@ private int[] dfs(
 
 Tree Knapsack is less common in standard LeetCode problems but is important for advanced tree contests and interviews.
 
+LeetCode does not have a direct node-count tree-knapsack problem. This related exercise uses tree DP with a state passed through the hierarchy, but does not impose a node-count capacity.
+
 Practice:
 
+- LC 2920 — Maximum Points After Collecting Coins From All Nodes
 - Tree Knapsack — standard competitive-programming pattern
 - Maximum-weight connected subtree with a node limit
 - Select exactly `k` nodes from a hierarchy
@@ -1534,7 +1536,7 @@ Practice:
 
 ---
 
-### Common Form 9: Count Configurations on a Tree
+## Common Form 9: Count Configurations on a Tree
 
 Count the number of valid ways to assign states to tree nodes.
 
@@ -1936,4 +1938,3 @@ number of nodes
 The shortest memory rule is:
 
 > Every subtree returns a compact summary of everything its parent needs to make the optimal decision.
-

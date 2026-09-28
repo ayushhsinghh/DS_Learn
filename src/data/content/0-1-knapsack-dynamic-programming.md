@@ -569,8 +569,7 @@ usually iterate capacity from low to high
 ```
 This direction difference controls whether the current item can be reused.
 ---
-## 11. Common Problem Forms
-### Common Form 1: Maximum Value Within Capacity
+## Common Form 1: Maximum Value Within Capacity
 Each item has:
 ```plain text
 Weight
@@ -597,7 +596,7 @@ Practice:
 - LC 474 — Ones and Zeroes
 - LC 879 — Profitable Schemes
 ---
-### Common Form 2: Subset Sum Feasibility
+## Common Form 2: Subset Sum Feasibility
 Determine whether some subset adds exactly to a target.
 #### How it works
 1. Define `dp[sum]` as whether the sum is achievable.
@@ -635,7 +634,7 @@ Practice:
 - Subset Sum
 - LC 1049 — Last Stone Weight II
 ---
-### Common Form 3: Partition into Equal Subsets
+## Common Form 3: Partition into Equal Subsets
 If total sum is `S`, two equal subsets must each have:
 ```plain text
 S / 2
@@ -660,7 +659,7 @@ return subsetSum(nums, total / 2);
 Practice:
 - LC 416 — Partition Equal Subset Sum
 ---
-### Common Form 4: Minimum Subset-Sum Difference
+## Common Form 4: Minimum Subset-Sum Difference
 Divide the array into two subsets minimizing:
 ```plain text
 abs(sum1 - sum2)
@@ -699,7 +698,7 @@ Practice:
 - Minimum Subset Sum Difference
 - Partition Array Into Two Subsets With Minimum Difference
 ---
-### Common Form 5: Count Subsets with a Target Sum
+## Common Form 5: Count Subsets with a Target Sum
 Instead of storing feasibility, store the number of ways.
 ```plain text
 dp[sum]
@@ -750,7 +749,7 @@ Practice:
 - LC 494 — Target Sum
 - LC 879 — Profitable Schemes
 ---
-### Common Form 6: Target Sum Transformation
+## Common Form 6: Target Sum Transformation
 Assign `+` or `-` before every number.
 
 Let:
@@ -811,7 +810,7 @@ return countSubsets(
 Practice:
 - LC 494 — Target Sum
 ---
-### Common Form 7: Multiple Capacity Constraints
+## Common Form 7: Multiple Capacity Constraints
 Some problems limit more than one resource.
 
 Example:
@@ -860,7 +859,7 @@ Practice:
 - LC 474 — Ones and Zeroes
 - Multi-Dimensional 0/1 Knapsack
 ---
-### Common Form 8: Select Items with an Exact Count or Additional Condition
+## Common Form 8: Select Items with an Exact Count or Additional Condition
 Sometimes capacity is not the only changing condition.
 
 State may include:

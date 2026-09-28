@@ -332,9 +332,8 @@ If that sentence is unclear, the state definition is not ready.
 
 ---
 
-## Core Patterns
 
-## Bitmask as a Set
+## Common Form 1: Bitmask as a Set
 
 Use one integer to represent a set when the number of possible items is small.
 
@@ -394,7 +393,7 @@ Use this pattern when:
 - LC 1239 — Maximum Length of a Concatenated String with Unique Characters
 - LC 318 — Maximum Product of Word Lengths
 
-## Generating All Subsets
+## Common Form 2: Generating All Subsets
 
 For `n` items, there are `2ⁿ` possible subsets.
 Each number from `0` to `(1 << n) - 1` represents one subset.
@@ -451,7 +450,7 @@ Space: O(n) excluding the generated output
 - LC 784 — Letter Case Permutation
 - LC 1239 — Maximum Length of a Concatenated String with Unique Characters
 
-## Enumerating Submasks
+## Common Form 3: Enumerating Submasks
 
 Sometimes you already have a mask and need to examine every subset contained inside it.
 Use:
@@ -527,7 +526,7 @@ O(3ⁿ)
 - LC 2305 — Fair Distribution of Cookies
 - LC 1494 — Parallel Courses II
 
-## Encoding Character or Feature Sets
+## Common Form 4: Encoding Character or Feature Sets
 
 Assign one bit to each possible character or feature.
 For lowercase English letters:
@@ -592,7 +591,7 @@ Do not use one bit per character when duplicate counts matter. `"ab"` and `"aab"
 - LC 1178 — Number of Valid Words for Each Puzzle
 - LC 1371 — Find the Longest Substring Containing Vowels in Even Counts
 
-## Visited-State Compression
+## Common Form 5: Visited-State Compression
 
 Sometimes reaching the same position with different collected items represents different states.
 Therefore, position alone cannot be marked as visited.
@@ -662,7 +661,7 @@ Space:  O(V × 2ⁿ)
 - LC 864 — Shortest Path to Get All Keys
 - LC 1129 — Shortest Path with Alternating Colors, using a small state instead of a full mask
 
-## Assignment and Matching With Masks
+## Common Form 6: Assignment and Matching With Masks
 
 Use a mask when items must be assigned once, such as assigning jobs to workers.
 State:
@@ -727,7 +726,7 @@ Space: O(2ⁿ)
 - LC 2172 — Maximum AND Sum of Array
 - LC 1066 — Campus Bikes II
 
-## `dp[mask][last]`
+## Common Form 7: `dp[mask][last]`
 
 Use this when the answer depends on:
 

@@ -53,6 +53,10 @@ Common appearances:
 - Comparing or shrinking boundaries
 > **Invariant:** Everything outside `[left, right]` has already been decided. Each comparison proves that at least one current boundary cannot participate in a better valid answer.
 
+Practice:
+- LC 167 — Two Sum II - Input Array Is Sorted
+- LC 11 — Container With Most Water
+
 ## Common Form 2: Same-Direction Read/Write Pointers
 Use this form when you must scan the input while compacting or rewriting it in place.
 
@@ -82,6 +86,10 @@ Common appearances:
 - In-place array compaction
 - Partition accepted and rejected elements
 > **Invariant:** The range before `write` contains exactly the accepted elements seen so far, in their required order.
+
+Practice:
+- LC 26 — Remove Duplicates from Sorted Array
+- LC 283 — Move Zeroes
 
 ## Quick Interview Checklist
 Ask yourself:

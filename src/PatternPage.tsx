@@ -1,7 +1,7 @@
-import { isValidElement, memo, useEffect, useMemo, useRef, useState, type MouseEvent, type ReactNode, type WheelEvent } from 'react'
+import { cloneElement, isValidElement, memo, useEffect, useMemo, useRef, useState, type MouseEvent, type ReactNode, type WheelEvent } from 'react'
 import Markdown, { type Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import { loadPattern, patterns, prefetchPattern, slugify, type Pattern } from './data/patterns'
+import { loadPattern, patterns, prefetchPattern, sentenceCaseHeading, type Pattern } from './data/patterns'
 import { appHref, Arrow, Mark, navigate, PageState, SkipLink } from './SiteChrome'
 
 const javaKeywords = new Set([
@@ -68,11 +68,85 @@ function CodeBlock({ code, language }: { code: string; language: string }) {
   )
 }
 
+function sentenceCaseMarkdownHeading(children: ReactNode, removeSequenceNumber = false) {
+  const caseState = { capitalizeNext: true }
+  const transform = (value: ReactNode): ReactNode => {
+    if (typeof value === 'string') {
+      const text = removeSequenceNumber ? value.replace(/^\s*\d+\.\s*/, '') : value
+      return sentenceCaseHeading(text, caseState)
+    }
+    if (typeof value === 'number') return value
+    if (Array.isArray(value)) return value.map(transform)
+    if (isValidElement<{ children?: ReactNode }>(value)) {
+      if (value.type === 'code') return value
+      return cloneElement(value, undefined, transform(value.props.children))
+    }
+    return value
+  }
+  return transform(children)
+}
+
 function nodeText(value: ReactNode): string {
   if (typeof value === 'string' || typeof value === 'number') return String(value)
   if (Array.isArray(value)) return value.map(nodeText).join('')
   if (isValidElement<{ children?: ReactNode }>(value)) return nodeText(value.props.children)
   return ''
+}
+
+const leetcodeSlugOverrides: Record<string, string> = {
+  '69': 'sqrtx',
+  '215': 'kth-largest-element-in-an-array',
+  '236': 'lowest-common-ancestor-of-a-binary-tree',
+  '673': 'number-of-longest-increasing-subsequence',
+  '968': 'binary-tree-cameras',
+  '1047': 'remove-all-adjacent-duplicates-in-string',
+  '1123': 'lowest-common-ancestor-of-deepest-leaves',
+  '1326': 'minimum-number-of-taps-to-open-to-water-a-garden',
+  '1489': 'find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree',
+  '1644': 'lowest-common-ancestor-of-a-binary-tree-ii',
+  '1650': 'lowest-common-ancestor-of-a-binary-tree-iii',
+}
+
+function leetcodeSlugFromQuestion(number: string, title: string) {
+  if (leetcodeSlugOverrides[number]) return leetcodeSlugOverrides[number]
+  const canonicalTitle = title
+    .replace(/, (?:conceptually related|multiplicative variation|using a small state instead of a full mask|for the undirected variation)$/i, '')
+    .replace(/ uses interval DP, not this pattern$/i, '')
+  return canonicalTitle
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/['’‘]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+}
+
+function LeetCodePracticeItem({ children }: { children?: ReactNode }) {
+  const question = nodeText(children).trim().match(/^LC\s*(\d+)\s*[—–-]\s*(.+)$/i)
+  if (!question) return <li>{children}</li>
+
+  const [, number, title] = question
+  const slug = leetcodeSlugFromQuestion(number, title)
+  const href = `https://leetcode.com/problems/${slug}/`
+  const isParagraph = isValidElement<{ children?: ReactNode }>(children) && children.type === 'p'
+  const linkChildren = isParagraph ? children.props.children : children
+  const anchor = (
+    <a
+      className="practice-question-link"
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`Open LeetCode question ${number}: ${title} in a new tab`}
+    >
+      {linkChildren}
+    </a>
+  )
+
+  if (isParagraph) {
+    return <li>{cloneElement(children, undefined, anchor)}</li>
+  }
+
+  return <li>{anchor}</li>
 }
 
 function ContentsIcon() {
@@ -92,13 +166,18 @@ function LoadFailure({ message }: { message: string }) {
 }
 
 const PatternArticle = memo(function PatternArticle({ pattern, patternIndex }: { pattern: Pattern; patternIndex: number }) {
+  const removeSequenceNumber = pattern.slug.endsWith('-dynamic-programming')
   const markdownComponents = useMemo<Components>(() => ({
     h2({ children, node }) {
-      const id = pattern.sections.find((section) => section.line === node?.position?.start.line)?.id ?? slugify(nodeText(children))
-      return <h2 id={id}>{children}</h2>
+      const section = pattern.sections.find((item) => item.line === node?.position?.start.line)
+      if (!section) return <h3>{sentenceCaseMarkdownHeading(children, removeSequenceNumber)}</h3>
+      return <h2 id={section.id}>{sentenceCaseMarkdownHeading(children, removeSequenceNumber)}</h2>
     },
     h3({ children }) {
-      return <h3>{children}</h3>
+      return <h3>{sentenceCaseMarkdownHeading(children, removeSequenceNumber)}</h3>
+    },
+    li({ children }) {
+      return <LeetCodePracticeItem>{children}</LeetCodePracticeItem>
     },
     pre({ children }) {
       return <>{children}</>
@@ -112,7 +191,7 @@ const PatternArticle = memo(function PatternArticle({ pattern, patternIndex }: {
     a({ href, children }) {
       return <a href={href} target="_blank" rel="noreferrer">{children}</a>
     },
-  }), [pattern.sections])
+  }), [pattern.sections, removeSequenceNumber])
 
   return (
     <article>

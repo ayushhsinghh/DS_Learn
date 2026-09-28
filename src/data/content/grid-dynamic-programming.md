@@ -715,9 +715,8 @@ Avoid immediate space optimization when:
 
 ---
 
-## 11. Common Problem Forms
 
-### Common Form 1: Count Paths
+## Common Form 1: Count Paths
 
 Find the number of ways to travel from the top-left to the bottom-right.
 
@@ -776,7 +775,7 @@ Practice:
 
 ---
 
-### Common Form 2: Count Paths With Obstacles
+## Common Form 2: Count Paths With Obstacles
 
 Some cells cannot be used.
 
@@ -835,7 +834,7 @@ Practice:
 
 ---
 
-### Common Form 3: Minimum or Maximum Path Cost
+## Common Form 3: Minimum or Maximum Path Cost
 
 Every cell contains a cost or reward.
 
@@ -902,7 +901,7 @@ Practice:
 
 ---
 
-### Common Form 4: Falling Path
+## Common Form 4: Falling Path
 
 You move from one row to the next using a set of allowed columns.
 
@@ -981,7 +980,7 @@ Practice:
 
 ---
 
-### Common Form 5: Triangle DP
+## Common Form 5: Triangle DP
 
 Each position can move to one of two positions in the following row.
 
@@ -1028,7 +1027,7 @@ Practice:
 
 ---
 
-### Common Form 6: Grid With Limited Moves
+## Common Form 6: Grid With Limited Moves
 
 The answer depends on the current cell and how many moves remain.
 
@@ -1098,7 +1097,7 @@ Practice:
 
 ---
 
-### Common Form 7: Two-Agent Grid DP
+## Common Form 7: Two-Agent Grid DP
 
 Two people or robots move through the grid simultaneously.
 
@@ -1172,7 +1171,7 @@ Practice:
 
 ---
 
-### Common Form 8: Shape-Based Grid DP
+## Common Form 8: Shape-Based Grid DP
 
 The goal is to find the largest square or another structure inside a binary matrix.
 
@@ -1246,7 +1245,7 @@ Practice:
 
 ---
 
-### Common Form 9: Reverse Grid DP
+## Common Form 9: Reverse Grid DP
 
 Sometimes the future determines how much resource is required at the current cell.
 
@@ -1330,7 +1329,7 @@ Practice:
 
 ---
 
-### Common Form 10: Grid DP With Previous-Choice Restrictions
+## Common Form 10: Grid DP With Previous-Choice Restrictions
 
 The choice in the current row depends on which column was selected previously.
 
@@ -1643,4 +1642,3 @@ Space: O(R × C²)
 The shortest memory rule is:
 
 > Current cell = current contribution + combined answers from valid dependency cells.
-

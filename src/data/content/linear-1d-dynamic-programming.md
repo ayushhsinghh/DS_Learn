@@ -513,8 +513,7 @@ Keep the complete DP array when:
 
 Correctness comes before space optimization.
 ---
-## 11. Common Problem Forms
-### Common Form 1: Count Ways to Reach a Position
+## Common Form 1: Count Ways to Reach a Position
 The current position can be reached from a fixed set of previous positions.
 
 Example:
@@ -556,7 +555,7 @@ Practice:
 - LC 1137 — N-th Tribonacci Number
 - LC 377 — Combination Sum IV
 ---
-### Common Form 2: Minimum Cost to Reach the End
+## Common Form 2: Minimum Cost to Reach the End
 Each position has a cost, and several previous positions may lead to it.
 #### How it works
 1. Define the minimum cost required to reach each position.
@@ -597,7 +596,7 @@ Practice:
 - LC 983 — Minimum Cost For Tickets
 - LC 2369 — Check if There Is a Valid Partition
 ---
-### Common Form 3: Take or Skip with Adjacency Restrictions
+## Common Form 3: Take or Skip with Adjacency Restrictions
 Selecting the current item prevents selecting an adjacent or nearby item.
 
 Typical recurrence:
@@ -630,7 +629,7 @@ Practice:
 - LC 2140 — Solving Questions With Brainpower
 - Maximum Sum of Non-Adjacent Elements
 ---
-### Common Form 4: Circular Linear DP
+## Common Form 4: Circular Linear DP
 The first and last positions are adjacent.
 They cannot both be selected.
 
@@ -671,7 +670,7 @@ Practice:
 - LC 213 — House Robber II
 - Circular Maximum Non-Adjacent Sum
 ---
-### Common Form 5: Decode or Parse a Prefix
+## Common Form 5: Decode or Parse a Prefix
 One or more characters may form the final valid token of a prefix.
 
 For Decode Ways:
@@ -724,7 +723,7 @@ Practice:
 - LC 639 — Decode Ways II
 - LC 1416 — Restore The Array
 ---
-### Common Form 6: Variable-Length Jumps
+## Common Form 6: Variable-Length Jumps
 The current state can transition to several possible future positions.
 The dependency is not limited to `i - 1` and `i - 2`.
 #### How it works
@@ -761,7 +760,7 @@ Practice:
 
 Some jump problems also have greedy solutions, so always check whether DP is necessary.
 ---
-### Common Form 7: Transform Values into Linear Positions
+## Common Form 7: Transform Values into Linear Positions
 Sometimes the input order is not the important structure.
 Instead, values themselves form neighboring positions.
 
@@ -800,7 +799,7 @@ Practice:
 - LC 740 — Delete and Earn
 - Weighted Non-Adjacent Selection
 ---
-### Common Form 8: Maintain Multiple Results per Position
+## Common Form 8: Maintain Multiple Results per Position
 Sometimes one scalar answer does not preserve enough information for future transitions.
 
 Maximum Product Subarray requires both:

@@ -543,8 +543,7 @@ minimization does not distinguish ordering
 Both loop orders can still produce the minimum number when transitions are otherwise correct.
 For counting, however, loop order changes the meaning of the answer dramatically.
 ---
-## 11. Common Problem Forms
-### Common Form 1: Maximum Value with Reusable Items
+## Common Form 1: Maximum Value with Reusable Items
 Each item has:
 ```plain text
 Weight
@@ -569,11 +568,12 @@ dp[capacity]
 )
 ```
 Practice:
+- LC 1449 — Form Largest Integer With Digits That Add up to Target
 - Unbounded Knapsack
 - Complete Knapsack
 - Rod Cutting
 ---
-### Common Form 2: Minimum Items to Reach an Exact Target
+## Common Form 2: Minimum Items to Reach an Exact Target
 Choose reusable values to create an exact target using the fewest items.
 #### How it works
 1. Define `dp[amount]` as the minimum items required for that amount.
@@ -622,7 +622,7 @@ Practice:
 - Minimum Coins
 - Minimum Number of Pieces
 ---
-### Common Form 3: Count Unordered Combinations
+## Common Form 3: Count Unordered Combinations
 Count how many combinations create an amount.
 
 Order does not matter:
@@ -664,7 +664,7 @@ Practice:
 - LC 518 — Coin Change II
 - Count Ways to Make Change
 ---
-### Common Form 4: Count Ordered Sequences
+## Common Form 4: Count Ordered Sequences
 Here, order matters:
 ```plain text
 [1, 2]
@@ -742,7 +742,7 @@ Item inner
 ```
 The recurrence may look similar, but loop order changes what is counted.
 ---
-### Common Form 5: Rod Cutting
+## Common Form 5: Rod Cutting
 A rod of length `n` can be cut into pieces.
 A piece length can be selected repeatedly, so each possible cut length behaves like an unlimited item.
 ```plain text
@@ -781,7 +781,7 @@ Practice:
 
 The last distinction is important: not every cutting problem is Knapsack.
 ---
-### Common Form 6: Minimum Number of Perfect Squares or Pieces
+## Common Form 6: Minimum Number of Perfect Squares or Pieces
 Available reusable items are generated rather than directly provided.
 
 For Perfect Squares:
@@ -822,12 +822,14 @@ int numSquares(int n) {
     return dp[n];
 }
 ```
+`Word Break` reuses dictionary words, but is usually taught as partition DP rather than numeric knapsack.
+
 Practice:
 - LC 279 — Perfect Squares
 - Minimum Number of Coins
 - Minimum Pieces to Reach a Length
 ---
-### Common Form 7: Feasibility with Reusable Items
+## Common Form 7: Feasibility with Reusable Items
 Determine whether an exact target can be constructed using reusable values.
 
 State:
@@ -860,11 +862,12 @@ for (int number : nums) {
 }
 ```
 Practice:
+- LC 279 — Perfect Squares
+- LC 139 — Word Break
 - Unbounded Subset Sum
 - Can Sum
-- Word Break, conceptually similar but usually taught as partition DP
 ---
-### Common Form 8: Maximum Number of Exact Pieces
+## Common Form 8: Maximum Number of Exact Pieces
 Some problems require using the entire target while maximizing the number of pieces.
 
 Example:

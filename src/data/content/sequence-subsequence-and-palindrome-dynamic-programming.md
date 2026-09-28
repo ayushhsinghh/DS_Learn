@@ -668,8 +668,7 @@ Keep the full table when:
 - You need to trace selected decisions.
 - The table is used by a later calculation.
 ---
-## 11. Common Problem Forms
-### Common Form 1: Longest Increasing Subsequence
+## Common Form 1: Longest Increasing Subsequence
 Select the longest strictly increasing subsequence from one array.
 #### How it works
 1. Let every element be the ending of a subsequence.
@@ -712,7 +711,7 @@ Practice:
 - Maximum Sum Increasing Subsequence
 - Longest Bitonic Subsequence
 ---
-### Common Form 2: Reconstruct or Count LIS
+## Common Form 2: Reconstruct or Count LIS
 Track additional information with the LIS length.
 #### How it works
 For reconstruction:
@@ -778,7 +777,7 @@ Practice:
 - LC 673 — Number of Longest Increasing Subsequences
 - Print Longest Increasing Subsequence
 ---
-### Common Form 3: Custom Predecessor Chains
+## Common Form 3: Custom Predecessor Chains
 Replace the increasing comparison with another compatibility rule.
 
 Examples:
@@ -851,7 +850,7 @@ Practice:
 - LC 354 — Russian Doll Envelopes
 - LC 646 — Maximum Length of Pair Chain
 ---
-### Common Form 4: Longest Common Subsequence
+## Common Form 4: Longest Common Subsequence
 Find the longest subsequence appearing in both sequences.
 #### How it works
 1. Compare the current characters.
@@ -876,7 +875,7 @@ Practice:
 - LC 1035 — Uncrossed Lines
 - LC 583 — Delete Operation for Two Strings
 ---
-### Common Form 5: Print Longest Common Subsequence
+## Common Form 5: Print Longest Common Subsequence
 Use the completed LCS table to reconstruct one valid LCS.
 #### How it works
 1. Start at `dp[m][n]`.
@@ -923,7 +922,7 @@ Practice:
 - Print Longest Common Subsequence
 - LC 1092 — Shortest Common Supersequence
 ---
-### Common Form 6: Longest Common Substring
+## Common Form 6: Longest Common Substring
 Find the longest contiguous segment appearing in both strings.
 #### How it works
 1. Let `dp[i][j]` represent the common suffix ending at both current characters.
@@ -967,7 +966,7 @@ Practice:
 - Longest Common Substring
 - LC 718 — Maximum Length of Repeated Subarray
 ---
-### Common Form 7: Shortest Common Supersequence
+## Common Form 7: Shortest Common Supersequence
 A supersequence contains both input strings as subsequences.
 
 Shortest length:
@@ -1041,7 +1040,7 @@ Practice:
 - LC 1092 — Shortest Common Supersequence
 - Print Shortest Common Supersequence
 ---
-### Common Form 8: Insertions and Deletions Between Strings
+## Common Form 8: Insertions and Deletions Between Strings
 Use LCS as the part already shared by both strings.
 To convert `first` into `second`:
 ```plain text
@@ -1082,7 +1081,7 @@ Practice:
 - LC 583 — Delete Operation for Two Strings
 - Minimum Insertions and Deletions to Convert Strings
 ---
-### Common Form 9: Edit Distance
+## Common Form 9: Edit Distance
 Allowed operations:
 ```plain text
 Insert
@@ -1153,7 +1152,7 @@ Practice:
 - One Edit Distance
 - String Transformation Problems
 ---
-### Common Form 10: Count Distinct Subsequences
+## Common Form 10: Count Distinct Subsequences
 Count how many subsequences of a source equal a target.
 
 State:
@@ -1208,7 +1207,7 @@ Practice:
 - LC 115 — Distinct Subsequences
 - Count Subsequences Equal to Target
 ---
-### Common Form 11: Interleaving Two Sequences
+## Common Form 11: Interleaving Two Sequences
 Determine whether a third string can be formed by interleaving two strings while preserving the order of each.
 #### How it works
 1. Let `i` and `j` be the consumed lengths of the first two strings.
@@ -1261,7 +1260,7 @@ boolean isInterleave(
 Practice:
 - LC 97 — Interleaving String
 ---
-### Common Form 12: Longest Palindromic Subsequence
+## Common Form 12: Longest Palindromic Subsequence
 Find the longest subsequence that is also a palindrome.
 
 Two approaches are available:
@@ -1294,7 +1293,7 @@ Practice:
 - LC 516 — Longest Palindromic Subsequence
 - LC 1312 — Minimum Insertion Steps to Make a String Palindrome
 ---
-### Common Form 13: Longest Palindromic Substring
+## Common Form 13: Longest Palindromic Substring
 Unlike a subsequence, the selected palindrome must be contiguous.
 
 State:
@@ -1356,7 +1355,7 @@ Practice:
 - LC 5 — Longest Palindromic Substring
 - LC 647 — Palindromic Substrings
 ---
-### Common Form 14: Count Palindromic Substrings
+## Common Form 14: Count Palindromic Substrings
 Count every palindromic interval.
 Different positions count as different substrings even if their text is equal.
 #### How it works
@@ -1400,7 +1399,7 @@ Practice:
 - LC 647 — Palindromic Substrings
 - Count Palindromic Substrings
 ---
-### Common Form 15: Minimum Insertions or Deletions for a Palindrome
+## Common Form 15: Minimum Insertions or Deletions for a Palindrome
 The longest palindromic subsequence is the part that can remain unchanged.
 
 Therefore:
@@ -1429,7 +1428,7 @@ Practice:
 - LC 1312 — Minimum Insertion Steps to Make a String Palindrome
 - Minimum Deletions to Make a String Palindrome
 ---
-### Common Form 16: Palindrome Partitioning Cost
+## Common Form 16: Palindrome Partitioning Cost
 Divide a string into palindromic pieces while minimizing cuts or changes.
 
 This combines:

@@ -716,9 +716,8 @@ Even then, optimization can make the solution harder to understand and may preve
 
 ---
 
-## 11. Common Problem Forms
 
-### Common Form 1: Matrix Chain Multiplication
+## Common Form 1: Matrix Chain Multiplication
 
 You are given a sequence of matrices and must determine the multiplication order with minimum cost.
 
@@ -799,7 +798,7 @@ Practice:
 
 ---
 
-### Common Form 2: Choose the Last Element to Remove
+## Common Form 2: Choose the Last Element to Remove
 
 This appears when removing an element changes its neighbors.
 
@@ -883,7 +882,7 @@ Practice:
 
 ---
 
-### Common Form 3: Minimum Cost to Cut an Interval
+## Common Form 3: Minimum Cost to Cut an Interval
 
 You must perform cuts, and every cut costs the length of the current piece.
 
@@ -965,7 +964,7 @@ Practice:
 
 ---
 
-### Common Form 4: Polygon Triangulation
+## Common Form 4: Polygon Triangulation
 
 A polygon must be divided into triangles while minimizing the total score.
 
@@ -1038,7 +1037,7 @@ Practice:
 
 ---
 
-### Common Form 5: Matching or Skipping Interval Boundaries
+## Common Form 5: Matching or Skipping Interval Boundaries
 
 The answer depends on whether the two ends of an interval match.
 
@@ -1116,7 +1115,7 @@ Practice:
 
 ---
 
-### Common Form 6: Optimal Game Strategy
+## Common Form 6: Optimal Game Strategy
 
 Two players take turns selecting elements, and both play optimally.
 
@@ -1195,7 +1194,7 @@ Practice:
 
 ---
 
-### Common Form 7: Expression Parenthesization
+## Common Form 7: Expression Parenthesization
 
 Different divisions of an expression produce different results.
 
@@ -1282,7 +1281,7 @@ Practice:
 
 ---
 
-### Common Form 8: Merge Adjacent Intervals
+## Common Form 8: Merge Adjacent Intervals
 
 Adjacent groups must be repeatedly merged, and each merge has a cost.
 
@@ -1372,7 +1371,7 @@ Practice:
 
 ---
 
-### Common Form 9: Compress Equal Boundaries
+## Common Form 9: Compress Equal Boundaries
 
 Repeated equal values can sometimes be processed together.
 
@@ -1747,4 +1746,3 @@ O(n²) memo + O(n) recursion stack
 The shortest memory rule is:
 
 > For every interval, try every place where its optimal solution could make its final meaningful decision.
-
