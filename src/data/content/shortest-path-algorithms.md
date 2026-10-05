@@ -593,23 +593,32 @@ Examples:
 5. Stop early when the destination is found.
 
 **Memory flow:** `Explore distance d → Discover distance d + 1`
+
 ```java
-queue.offer(source);
-distance[source] = 0;
+int fewestEdges(
+        List<List<Integer>> graph,
+        int source, int destination) {
+    int[] distance = new int[graph.size()];
+    Arrays.fill(distance, -1);
+    Queue<Integer> queue = new ArrayDeque<>();
+    distance[source] = 0;
+    queue.offer(source);
 
-while (!queue.isEmpty()) {
-    int node = queue.poll();
-
-    for (int neighbor : graph.get(node)) {
-        if (distance[neighbor] == -1) {
-            distance[neighbor] =
-                distance[node] + 1;
-
-            queue.offer(neighbor);
+    while (!queue.isEmpty()) {
+        int node = queue.poll();
+        if (node == destination) {
+            return distance[node];
+        }
+        for (int next : graph.get(node)) {
+            if (distance[next] != -1) continue;
+            distance[next] = distance[node] + 1;
+            queue.offer(next);
         }
     }
+    return -1;
 }
 ```
+
 Practice:
 - LC 1091 — Shortest Path in Binary Matrix
 - LC 752 — Open the Lock
@@ -633,25 +642,32 @@ Examples:
 5. BFS levels represent simultaneous expansion.
 
 **Memory flow:** `Initialize every source → Expand together → Record nearest distance`
+
 ```java
-for (int source : sources) {
-    queue.offer(source);
-    distance[source] = 0;
-}
+int[] nearestSource(
+        List<List<Integer>> graph,
+        int[] sources) {
+    int[] distance = new int[graph.size()];
+    Arrays.fill(distance, -1);
+    Queue<Integer> queue = new ArrayDeque<>();
 
-while (!queue.isEmpty()) {
-    int node = queue.poll();
-
-    for (int neighbor : graph.get(node)) {
-        if (distance[neighbor] == -1) {
-            distance[neighbor] =
-                distance[node] + 1;
-
-            queue.offer(neighbor);
+    for (int source : sources) {
+        if (distance[source] != -1) continue;
+        distance[source] = 0;
+        queue.offer(source);
+    }
+    while (!queue.isEmpty()) {
+        int node = queue.poll();
+        for (int next : graph.get(node)) {
+            if (distance[next] != -1) continue;
+            distance[next] = distance[node] + 1;
+            queue.offer(next);
         }
     }
+    return distance;
 }
 ```
+
 Practice:
 - LC 994 — Rotting Oranges
 - LC 542 — 01 Matrix
@@ -679,6 +695,48 @@ Current position
 5. Return the level when the target state is reached.
 
 **Memory flow:** `State → Generate legal moves → BFS by number of moves`
+
+```java
+int openLock(String[] deadends, String target) {
+    Set<String> blocked = new HashSet<>(
+        Arrays.asList(deadends)
+    );
+    if (blocked.contains("0000")) return -1;
+
+    Set<String> seen = new HashSet<>();
+    Queue<String> queue = new ArrayDeque<>();
+    seen.add("0000");
+    queue.offer("0000");
+    int moves = 0;
+
+    while (!queue.isEmpty()) {
+        int levelSize = queue.size();
+        for (int i = 0; i < levelSize; i++) {
+            String state = queue.poll();
+            if (state.equals(target)) return moves;
+
+            char[] digits = state.toCharArray();
+            for (int wheel = 0; wheel < 4; wheel++) {
+                char original = digits[wheel];
+                for (int step : new int[]{-1, 1}) {
+                    int digit = original - '0';
+                    digits[wheel] = (char) (
+                        '0' + (digit + step + 10) % 10
+                    );
+                    String next = new String(digits);
+                    if (!blocked.contains(next)
+                            && seen.add(next)) {
+                        queue.offer(next);
+                    }
+                }
+                digits[wheel] = original;
+            }
+        }
+        moves++;
+    }
+    return -1;
+}
+```
 
 Open Lock example:
 ```plain text
@@ -711,6 +769,49 @@ Edges have different non-negative costs.
 
 **Memory flow:** `Poll cheapest node → Relax weighted edges → Queue improvements`
 
+```java
+long shortestWeightedPath(
+        int n, int[][] edges,
+        int source, int destination) {
+    List<List<int[]>> graph = new ArrayList<>();
+    for (int i = 0; i < n; i++) {
+        graph.add(new ArrayList<>());
+    }
+    for (int[] edge : edges) {
+        graph.get(edge[0]).add(
+            new int[]{edge[1], edge[2]}
+        );
+    }
+
+    long infinity = Long.MAX_VALUE / 4;
+    long[] distance = new long[n];
+    Arrays.fill(distance, infinity);
+    PriorityQueue<long[]> queue = new PriorityQueue<>(
+        Comparator.comparingLong(state -> state[1])
+    );
+    distance[source] = 0;
+    queue.offer(new long[]{source, 0});
+
+    while (!queue.isEmpty()) {
+        long[] state = queue.poll();
+        int node = (int) state[0];
+        long cost = state[1];
+        if (cost != distance[node]) continue;
+        if (node == destination) return cost;
+
+        for (int[] edge : graph.get(node)) {
+            int next = edge[0];
+            long candidate = cost + edge[1];
+            if (candidate < distance[next]) {
+                distance[next] = candidate;
+                queue.offer(new long[]{next, candidate});
+            }
+        }
+    }
+    return -1;
+}
+```
+
 Practice:
 - LC 743 — Network Delay Time
 - LC 787 — Cheapest Flights Within K Stops
@@ -739,20 +840,59 @@ We want to minimize that maximum.
 5. Use a min-priority queue as in Dijkstra.
 
 **Memory flow:** `Carry worst edge so far → Minimize that worst value`
-```java
-int edgeDifference =
-    Math.abs(
-        heights[currentRow][currentCol]
-        - heights[nextRow][nextCol]
-    );
 
-int candidateEffort = Math.max(
-    currentEffort,
-    edgeDifference
-);
+```java
+long minimumEffort(int[][] heights) {
+    int rows = heights.length;
+    int cols = heights[0].length;
+    long[][] effort = new long[rows][cols];
+    for (long[] row : effort) {
+        Arrays.fill(row, Long.MAX_VALUE);
+    }
+    PriorityQueue<long[]> queue = new PriorityQueue<>(
+        Comparator.comparingLong(state -> state[2])
+    );
+    effort[0][0] = 0;
+    queue.offer(new long[]{0, 0, 0});
+    int[][] directions = {
+        {1, 0}, {-1, 0}, {0, 1}, {0, -1}
+    };
+
+    while (!queue.isEmpty()) {
+        long[] state = queue.poll();
+        int row = (int) state[0];
+        int col = (int) state[1];
+        long current = state[2];
+        if (current != effort[row][col]) continue;
+        if (row == rows - 1 && col == cols - 1) {
+            return current;
+        }
+
+        for (int[] direction : directions) {
+            int nextRow = row + direction[0];
+            int nextCol = col + direction[1];
+            if (nextRow < 0 || nextRow >= rows
+                    || nextCol < 0 || nextCol >= cols) {
+                continue;
+            }
+            long difference = Math.abs(
+                (long) heights[row][col]
+                    - heights[nextRow][nextCol]
+            );
+            long candidate = Math.max(
+                current, difference
+            );
+            if (candidate < effort[nextRow][nextCol]) {
+                effort[nextRow][nextCol] = candidate;
+                queue.offer(new long[]{
+                    nextRow, nextCol, candidate
+                });
+            }
+        }
+    }
+    return -1;
+}
 ```
-Why `Math.max`?
-The path’s effort is determined by its most difficult edge.
 
 Practice:
 - LC 1631 — Path With Minimum Effort
@@ -776,15 +916,54 @@ Use a max-priority queue.
 5. Stop when the destination is removed as the best state.
 
 **Memory flow:** `Poll most promising path → Multiply relationship → Keep maximum`
-```java
-double candidate =
-    probability[current]
-    * edge.probability;
 
-if (candidate > probability[edge.node]) {
-    probability[edge.node] = candidate;
+```java
+double maximumProbability(
+        int n, int[][] edges, double[] probabilities,
+        int source, int destination) {
+    List<List<double[]>> graph = new ArrayList<>();
+    for (int i = 0; i < n; i++) {
+        graph.add(new ArrayList<>());
+    }
+    for (int i = 0; i < edges.length; i++) {
+        int from = edges[i][0];
+        int to = edges[i][1];
+        double probability = probabilities[i];
+        graph.get(from).add(
+            new double[]{to, probability}
+        );
+        graph.get(to).add(
+            new double[]{from, probability}
+        );
+    }
+
+    double[] best = new double[n];
+    PriorityQueue<double[]> queue = new PriorityQueue<>(
+        (a, b) -> Double.compare(b[1], a[1])
+    );
+    best[source] = 1.0;
+    queue.offer(new double[]{source, 1.0});
+
+    while (!queue.isEmpty()) {
+        double[] state = queue.poll();
+        int node = (int) state[0];
+        double probability = state[1];
+        if (probability < best[node]) continue;
+        if (node == destination) return probability;
+
+        for (double[] edge : graph.get(node)) {
+            int next = (int) edge[0];
+            double candidate = probability * edge[1];
+            if (candidate > best[next]) {
+                best[next] = candidate;
+                queue.offer(new double[]{next, candidate});
+            }
+        }
+    }
+    return 0.0;
 }
 ```
+
 Practice:
 - LC 1514 — Path with Maximum Probability
 - Currency-conversion variants with optimization objectives
@@ -808,19 +987,55 @@ candidate == distance[next]
 → ways[next] += ways[current]
 ```
 **Memory flow:** `Better distance replaces count → Equal distance adds count`
-```java
-if (candidate < distance[next]) {
-    distance[next] = candidate;
-    ways[next] = ways[current];
 
-    queue.offer(
-        new State(next, candidate)
+```java
+int countShortestPaths(int n, int[][] roads) {
+    final long MOD = 1_000_000_007;
+    List<List<int[]>> graph = new ArrayList<>();
+    for (int i = 0; i < n; i++) {
+        graph.add(new ArrayList<>());
+    }
+    for (int[] road : roads) {
+        graph.get(road[0]).add(
+            new int[]{road[1], road[2]}
+        );
+        graph.get(road[1]).add(
+            new int[]{road[0], road[2]}
+        );
+    }
+
+    long[] distance = new long[n];
+    long[] ways = new long[n];
+    Arrays.fill(distance, Long.MAX_VALUE / 4);
+    PriorityQueue<long[]> queue = new PriorityQueue<>(
+        Comparator.comparingLong(state -> state[1])
     );
-} else if (candidate == distance[next]) {
-    ways[next] =
-        (ways[next] + ways[current]) % MOD;
+    distance[0] = 0;
+    ways[0] = 1;
+    queue.offer(new long[]{0, 0});
+
+    while (!queue.isEmpty()) {
+        long[] state = queue.poll();
+        int node = (int) state[0];
+        long cost = state[1];
+        if (cost != distance[node]) continue;
+
+        for (int[] edge : graph.get(node)) {
+            int next = edge[0];
+            long candidate = cost + edge[1];
+            if (candidate < distance[next]) {
+                distance[next] = candidate;
+                ways[next] = ways[node];
+                queue.offer(new long[]{next, candidate});
+            } else if (candidate == distance[next]) {
+                ways[next] = (ways[next] + ways[node]) % MOD;
+            }
+        }
+    }
+    return (int) ways[n - 1];
 }
 ```
+
 Practice:
 - LC 1976 — Number of Ways to Arrive at Destination
 - Number of Shortest Paths in an Unweighted Graph
@@ -842,37 +1057,40 @@ A slightly more expensive path may be useful if it used fewer stops.
 5. This prevents one round from using more than one new edge.
 
 **Memory flow:** `One relaxation round → Allow one additional edge`
+
 ```java
-int[] distance = new int[n];
-Arrays.fill(distance, Integer.MAX_VALUE);
+long cheapestFlight(
+        int n, int[][] flights,
+        int source, int destination, int maxStops) {
+    long infinity = Long.MAX_VALUE / 4;
+    long[] distance = new long[n];
+    Arrays.fill(distance, infinity);
+    distance[source] = 0;
 
-distance[source] = 0;
+    for (int round = 0; round <= maxStops; round++) {
+        long[] nextDistance = Arrays.copyOf(distance, n);
+        boolean changed = false;
 
-for (int edgesUsed = 0;
-        edgesUsed <= maxStops;
-        edgesUsed++) {
-    int[] nextDistance =
-        Arrays.copyOf(distance, n);
+        for (int[] flight : flights) {
+            int from = flight[0];
+            int to = flight[1];
+            int price = flight[2];
+            if (distance[from] == infinity) continue;
 
-    for (int[] flight : flights) {
-        int from = flight[0];
-        int to = flight[1];
-        int price = flight[2];
-
-        if (distance[from]
-                == Integer.MAX_VALUE) {
-            continue;
+            long candidate = distance[from] + price;
+            if (candidate < nextDistance[to]) {
+                nextDistance[to] = candidate;
+                changed = true;
+            }
         }
-
-        nextDistance[to] = Math.min(
-            nextDistance[to],
-            distance[from] + price
-        );
+        distance = nextDistance;
+        if (!changed) break;
     }
-
-    distance = nextDistance;
+    return distance[destination] == infinity
+        ? -1 : distance[destination];
 }
 ```
+
 ### Why copy the array?
 If updates are immediately reused during the same round, one iteration could travel across several edges.
 
@@ -882,6 +1100,7 @@ Iteration 1 → paths using at most 1 edge
 Iteration 2 → paths using at most 2 edges
 ...
 ```
+
 Practice:
 - LC 787 — Cheapest Flights Within K Stops
 - Shortest Path with At Most K Edges
@@ -897,6 +1116,43 @@ Bellman–Ford repeatedly relaxes all edges.
 5. Optionally use one additional pass to detect a negative cycle.
 
 **Memory flow:** `Relax every edge repeatedly → Propagate cheaper paths`
+
+```java
+long[] bellmanFord(
+        int n, int[][] edges, int source) {
+    long infinity = Long.MAX_VALUE / 4;
+    long[] distance = new long[n];
+    Arrays.fill(distance, infinity);
+    distance[source] = 0;
+
+    for (int round = 1; round < n; round++) {
+        boolean changed = false;
+        for (int[] edge : edges) {
+            int from = edge[0];
+            int to = edge[1];
+            if (distance[from] == infinity) continue;
+
+            long candidate = distance[from] + edge[2];
+            if (candidate < distance[to]) {
+                distance[to] = candidate;
+                changed = true;
+            }
+        }
+        if (!changed) break;
+    }
+
+    for (int[] edge : edges) {
+        if (distance[edge[0]] != infinity
+                && distance[edge[0]] + edge[2]
+                    < distance[edge[1]]) {
+            throw new IllegalArgumentException(
+                "Negative cycle reachable from source"
+            );
+        }
+    }
+    return distance;
+}
+```
 
 Practice:
 - Bellman–Ford shortest-path problems
@@ -923,6 +1179,28 @@ Repeating the cycle keeps reducing total cost.
 
 **Memory flow:** `Finish normal relaxation → Test whether improvement is still possible`
 
+```java
+boolean hasNegativeCycle(int n, int[][] edges) {
+    long[] distance = new long[n];
+
+    for (int round = 0; round < n; round++) {
+        boolean changed = false;
+        for (int[] edge : edges) {
+            int from = edge[0];
+            int to = edge[1];
+            long candidate = distance[from] + edge[2];
+            if (candidate < distance[to]) {
+                distance[to] = candidate;
+                changed = true;
+                if (round == n - 1) return true;
+            }
+        }
+        if (!changed) return false;
+    }
+    return false;
+}
+```
+
 Practice:
 - Detect Negative Cycle
 - Currency Arbitrage
@@ -938,24 +1216,46 @@ The problem needs shortest distances for many or all source-destination pairs.
 5. Update every `from → to` pair through that intermediate.
 
 **Memory flow:** `Allow one more intermediate node → Improve every pair`
-```java
-for (int via = 0; via < n; via++) {
-    for (int from = 0; from < n; from++) {
-        for (int to = 0; to < n; to++) {
-            if (distance[from][via] == infinity
-                    || distance[via][to] == infinity) {
-                continue;
-            }
 
-            distance[from][to] = Math.min(
-                distance[from][to],
-                distance[from][via]
-                    + distance[via][to]
+```java
+long[][] allPairsDistances(int n, int[][] edges) {
+    long infinity = Long.MAX_VALUE / 4;
+    long[][] distance = new long[n][n];
+    for (int i = 0; i < n; i++) {
+        Arrays.fill(distance[i], infinity);
+        distance[i][i] = 0;
+    }
+    for (int[] edge : edges) {
+        int from = edge[0];
+        int to = edge[1];
+        distance[from][to] = Math.min(
+            distance[from][to], edge[2]
+        );
+    }
+
+    for (int via = 0; via < n; via++) {
+        for (int from = 0; from < n; from++) {
+            if (distance[from][via] == infinity) continue;
+            for (int to = 0; to < n; to++) {
+                if (distance[via][to] == infinity) continue;
+                distance[from][to] = Math.min(
+                    distance[from][to],
+                    distance[from][via] + distance[via][to]
+                );
+            }
+        }
+    }
+    for (int node = 0; node < n; node++) {
+        if (distance[node][node] < 0) {
+            throw new IllegalArgumentException(
+                "Graph contains a negative cycle"
             );
         }
     }
+    return distance;
 }
 ```
+
 Practice:
 - LC 1334 — Find the City With the Smallest Number of Neighbors
 - LC 1462 — Course Schedule IV
@@ -977,6 +1277,57 @@ For larger sparse graphs with non-negative weights, run Dijkstra from each sourc
 
 **Memory flow:** `Compute distances → Count values inside threshold → Apply tie rule`
 
+```java
+int cityWithinThreshold(
+        int n, int[][] edges, int threshold) {
+    long infinity = Long.MAX_VALUE / 4;
+    long[][] distance = new long[n][n];
+    for (int i = 0; i < n; i++) {
+        Arrays.fill(distance[i], infinity);
+        distance[i][i] = 0;
+    }
+    for (int[] edge : edges) {
+        int from = edge[0];
+        int to = edge[1];
+        long weight = Math.min(
+            distance[from][to], edge[2]
+        );
+        distance[from][to] = weight;
+        distance[to][from] = weight;
+    }
+
+    for (int via = 0; via < n; via++) {
+        for (int from = 0; from < n; from++) {
+            if (distance[from][via] == infinity) continue;
+            for (int to = 0; to < n; to++) {
+                if (distance[via][to] == infinity) continue;
+                distance[from][to] = Math.min(
+                    distance[from][to],
+                    distance[from][via] + distance[via][to]
+                );
+            }
+        }
+    }
+
+    int answer = -1;
+    int fewest = n;
+    for (int city = 0; city < n; city++) {
+        int count = 0;
+        for (int other = 0; other < n; other++) {
+            if (city != other
+                    && distance[city][other] <= threshold) {
+                count++;
+            }
+        }
+        if (count <= fewest) {
+            fewest = count;
+            answer = city;
+        }
+    }
+    return answer;
+}
+```
+
 Practice:
 - LC 1334 — Find the City With the Smallest Number of Neighbors
 ---
@@ -991,28 +1342,40 @@ Store the predecessor responsible for each improvement.
 4. Reverse the collected nodes.
 
 **Memory flow:** `Improve distance → Save predecessor → Trace destination backward`
-```java
-if (candidate < distance[next]) {
-    distance[next] = candidate;
-    parent[next] = current;
 
-    queue.offer(
-        new State(next, candidate)
-    );
+```java
+List<Integer> shortestRoute(
+        List<List<Integer>> graph,
+        int source, int destination) {
+    int[] parent = new int[graph.size()];
+    Arrays.fill(parent, -1);
+    boolean[] seen = new boolean[graph.size()];
+    Queue<Integer> queue = new ArrayDeque<>();
+    seen[source] = true;
+    queue.offer(source);
+
+    while (!queue.isEmpty()) {
+        int node = queue.poll();
+        if (node == destination) break;
+        for (int next : graph.get(node)) {
+            if (seen[next]) continue;
+            seen[next] = true;
+            parent[next] = node;
+            queue.offer(next);
+        }
+    }
+    List<Integer> path = new ArrayList<>();
+    if (!seen[destination]) return path;
+
+    for (int node = destination;
+            node != -1; node = parent[node]) {
+        path.add(node);
+    }
+    Collections.reverse(path);
+    return path;
 }
 ```
-```java
-List<Integer> path = new ArrayList<>();
 
-int node = destination;
-
-while (node != -1) {
-    path.add(node);
-    node = parent[node];
-}
-
-Collections.reverse(path);
-```
 Practice:
 - Print Shortest Path in an Unweighted Graph
 - Print Dijkstra’s Shortest Path
