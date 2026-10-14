@@ -2,6 +2,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync, readdirSync } from 'node:fs'
 import { extractSections } from '../src/data/sections.ts'
+import { drawerMotionPolicy, sectionScrollBehavior } from '../src/motion.ts'
 import { unified } from 'unified'
 import remarkParse from 'remark-parse'
 
@@ -46,4 +47,55 @@ test('section extraction excludes fences and small headings, and disambiguates a
   assert.deepEqual(extractSections(content, 'test').map(({ id, line }) => ({ id, line })), [
     { id: 'topic', line: 1 }, { id: 'topic-2', line: 6 },
   ])
+})
+
+test('section scrolling animates only pointer activation without reduced motion', () => {
+  assert.equal(sectionScrollBehavior(false, false), 'smooth')
+  assert.equal(sectionScrollBehavior(true, false), 'instant')
+  assert.equal(sectionScrollBehavior(false, true), 'instant')
+  assert.equal(sectionScrollBehavior(true, true), 'instant')
+})
+
+test('motion regressions: instant navigation, gated hover, static reduced-motion loader', () => {
+  const css = readFileSync(new URL('../src/styles.css', import.meta.url), 'utf8')
+  const chrome = readFileSync(new URL('../src/SiteChrome.tsx', import.meta.url), 'utf8')
+  const reader = readFileSync(new URL('../src/PatternPage.tsx', import.meta.url), 'utf8')
+  assert.match(chrome, /scrollTo\(\{ top: 0, behavior: 'instant' \}\)/)
+  assert.match(reader, /keyboardActivated = event.detail === 0/)
+  assert.match(reader, /sectionScrollBehavior\(keyboardActivated, reduceMotion\)/)
+  assert.match(css, /html \{[^}]*scroll-behavior: auto;/)
+  assert.match(css, /@media \(hover: hover\) and \(pointer: fine\) \{[\s\S]*?\.pattern-card:hover \.pattern-arrow \{[^}]*transform: translateX\(5px\)/)
+  assert.match(css, /\.pattern-card:focus-visible \{[^}]*transition: none;/)
+  assert.doesNotMatch(css, /transition: width|animation-duration: \.01ms/)
+  assert.match(css, /\.reader-header \{ position: sticky; transition: transform \.28s cubic-bezier\(\.16,1,\.3,1\); \}/)
+  assert.match(css, /@media \(prefers-reduced-motion: reduce\) \{[\s\S]*?\.loading-rule::after \{ animation: none; transform: scaleX\(\.6\); \}/)
+  assert.match(css, /\.pattern-card:hover \.pattern-arrow, \.pattern-card:active, \.menu-button:active \{ transform: none; \}/)
+})
+
+test('drawer motion is limited to pointer entry and pointer Close', () => {
+  // Mouse, touch, and pen click activation share the pointer policy.
+  assert.deepEqual(drawerMotionPolicy('pointer', false, true), { mode: 'pointer', duration: 220 })
+  assert.deepEqual(drawerMotionPolicy('pointer', false, false), { mode: 'pointer', duration: 160 })
+  for (const opening of [true, false]) {
+    assert.deepEqual(drawerMotionPolicy('pointer', true, opening), { mode: 'pointer', duration: 120 })
+    for (const activation of ['keyboard', 'escape', 'section', 'desktop']) {
+      for (const reduced of [true, false]) {
+        assert.deepEqual(drawerMotionPolicy(activation, reduced, opening), { mode: 'instant', duration: 0 })
+      }
+    }
+  }
+})
+
+test('drawer lifecycle keeps exits mounted and supports instant and reduced-motion paths', () => {
+  const css = readFileSync(new URL('../src/styles.css', import.meta.url), 'utf8')
+  const reader = readFileSync(new URL('../src/PatternPage.tsx', import.meta.url), 'utf8')
+  assert.match(css, /transition: transform 220ms var\(--ease-drawer\), opacity 220ms var\(--ease-drawer\)/)
+  assert.match(css, /transition-duration: 160ms/)
+  assert.match(css, /@media \(max-width: 1120px\) and \(prefers-reduced-motion: reduce\) \{[\s\S]*?transform: none;[\s\S]*?transition: opacity 120ms var\(--ease-out\)/)
+  assert.match(reader, /event.target !== event.currentTarget \|\| event.propertyName !== 'opacity'/)
+  assert.match(reader, /policy.duration \+ 50/)
+  assert.match(reader, /requestDrawerClose\('escape'\)/)
+  assert.match(reader, /requestDrawerClose\('section'\)/)
+  assert.match(reader, /requestDrawerClose\('desktop'\)/)
+  assert.match(reader, /event.detail > 0 \? 'pointer' : 'keyboard'/)
 })

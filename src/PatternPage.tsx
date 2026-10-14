@@ -1,8 +1,9 @@
-import { cloneElement, isValidElement, memo, useEffect, useMemo, useRef, useState, type MouseEvent, type ReactNode } from 'react'
+import { cloneElement, isValidElement, memo, useEffect, useMemo, useRef, useState, type MouseEvent, type ReactNode, type TransitionEvent } from 'react'
 import Markdown, { type Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { loadPattern, patterns, prefetchPattern, sentenceCaseHeading, type Pattern } from './data/patterns'
 import { appHref, Arrow, Mark, navigate, PageState, SkipLink } from './SiteChrome'
+import { drawerMotionPolicy, sectionScrollBehavior, type DrawerActivation } from './motion'
 import leetcodeSlugs from './data/leetcode-slugs.json'
 
 const javaKeywords = new Set([
@@ -185,6 +186,13 @@ const PatternArticle = memo(function PatternArticle({ pattern, patternIndex }: {
 function PatternReader({ pattern }: { pattern: Pattern }) {
   const patternIndex = patterns.findIndex((item) => item.slug === pattern.slug)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [drawerVisible, setDrawerVisible] = useState(false)
+  const [drawerMotion, setDrawerMotion] = useState<'pointer' | 'instant'>('instant')
+  const [drawerClosing, setDrawerClosing] = useState(false)
+  const [drawerSwitching, setDrawerSwitching] = useState(false)
+  const drawerLifecycle = useRef({ open: false, closing: false })
+  const drawerFrames = useRef(new Set<number>())
+  const closeTimer = useRef<number | undefined>(undefined)
   const [headerMode, setHeaderMode] = useState<'full' | 'hidden' | 'compact'>('full')
   const menuButtonRef = useRef<HTMLButtonElement>(null)
   const contentsRef = useRef<HTMLElement>(null)
@@ -224,10 +232,6 @@ function PatternReader({ pattern }: { pattern: Pattern }) {
       const { x, y } = pageScrollRef.current
       if (window.scrollX !== x || window.scrollY !== y) window.scrollTo(x, y)
     }
-    const frame = window.requestAnimationFrame(() => {
-      if (contentsRef.current) contentsRef.current.scrollTop = 0
-      contentsRef.current?.querySelector<HTMLAnchorElement>('a')?.focus({ preventScroll: true })
-    })
     const closeMenu = (event: KeyboardEvent) => {
       if (event.key === 'Tab') {
         const controls = contentsRef.current?.querySelectorAll<HTMLElement>('button, a[href]')
@@ -240,9 +244,7 @@ function PatternReader({ pattern }: { pattern: Pattern }) {
         return
       }
       if (event.key !== 'Escape') return
-      setMenuOpen(false)
-      setHeaderMode(window.scrollY > 24 ? 'compact' : 'full')
-      window.requestAnimationFrame(() => menuButtonRef.current?.focus({ preventScroll: true }))
+      requestDrawerClose('escape')
     }
     document.body.style.overflow = 'hidden'
     document.documentElement.style.overflow = 'hidden'
@@ -250,7 +252,6 @@ function PatternReader({ pattern }: { pattern: Pattern }) {
     window.addEventListener('keydown', closeMenu)
     window.addEventListener('scroll', holdPagePosition, { passive: true })
     return () => {
-      window.cancelAnimationFrame(frame)
       window.removeEventListener('scroll', holdPagePosition)
       document.body.style.overflow = bodyOverflow
       document.documentElement.style.overflow = rootStyles.overflow
@@ -264,11 +265,31 @@ function PatternReader({ pattern }: { pattern: Pattern }) {
     const desktop = window.matchMedia('(width > 1120px)')
     const closeOnDesktop = () => {
       if (!desktop.matches) return
-      setMenuOpen(false)
+      requestDrawerClose('desktop')
       setHeaderMode('full')
     }
     desktop.addEventListener('change', closeOnDesktop)
     return () => desktop.removeEventListener('change', closeOnDesktop)
+  }, [])
+
+  useEffect(() => {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const settleDrawer = () => {
+      if (!drawerLifecycle.current.open) return
+      if (drawerLifecycle.current.closing) {
+        finishDrawerClose('keyboard')
+      } else {
+        cancelDrawerWork()
+        setDrawerMotion('instant')
+        setDrawerVisible(true)
+        if (!contentsRef.current?.contains(document.activeElement)) scheduleDrawerFrame(focusContents)
+      }
+    }
+    reducedMotion.addEventListener('change', settleDrawer)
+    return () => {
+      reducedMotion.removeEventListener('change', settleDrawer)
+      cancelDrawerWork()
+    }
   }, [])
 
   useEffect(() => {
@@ -329,31 +350,111 @@ function PatternReader({ pattern }: { pattern: Pattern }) {
 
   function openSection(event: MouseEvent<HTMLAnchorElement>, id: string) {
     event.preventDefault()
-    setMenuOpen(false)
-    window.requestAnimationFrame(() => {
+    const keyboardActivated = event.detail === 0
+    requestDrawerClose('section')
+    scheduleDrawerFrame(() => {
       if (window.location.hash !== `#${id}`) window.history.pushState({}, '', `#${id}`)
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
       const heading = document.getElementById(id)
       heading?.focus({ preventScroll: true })
-      heading?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' })
+      heading?.scrollIntoView({ behavior: sectionScrollBehavior(keyboardActivated, reduceMotion) })
     })
   }
 
-  function closeContents() {
-    setMenuOpen(false)
-    setHeaderMode(window.scrollY > 24 ? 'compact' : 'full')
-    window.requestAnimationFrame(() => menuButtonRef.current?.focus({ preventScroll: true }))
+  function scheduleDrawerFrame(callback: () => void) {
+    const frame = window.requestAnimationFrame(() => {
+      drawerFrames.current.delete(frame)
+      callback()
+    })
+    drawerFrames.current.add(frame)
   }
 
-  function toggleContents() {
+  function cancelDrawerWork() {
+    drawerFrames.current.forEach((frame) => window.cancelAnimationFrame(frame))
+    drawerFrames.current.clear()
+    window.clearTimeout(closeTimer.current)
+    closeTimer.current = undefined
+  }
+
+  function focusContents() {
+    contentsRef.current?.querySelector<HTMLAnchorElement>('a')?.focus({ preventScroll: true })
+  }
+
+  function finishDrawerClose(reason: DrawerActivation) {
+    if (!drawerLifecycle.current.open) return
+    cancelDrawerWork()
+    drawerLifecycle.current = { open: false, closing: false }
+    setDrawerSwitching(true)
+    setDrawerMotion('instant')
+    setDrawerVisible(false)
+    setDrawerClosing(false)
+    setMenuOpen(false)
+    setHeaderMode(reason === 'desktop' ? 'full' : pageScrollRef.current.y > 24 ? 'compact' : 'full')
+    scheduleDrawerFrame(() => {
+      if (reason !== 'desktop' && reason !== 'section') menuButtonRef.current?.focus({ preventScroll: true })
+      scheduleDrawerFrame(() => setDrawerSwitching(false))
+    })
+  }
+
+  function requestDrawerClose(reason: DrawerActivation) {
+    if (!drawerLifecycle.current.open) return
+    if (reason === 'pointer' && drawerLifecycle.current.closing) return
+    const policy = drawerMotionPolicy(reason, window.matchMedia('(prefers-reduced-motion: reduce)').matches, false)
+    if (policy.mode === 'instant') {
+      finishDrawerClose(reason)
+      return
+    }
+    cancelDrawerWork()
+    drawerLifecycle.current.closing = true
+    setDrawerSwitching(true)
+    setDrawerMotion(policy.mode)
+    setDrawerClosing(true)
+    setDrawerVisible(false)
+    // Keep the scroll lock until the exit ends; also handle absent transition events.
+    closeTimer.current = window.setTimeout(() => finishDrawerClose(reason), policy.duration + 50)
+  }
+
+  function closeContents(event: MouseEvent<HTMLButtonElement>) {
+    requestDrawerClose(event.detail > 0 ? 'pointer' : 'keyboard')
+  }
+
+  function toggleContents(event: MouseEvent<HTMLButtonElement>) {
+    const activation = event.detail > 0 ? 'pointer' : 'keyboard'
+    if (drawerLifecycle.current.open && !drawerLifecycle.current.closing) {
+      requestDrawerClose(activation)
+      return
+    }
+    const reversing = drawerLifecycle.current.closing
+    cancelDrawerWork()
+    drawerLifecycle.current = { open: true, closing: false }
+    const policy = drawerMotionPolicy(activation, window.matchMedia('(prefers-reduced-motion: reduce)').matches, true)
+    setDrawerSwitching(true)
+    setDrawerMotion(policy.mode)
+    setDrawerClosing(false)
     setHeaderMode('full')
-    setMenuOpen((open) => !open)
+    setMenuOpen(true)
+    setDrawerVisible(reversing || policy.mode === 'instant')
+    if (contentsRef.current && !reversing) contentsRef.current.scrollTop = 0
+    if (reversing || policy.mode === 'instant') {
+      scheduleDrawerFrame(focusContents)
+    } else {
+      // Paint the initial state once, then let CSS retarget the visible state.
+      scheduleDrawerFrame(() => scheduleDrawerFrame(() => {
+        setDrawerVisible(true)
+        scheduleDrawerFrame(focusContents)
+      }))
+    }
+  }
+
+  function onDrawerTransitionEnd(event: TransitionEvent<HTMLElement>) {
+    if (event.target !== event.currentTarget || event.propertyName !== 'opacity') return
+    if (drawerLifecycle.current.closing) finishDrawerClose('pointer')
   }
 
   return (
     <div className="reader-shell">
       <SkipLink />
-      <header className={`reader-header ${headerMode === 'hidden' || menuOpen ? 'is-hidden' : ''} ${headerMode === 'compact' ? 'is-compact' : ''}`} inert={menuOpen ? true : undefined} aria-hidden={menuOpen || undefined}>
+      <header className={`reader-header ${headerMode === 'hidden' || menuOpen ? 'is-hidden' : ''} ${headerMode === 'compact' ? 'is-compact' : ''}`} data-drawer-switching={drawerSwitching} inert={menuOpen ? true : undefined} aria-hidden={menuOpen || undefined}>
         <Mark />
         <div className="reader-progress" aria-label={`Pattern ${patternIndex + 1} of ${patterns.length}`}>
           <span>{String(patternIndex + 1).padStart(2, '0')} / {patterns.length}</span>
@@ -395,7 +496,7 @@ function PatternReader({ pattern }: { pattern: Pattern }) {
         </nav>
       </main>
 
-      <aside ref={contentsRef} id="page-contents" className={`on-this-page ${menuOpen ? 'is-open' : ''}`}>
+      <aside ref={contentsRef} id="page-contents" className={`on-this-page ${menuOpen ? 'is-open' : ''}`} data-visible={drawerVisible} data-motion={drawerMotion} data-closing={drawerClosing} onTransitionEnd={onDrawerTransitionEnd}>
         <div className="contents-heading">
           <p className="nav-label">ON THIS PAGE</p>
           <button className="menu-button contents-close" onClick={closeContents} aria-label="Close page contents">Close</button>

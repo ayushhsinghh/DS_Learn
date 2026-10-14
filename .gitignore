@@ -12,3 +12,4 @@ vite.config.d.ts
 .gemini
 .impeccable
 .opencode
+plans/*

@@ -19,8 +19,7 @@ export function navigate(event: MouseEvent<HTMLAnchorElement>, path: string) {
   event.preventDefault()
   window.history.pushState({}, '', appHref(path))
   window.dispatchEvent(new PopStateEvent('popstate'))
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' })
+  window.scrollTo({ top: 0, behavior: 'instant' })
 }
 
 export function SkipLink() {
